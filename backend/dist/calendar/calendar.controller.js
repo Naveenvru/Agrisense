@@ -55,6 +55,7 @@ let CalendarController = class CalendarController {
 exports.CalendarController = CalendarController;
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Generate calendar events for a farmer crop' }),
+    (0, swagger_1.ApiParam)({ name: 'farmerCropId', description: 'ID of the farmer crop', example: '3' }),
     (0, common_1.Post)('generate/:farmerCropId'),
     __param(0, (0, common_1.Param)('farmerCropId')),
     __param(1, (0, common_1.Req)()),
@@ -72,6 +73,7 @@ __decorate([
 ], CalendarController.prototype, "findAllEvents", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get specific calendar event' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the calendar event', example: '3' }),
     (0, common_1.Get)('events/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -81,6 +83,7 @@ __decorate([
 ], CalendarController.prototype, "findOneEvent", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Complete a specific calendar event' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the calendar event', example: '3' }),
     (0, common_1.Patch)('events/:id/complete'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),

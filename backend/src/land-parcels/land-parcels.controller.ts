@@ -11,7 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LandParcelsService } from './land-parcels.service';
 import { CreateLandParcelDto } from './dto/create-land-parcel.dto';
@@ -45,6 +45,7 @@ export class LandParcelsController {
   }
 
   @ApiOperation({ summary: 'Get a specific land parcel' })
+  @ApiParam({ name: 'id', description: 'ID of the land parcel', example: '3' })
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: any) {
     const parcel = await this.landParcelsService.findOneByUser(id, req.user.id);
@@ -54,6 +55,7 @@ export class LandParcelsController {
   }
 
   @ApiOperation({ summary: 'Update a specific land parcel' })
+  @ApiParam({ name: 'id', description: 'ID of the land parcel', example: '3' })
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -68,6 +70,7 @@ export class LandParcelsController {
   }
 
   @ApiOperation({ summary: 'Delete a specific land parcel' })
+  @ApiParam({ name: 'id', description: 'ID of the land parcel', example: '3' })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string, @Req() req: any) {

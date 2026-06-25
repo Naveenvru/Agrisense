@@ -1,0 +1,3 @@
+# Data Lake — Raw Weather Storage
+# Phase 8.7: WeatherCollector.store() will write raw JSON files here.
+# Format: weather_<locationId>_<timestamp>.json

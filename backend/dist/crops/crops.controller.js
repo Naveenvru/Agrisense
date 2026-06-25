@@ -59,6 +59,7 @@ __decorate([
 ], CropsController.prototype, "findAll", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get specific crop details' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the crop', example: '3' }),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

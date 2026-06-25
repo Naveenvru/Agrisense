@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 import databaseConfig from './config/database.config';
 import authConfig from './config/auth.config';
+import mongodbConfig from './mongodb/config/mongodb.config';
+import { MongodbModule } from './mongodb/mongodb.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FarmerProfilesModule } from './farmer-profiles/farmer-profiles.module';
@@ -10,6 +13,9 @@ import { LandParcelsModule } from './land-parcels/land-parcels.module';
 import { CropsModule } from './crops/crops.module';
 import { FarmerCropsModule } from './farmer-crops/farmer-crops.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { WeatherModule } from './weather/weather.module';
+import { StorageModule } from './storage/common/storage.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -22,7 +28,7 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, authConfig],
+      load: [databaseConfig, authConfig, mongodbConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -46,6 +52,14 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
         synchronize: false, // Schema is frozen
       }),
     }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('mongodb.uri'),
+        dbName: configService.get<string>('mongodb.database'),
+      }),
+    }),
     UsersModule,
     AuthModule,
     FarmerProfilesModule,
@@ -53,6 +67,10 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     CropsModule,
     FarmerCropsModule,
     CalendarModule,
+    MongodbModule,
+    WeatherModule,
+    StorageModule,
+    SchedulerModule,
   ],
 })
 export class AppModule {}

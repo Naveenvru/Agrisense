@@ -78,6 +78,7 @@ __decorate([
 ], FarmerCropsController.prototype, "findAll", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get specific farmer crop' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the farmer crop', example: '3' }),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -87,6 +88,7 @@ __decorate([
 ], FarmerCropsController.prototype, "findOne", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update specific farmer crop' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the farmer crop', example: '3' }),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -97,6 +99,7 @@ __decorate([
 ], FarmerCropsController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete specific farmer crop' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the farmer crop', example: '3' }),
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),

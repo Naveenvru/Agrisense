@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { CropsService } from './crops.service';
 
 @ApiTags('Crops Catalog')
@@ -36,6 +36,7 @@ export class CropsController {
   }
 
   @ApiOperation({ summary: 'Get specific crop details' })
+  @ApiParam({ name: 'id', description: 'ID of the crop', example: '3' })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const crop = await this.cropsService.findOne(id);

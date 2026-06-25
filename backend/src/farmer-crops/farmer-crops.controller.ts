@@ -11,7 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FarmerCropsService } from './farmer-crops.service';
 import { CreateFarmerCropDto } from './dto/create-farmer-crop.dto';
@@ -45,6 +45,7 @@ export class FarmerCropsController {
   }
 
   @ApiOperation({ summary: 'Get specific farmer crop' })
+  @ApiParam({ name: 'id', description: 'ID of the farmer crop', example: '3' })
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: any) {
     const farmerCrop = await this.farmerCropsService.findOne(id, req.user.id);
@@ -54,6 +55,7 @@ export class FarmerCropsController {
   }
 
   @ApiOperation({ summary: 'Update specific farmer crop' })
+  @ApiParam({ name: 'id', description: 'ID of the farmer crop', example: '3' })
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -68,6 +70,7 @@ export class FarmerCropsController {
   }
 
   @ApiOperation({ summary: 'Delete specific farmer crop' })
+  @ApiParam({ name: 'id', description: 'ID of the farmer crop', example: '3' })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string, @Req() req: any) {

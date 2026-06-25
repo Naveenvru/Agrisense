@@ -13,8 +13,11 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
+const mongoose_1 = require("@nestjs/mongoose");
 const database_config_1 = __importDefault(require("./config/database.config"));
 const auth_config_1 = __importDefault(require("./config/auth.config"));
+const mongodb_config_1 = __importDefault(require("./mongodb/config/mongodb.config"));
+const mongodb_module_1 = require("./mongodb/mongodb.module");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const farmer_profiles_module_1 = require("./farmer-profiles/farmer-profiles.module");
@@ -22,6 +25,9 @@ const land_parcels_module_1 = require("./land-parcels/land-parcels.module");
 const crops_module_1 = require("./crops/crops.module");
 const farmer_crops_module_1 = require("./farmer-crops/farmer-crops.module");
 const calendar_module_1 = require("./calendar/calendar.module");
+const weather_module_1 = require("./weather/weather.module");
+const storage_module_1 = require("./storage/common/storage.module");
+const scheduler_module_1 = require("./scheduler/scheduler.module");
 const user_entity_1 = require("./users/user.entity");
 const farmer_profile_entity_1 = require("./farmer-profiles/farmer-profile.entity");
 const land_parcel_entity_1 = require("./land-parcels/land-parcel.entity");
@@ -37,7 +43,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [database_config_1.default, auth_config_1.default],
+                load: [database_config_1.default, auth_config_1.default, mongodb_config_1.default],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
@@ -61,6 +67,14 @@ exports.AppModule = AppModule = __decorate([
                     synchronize: false,
                 }),
             }),
+            mongoose_1.MongooseModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => ({
+                    uri: configService.get('mongodb.uri'),
+                    dbName: configService.get('mongodb.database'),
+                }),
+            }),
             users_module_1.UsersModule,
             auth_module_1.AuthModule,
             farmer_profiles_module_1.FarmerProfilesModule,
@@ -68,6 +82,10 @@ exports.AppModule = AppModule = __decorate([
             crops_module_1.CropsModule,
             farmer_crops_module_1.FarmerCropsModule,
             calendar_module_1.CalendarModule,
+            mongodb_module_1.MongodbModule,
+            weather_module_1.WeatherModule,
+            storage_module_1.StorageModule,
+            scheduler_module_1.SchedulerModule,
         ],
     })
 ], AppModule);

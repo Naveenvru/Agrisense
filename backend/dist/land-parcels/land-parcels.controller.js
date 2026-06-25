@@ -78,6 +78,7 @@ __decorate([
 ], LandParcelsController.prototype, "findAll", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get a specific land parcel' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the land parcel', example: '3' }),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -87,6 +88,7 @@ __decorate([
 ], LandParcelsController.prototype, "findOne", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update a specific land parcel' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the land parcel', example: '3' }),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -97,6 +99,7 @@ __decorate([
 ], LandParcelsController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete a specific land parcel' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the land parcel', example: '3' }),
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),

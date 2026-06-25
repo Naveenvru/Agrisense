@@ -7,7 +7,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CalendarService } from './calendar.service';
 
@@ -19,6 +19,7 @@ export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
   @ApiOperation({ summary: 'Generate calendar events for a farmer crop' })
+  @ApiParam({ name: 'farmerCropId', description: 'ID of the farmer crop', example: '3' })
   @Post('generate/:farmerCropId')
   async generate(@Param('farmerCropId') farmerCropId: string, @Req() req: any) {
     const result = await this.calendarService.generate(farmerCropId, req.user.id);
@@ -41,6 +42,7 @@ export class CalendarController {
   }
 
   @ApiOperation({ summary: 'Get specific calendar event' })
+  @ApiParam({ name: 'id', description: 'ID of the calendar event', example: '3' })
   @Get('events/:id')
   async findOneEvent(@Param('id') id: string, @Req() req: any) {
     const event = await this.calendarService.findOne(id, req.user.id);
@@ -50,6 +52,7 @@ export class CalendarController {
   }
 
   @ApiOperation({ summary: 'Complete a specific calendar event' })
+  @ApiParam({ name: 'id', description: 'ID of the calendar event', example: '3' })
   @Patch('events/:id/complete')
   async completeEvent(@Param('id') id: string, @Req() req: any) {
     const event = await this.calendarService.complete(id, req.user.id);

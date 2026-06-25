@@ -1,0 +1,3 @@
+# Data Lake — Raw Market Price Storage
+# Phase 9: MarketCollector.store() will write raw AGMARKNET responses here.
+# Format: market_<crop>_<market>_<date>.json
