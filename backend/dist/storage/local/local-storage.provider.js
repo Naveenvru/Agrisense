@@ -43,7 +43,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalStorageProvider = void 0;
 const common_1 = require("@nestjs/common");
 const fs = __importStar(require("fs"));
+const fsp = __importStar(require("fs/promises"));
 const path = __importStar(require("path"));
+const crypto = __importStar(require("crypto"));
 const storage_constants_1 = require("../common/storage.constants");
 let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
     providerName = storage_constants_1.STORAGE_CONSTANTS.PROVIDERS.LOCAL;
@@ -51,35 +53,168 @@ let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
     onModuleInit() {
         this.ensureDirectories();
     }
-    async save(location, _content, _options) {
+    async save(location, content, options) {
+        const start = Date.now();
         const filePath = this.resolvePath(location);
-        this.logger.debug(`SAVE (stub) → ${filePath}`);
-        return {
-            success: false,
-            location,
-            errorMessage: 'LocalStorageProvider.save() — not yet implemented (Phase 8.8).',
-            durationMs: 0,
-        };
+        try {
+            const byteLength = Buffer.isBuffer(content)
+                ? content.length
+                : Buffer.byteLength(content, 'utf8');
+            if (byteLength > storage_constants_1.STORAGE_CONSTANTS.LIMITS.MAX_FILE_SIZE_BYTES) {
+                return {
+                    success: false,
+                    location,
+                    errorMessage: `File exceeds maximum size of ${storage_constants_1.STORAGE_CONSTANTS.LIMITS.MAX_FILE_SIZE_BYTES} bytes (got ${byteLength} bytes).`,
+                    durationMs: Date.now() - start,
+                };
+            }
+            if (!options?.overwrite && fs.existsSync(filePath)) {
+                return {
+                    success: false,
+                    location,
+                    errorMessage: `File already exists at ${filePath}. Pass overwrite=true to replace it.`,
+                    durationMs: Date.now() - start,
+                };
+            }
+            await fsp.mkdir(path.dirname(filePath), { recursive: true });
+            await fsp.writeFile(filePath, content, 'utf8');
+            const contentBuffer = Buffer.isBuffer(content)
+                ? content
+                : Buffer.from(content, 'utf8');
+            const checksum = crypto
+                .createHash('sha256')
+                .update(contentBuffer)
+                .digest('hex');
+            const stat = await fsp.stat(filePath);
+            const ext = path.extname(location.filename);
+            const now = new Date();
+            const metadata = {
+                id: `${location.tier}-${location.domain}-${location.filename}-${Date.now()}`,
+                filename: location.filename,
+                originalFilename: location.filename,
+                provider: this.providerName,
+                path: filePath,
+                extension: ext,
+                mimeType: options?.mimeType ?? this.resolveMimeType(ext),
+                size: stat.size,
+                checksum,
+                createdAt: now,
+                updatedAt: now,
+                source: options?.tags?.source ?? 'unknown',
+                status: 'active',
+                version: 1,
+                tier: location.tier,
+                domain: location.domain,
+                tags: options?.tags,
+            };
+            this.logger.log(`FILE STORED | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename} size=${stat.size}B checksum=${checksum.substring(0, 12)}...`);
+            return {
+                success: true,
+                location,
+                metadata,
+                durationMs: Date.now() - start,
+            };
+        }
+        catch (error) {
+            this.logger.error(`SAVE FAILED | file=${location.filename} error=${error?.message}`);
+            return {
+                success: false,
+                location,
+                errorMessage: `Save failed: ${error?.message}`,
+                durationMs: Date.now() - start,
+            };
+        }
     }
-    async read(location, _options) {
+    async read(location, options) {
+        const start = Date.now();
         const filePath = this.resolvePath(location);
-        this.logger.debug(`READ (stub) → ${filePath}`);
-        return {
-            success: false,
-            location,
-            errorMessage: 'LocalStorageProvider.read() — not yet implemented (Phase 8.8).',
-            durationMs: 0,
-        };
+        try {
+            if (!fs.existsSync(filePath)) {
+                return {
+                    success: false,
+                    location,
+                    errorMessage: `File not found: ${filePath}`,
+                    durationMs: Date.now() - start,
+                };
+            }
+            const encoding = options?.encoding ?? 'utf8';
+            const raw = await fsp.readFile(filePath, encoding);
+            const contentBuffer = Buffer.isBuffer(raw)
+                ? raw
+                : Buffer.from(raw, 'utf8');
+            const checksum = crypto
+                .createHash('sha256')
+                .update(contentBuffer)
+                .digest('hex');
+            const stat = await fsp.stat(filePath);
+            const ext = path.extname(location.filename);
+            const now = new Date();
+            const metadata = {
+                id: `${location.tier}-${location.domain}-${location.filename}`,
+                filename: location.filename,
+                originalFilename: location.filename,
+                provider: this.providerName,
+                path: filePath,
+                extension: ext,
+                mimeType: this.resolveMimeType(ext),
+                size: stat.size,
+                checksum,
+                createdAt: stat.birthtime,
+                updatedAt: stat.mtime,
+                source: 'unknown',
+                status: 'active',
+                version: 1,
+                tier: location.tier,
+                domain: location.domain,
+            };
+            this.logger.log(`FILE READ | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename} size=${stat.size}B`);
+            return {
+                success: true,
+                location,
+                metadata,
+                data: raw,
+                durationMs: Date.now() - start,
+            };
+        }
+        catch (error) {
+            this.logger.error(`READ FAILED | file=${location.filename} error=${error?.message}`);
+            return {
+                success: false,
+                location,
+                errorMessage: `Read failed: ${error?.message}`,
+                durationMs: Date.now() - start,
+            };
+        }
     }
     async delete(location) {
+        const start = Date.now();
         const filePath = this.resolvePath(location);
-        this.logger.debug(`DELETE (stub) → ${filePath}`);
-        return {
-            success: false,
-            location,
-            errorMessage: 'LocalStorageProvider.delete() — not yet implemented (Phase 8.8).',
-            durationMs: 0,
-        };
+        try {
+            if (!fs.existsSync(filePath)) {
+                return {
+                    success: false,
+                    location,
+                    errorMessage: `File not found for deletion: ${filePath}`,
+                    durationMs: Date.now() - start,
+                };
+            }
+            await fsp.unlink(filePath);
+            this.logger.log(`FILE DELETED | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename}`);
+            return {
+                success: true,
+                location,
+                durationMs: Date.now() - start,
+            };
+        }
+        catch (error) {
+            this.logger.error(`DELETE FAILED | file=${location.filename} error=${error?.message}`);
+            return {
+                success: false,
+                location,
+                errorMessage: `Delete failed: ${error?.message}`,
+                durationMs: Date.now() - start,
+            };
+        }
     }
     async exists(location) {
         const filePath = this.resolvePath(location);
@@ -90,9 +225,28 @@ let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
         if (!fs.existsSync(dirPath)) {
             return [];
         }
-        let files = fs.readdirSync(dirPath);
+        let files = fs.readdirSync(dirPath).filter((f) => {
+            const fullPath = path.join(dirPath, f);
+            return fs.statSync(fullPath).isFile();
+        });
         if (options?.extension) {
             files = files.filter((f) => f.endsWith(options.extension));
+        }
+        if (options?.sortBy === 'createdAt' || options?.sortBy === 'size') {
+            files = files.sort((a, b) => {
+                const statA = fs.statSync(path.join(dirPath, a));
+                const statB = fs.statSync(path.join(dirPath, b));
+                const valA = options.sortBy === 'createdAt'
+                    ? statA.birthtimeMs
+                    : statA.size;
+                const valB = options.sortBy === 'createdAt'
+                    ? statB.birthtimeMs
+                    : statB.size;
+                return options.sortOrder === 'desc' ? valB - valA : valA - valB;
+            });
+        }
+        else if (options?.sortBy === 'name') {
+            files = files.sort((a, b) => options.sortOrder === 'desc' ? b.localeCompare(a) : a.localeCompare(b));
         }
         if (options?.limit) {
             files = files.slice(0, options.limit);
@@ -111,7 +265,9 @@ let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
                 writable,
                 freeSpaceBytes: -1,
                 latencyMs: Date.now() - start,
-                message: exists && writable ? 'Local storage is healthy.' : 'Storage directory not writable.',
+                message: exists && writable
+                    ? 'Local storage is healthy.'
+                    : 'Storage directory not writable.',
                 checkedAt: new Date(),
             };
         }
@@ -137,7 +293,7 @@ let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
     ensureDirectories() {
         const dirs = [];
         for (const tier of Object.values(storage_constants_1.STORAGE_CONSTANTS.TIERS)) {
-            if (tier === 'raw') {
+            if (tier === storage_constants_1.STORAGE_CONSTANTS.TIERS.RAW) {
                 for (const domain of Object.values(storage_constants_1.STORAGE_CONSTANTS.DOMAINS)) {
                     dirs.push(path.join(storage_constants_1.STORAGE_ROOT, tier, domain));
                 }
@@ -162,6 +318,15 @@ let LocalStorageProvider = LocalStorageProvider_1 = class LocalStorageProvider {
         catch {
             return false;
         }
+    }
+    resolveMimeType(ext) {
+        const mimeMap = {
+            '.json': 'application/json',
+            '.csv': 'text/csv',
+            '.xml': 'application/xml',
+            '.txt': 'text/plain',
+        };
+        return mimeMap[ext] ?? 'application/octet-stream';
     }
 };
 exports.LocalStorageProvider = LocalStorageProvider;

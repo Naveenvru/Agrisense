@@ -1,0 +1,13 @@
+import { IGeoBoundaryProvider } from './geoboundary-provider.interface';
+export declare class MockGeoBoundaryProvider implements IGeoBoundaryProvider {
+    private readonly logger;
+    reverseGeocode(latitude: number, longitude: number): Promise<{
+        villageName: string;
+        talukName: string;
+        districtName: string;
+        stateName: string;
+        countryName: string;
+        postalCode: string;
+        provider: string;
+    }>;
+}

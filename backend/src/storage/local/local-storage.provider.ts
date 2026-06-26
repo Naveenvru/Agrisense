@@ -4,11 +4,14 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import * as fs from 'fs';
+import * as fsp from 'fs/promises';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import { IStorageProvider } from '../common/storage-provider.interface';
 import {
   StorageLocation,
   StorageResult,
+  StorageMetadata,
   StorageHealthResult,
   SaveOptions,
   ReadOptions,
@@ -17,6 +20,7 @@ import {
 import {
   STORAGE_CONSTANTS,
   STORAGE_ROOT,
+  StorageProviderName,
 } from '../common/storage.constants';
 
 /**
@@ -25,8 +29,11 @@ import {
  * Stores files on the local filesystem under `storage/`.
  * Implements IStorageProvider so it is fully swappable for IPFS or cloud.
  *
- * Phase 8.7: Folder creation + health check only.
- * Phase 8.8: Full save() / read() / delete() implementation.
+ * Phase 8.8: Full save() / read() / delete() implementation with
+ *   ✔ SHA-256 checksum generation
+ *   ✔ StorageMetadata construction
+ *   ✔ File size limit enforcement
+ *   ✔ Overwrite guard
  *
  * Directory layout
  * ─────────────────
@@ -40,7 +47,7 @@ import {
  */
 @Injectable()
 export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
-  readonly providerName = STORAGE_CONSTANTS.PROVIDERS.LOCAL;
+  readonly providerName: StorageProviderName = STORAGE_CONSTANTS.PROVIDERS.LOCAL;
   private readonly logger = new Logger(LocalStorageProvider.name);
 
   /**
@@ -51,59 +58,239 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
   }
 
   // ---------------------------------------------------------------------------
-  // IStorageProvider — Phase 8.8 will complete these implementations
+  // Save
   // ---------------------------------------------------------------------------
 
   async save(
     location: StorageLocation,
-    _content: string | Buffer,
-    _options?: SaveOptions,
+    content: string | Buffer,
+    options?: SaveOptions,
   ): Promise<StorageResult> {
+    const start = Date.now();
     const filePath = this.resolvePath(location);
-    this.logger.debug(`SAVE (stub) → ${filePath}`);
 
-    // Phase 8.8: fs.writeFile / fs.writeFileSync implementation
-    return {
-      success: false,
-      location,
-      errorMessage: 'LocalStorageProvider.save() — not yet implemented (Phase 8.8).',
-      durationMs: 0,
-    };
+    try {
+      // Enforce file size limit
+      const byteLength = Buffer.isBuffer(content)
+        ? content.length
+        : Buffer.byteLength(content, 'utf8');
+
+      if (byteLength > STORAGE_CONSTANTS.LIMITS.MAX_FILE_SIZE_BYTES) {
+        return {
+          success: false,
+          location,
+          errorMessage: `File exceeds maximum size of ${STORAGE_CONSTANTS.LIMITS.MAX_FILE_SIZE_BYTES} bytes (got ${byteLength} bytes).`,
+          durationMs: Date.now() - start,
+        };
+      }
+
+      // Overwrite guard
+      if (!options?.overwrite && fs.existsSync(filePath)) {
+        return {
+          success: false,
+          location,
+          errorMessage: `File already exists at ${filePath}. Pass overwrite=true to replace it.`,
+          durationMs: Date.now() - start,
+        };
+      }
+
+      // Ensure target directory exists
+      await fsp.mkdir(path.dirname(filePath), { recursive: true });
+
+      // Write file
+      await fsp.writeFile(filePath, content, 'utf8');
+
+      // Compute SHA-256 checksum
+      const contentBuffer = Buffer.isBuffer(content)
+        ? content
+        : Buffer.from(content, 'utf8');
+      const checksum = crypto
+        .createHash('sha256')
+        .update(contentBuffer)
+        .digest('hex');
+
+      // Stat for actual size on disk
+      const stat = await fsp.stat(filePath);
+      const ext = path.extname(location.filename);
+      const now = new Date();
+
+      const metadata: StorageMetadata = {
+        id: `${location.tier}-${location.domain}-${location.filename}-${Date.now()}`,
+        filename: location.filename,
+        originalFilename: location.filename,
+        provider: this.providerName,
+        path: filePath,
+        extension: ext,
+        mimeType: options?.mimeType ?? this.resolveMimeType(ext),
+        size: stat.size,
+        checksum,
+        createdAt: now,
+        updatedAt: now,
+        source: options?.tags?.source ?? 'unknown',
+        status: 'active',
+        version: 1,
+        tier: location.tier as any,
+        domain: location.domain as any,
+        tags: options?.tags,
+      };
+
+      this.logger.log(
+        `FILE STORED | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename} size=${stat.size}B checksum=${checksum.substring(0, 12)}...`,
+      );
+
+      return {
+        success: true,
+        location,
+        metadata,
+        durationMs: Date.now() - start,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `SAVE FAILED | file=${location.filename} error=${error?.message}`,
+      );
+      return {
+        success: false,
+        location,
+        errorMessage: `Save failed: ${error?.message}`,
+        durationMs: Date.now() - start,
+      };
+    }
   }
+
+  // ---------------------------------------------------------------------------
+  // Read
+  // ---------------------------------------------------------------------------
 
   async read(
     location: StorageLocation,
-    _options?: ReadOptions,
+    options?: ReadOptions,
   ): Promise<StorageResult<string | Buffer>> {
+    const start = Date.now();
     const filePath = this.resolvePath(location);
-    this.logger.debug(`READ (stub) → ${filePath}`);
 
-    // Phase 8.8: fs.readFile implementation
-    return {
-      success: false,
-      location,
-      errorMessage: 'LocalStorageProvider.read() — not yet implemented (Phase 8.8).',
-      durationMs: 0,
-    };
+    try {
+      if (!fs.existsSync(filePath)) {
+        return {
+          success: false,
+          location,
+          errorMessage: `File not found: ${filePath}`,
+          durationMs: Date.now() - start,
+        };
+      }
+
+      const encoding = options?.encoding ?? 'utf8';
+      const raw = await fsp.readFile(filePath, encoding);
+
+      // Compute checksum on read content for integrity
+      const contentBuffer = Buffer.isBuffer(raw)
+        ? raw
+        : Buffer.from(raw, 'utf8');
+      const checksum = crypto
+        .createHash('sha256')
+        .update(contentBuffer)
+        .digest('hex');
+
+      const stat = await fsp.stat(filePath);
+      const ext = path.extname(location.filename);
+      const now = new Date();
+
+      const metadata: StorageMetadata = {
+        id: `${location.tier}-${location.domain}-${location.filename}`,
+        filename: location.filename,
+        originalFilename: location.filename,
+        provider: this.providerName,
+        path: filePath,
+        extension: ext,
+        mimeType: this.resolveMimeType(ext),
+        size: stat.size,
+        checksum,
+        createdAt: stat.birthtime,
+        updatedAt: stat.mtime,
+        source: 'unknown',
+        status: 'active',
+        version: 1,
+        tier: location.tier as any,
+        domain: location.domain as any,
+      };
+
+      this.logger.log(
+        `FILE READ | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename} size=${stat.size}B`,
+      );
+
+      return {
+        success: true,
+        location,
+        metadata,
+        data: raw,
+        durationMs: Date.now() - start,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `READ FAILED | file=${location.filename} error=${error?.message}`,
+      );
+      return {
+        success: false,
+        location,
+        errorMessage: `Read failed: ${error?.message}`,
+        durationMs: Date.now() - start,
+      };
+    }
   }
+
+  // ---------------------------------------------------------------------------
+  // Delete
+  // ---------------------------------------------------------------------------
 
   async delete(location: StorageLocation): Promise<StorageResult> {
+    const start = Date.now();
     const filePath = this.resolvePath(location);
-    this.logger.debug(`DELETE (stub) → ${filePath}`);
 
-    // Phase 8.8: fs.unlink implementation
-    return {
-      success: false,
-      location,
-      errorMessage: 'LocalStorageProvider.delete() — not yet implemented (Phase 8.8).',
-      durationMs: 0,
-    };
+    try {
+      if (!fs.existsSync(filePath)) {
+        return {
+          success: false,
+          location,
+          errorMessage: `File not found for deletion: ${filePath}`,
+          durationMs: Date.now() - start,
+        };
+      }
+
+      await fsp.unlink(filePath);
+
+      this.logger.log(
+        `FILE DELETED | provider=local tier=${location.tier} domain=${location.domain} file=${location.filename}`,
+      );
+
+      return {
+        success: true,
+        location,
+        durationMs: Date.now() - start,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `DELETE FAILED | file=${location.filename} error=${error?.message}`,
+      );
+      return {
+        success: false,
+        location,
+        errorMessage: `Delete failed: ${error?.message}`,
+        durationMs: Date.now() - start,
+      };
+    }
   }
+
+  // ---------------------------------------------------------------------------
+  // Exists
+  // ---------------------------------------------------------------------------
 
   async exists(location: StorageLocation): Promise<boolean> {
     const filePath = this.resolvePath(location);
     return fs.existsSync(filePath);
   }
+
+  // ---------------------------------------------------------------------------
+  // List
+  // ---------------------------------------------------------------------------
 
   async list(
     tier: string,
@@ -116,10 +303,35 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
       return [];
     }
 
-    let files = fs.readdirSync(dirPath);
+    let files = fs.readdirSync(dirPath).filter((f) => {
+      // Only return files, not subdirectories
+      const fullPath = path.join(dirPath, f);
+      return fs.statSync(fullPath).isFile();
+    });
 
     if (options?.extension) {
       files = files.filter((f) => f.endsWith(options.extension!));
+    }
+
+    // Sorting
+    if (options?.sortBy === 'createdAt' || options?.sortBy === 'size') {
+      files = files.sort((a, b) => {
+        const statA = fs.statSync(path.join(dirPath, a));
+        const statB = fs.statSync(path.join(dirPath, b));
+        const valA =
+          options.sortBy === 'createdAt'
+            ? statA.birthtimeMs
+            : statA.size;
+        const valB =
+          options.sortBy === 'createdAt'
+            ? statB.birthtimeMs
+            : statB.size;
+        return options.sortOrder === 'desc' ? valB - valA : valA - valB;
+      });
+    } else if (options?.sortBy === 'name') {
+      files = files.sort((a, b) =>
+        options.sortOrder === 'desc' ? b.localeCompare(a) : a.localeCompare(b),
+      );
     }
 
     if (options?.limit) {
@@ -128,6 +340,10 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
 
     return files;
   }
+
+  // ---------------------------------------------------------------------------
+  // Health
+  // ---------------------------------------------------------------------------
 
   async health(): Promise<StorageHealthResult> {
     const start = Date.now();
@@ -141,9 +357,12 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
         provider: this.providerName,
         healthy: exists && writable,
         writable,
-        freeSpaceBytes: -1, // Phase 8.8: use fs.statfs or disk-usage package
+        freeSpaceBytes: -1, // disk-usage not needed for Phase 8.8
         latencyMs: Date.now() - start,
-        message: exists && writable ? 'Local storage is healthy.' : 'Storage directory not writable.',
+        message:
+          exists && writable
+            ? 'Local storage is healthy.'
+            : 'Storage directory not writable.',
         checkedAt: new Date(),
       };
     } catch (error: any) {
@@ -173,9 +392,8 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
   private ensureDirectories(): void {
     const dirs: string[] = [];
 
-    // All tier × domain combinations
     for (const tier of Object.values(STORAGE_CONSTANTS.TIERS)) {
-      if (tier === 'raw') {
+      if (tier === STORAGE_CONSTANTS.TIERS.RAW) {
         for (const domain of Object.values(STORAGE_CONSTANTS.DOMAINS)) {
           dirs.push(path.join(STORAGE_ROOT, tier, domain));
         }
@@ -201,5 +419,18 @@ export class LocalStorageProvider implements IStorageProvider, OnModuleInit {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Resolve MIME type from file extension.
+   */
+  private resolveMimeType(ext: string): string {
+    const mimeMap: Record<string, string> = {
+      '.json': 'application/json',
+      '.csv': 'text/csv',
+      '.xml': 'application/xml',
+      '.txt': 'text/plain',
+    };
+    return mimeMap[ext] ?? 'application/octet-stream';
   }
 }

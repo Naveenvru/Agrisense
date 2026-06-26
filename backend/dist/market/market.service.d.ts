@@ -1,0 +1,41 @@
+import { MarketCollector } from '../collectors/market/market.collector';
+import { MarketNormalizationService } from './normalization/market-normalization.service';
+import { MarketQualityService } from './quality/market-quality.service';
+import { MarketRepository } from './repository/market.repository';
+import { MarketAggregationService } from './aggregation/market-aggregation.service';
+import { MarketCollectParams, MarketValidationResult, MarketPriceStats, MarketArrivalStats } from './interfaces/market.interface';
+export declare class MarketService {
+    private readonly collector;
+    private readonly normalization;
+    private readonly quality;
+    private readonly repository;
+    private readonly aggregation;
+    private readonly logger;
+    constructor(collector: MarketCollector, normalization: MarketNormalizationService, quality: MarketQualityService, repository: MarketRepository, aggregation: MarketAggregationService);
+    collect(params?: MarketCollectParams): Promise<{
+        collectionResult: {
+            status: string;
+            recordsCollected: number;
+            durationMs: number;
+        };
+        qualityResult: Pick<MarketValidationResult, 'totalInput' | 'totalValid' | 'totalRejected' | 'totalDuplicates'>;
+        stored: {
+            prices: number;
+            arrivals: number;
+        };
+        dataLake: {
+            stored: boolean;
+            filename?: string;
+        };
+    }>;
+    getPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    getLatestPrice(commodity: string, market: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2 | null>;
+    getArrivals(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<import("../mongodb/market/market-arrival.schema").MarketArrival[]>;
+    getTrends(commodity?: string, market?: string, period?: string, limit?: number): Promise<import("../mongodb/market/market-trend.schema").MarketTrend[]>;
+    getPriceStats(commodity: string, market: string, startDate: Date, endDate: Date): Promise<MarketPriceStats | null>;
+    getArrivalTotals(commodity: string, market: string, startDate?: Date, endDate?: Date): Promise<MarketArrivalStats[]>;
+    healthCheck(): {
+        status: string;
+        module: string;
+    };
+}

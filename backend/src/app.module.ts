@@ -16,6 +16,9 @@ import { CalendarModule } from './calendar/calendar.module';
 import { WeatherModule } from './weather/weather.module';
 import { StorageModule } from './storage/common/storage.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { MarketModule } from './market/market.module';
+import { MasterDataModule } from './master-data/master-data.module';
+import { GeoBoundaryModule } from './geoboundary/geoboundary.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -71,7 +74,9 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     WeatherModule,
     StorageModule,
     SchedulerModule,
+    MarketModule,
+    MasterDataModule,
+    GeoBoundaryModule,
   ],
 })
 export class AppModule {}
-
