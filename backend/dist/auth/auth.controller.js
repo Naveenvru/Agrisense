@@ -40,7 +40,8 @@ let AuthController = class AuthController {
         const oauthUser = req.user;
         const user = await this.authService.validateOAuthUser(oauthUser.email, `${oauthUser.firstName} ${oauthUser.lastName}`);
         const { accessToken } = this.authService.generateToken(user);
-        res.redirect(`http://localhost:3000/oauth-callback?token=${accessToken}`);
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/oauth-callback?token=${accessToken}`);
     }
     async googleTokenAuth(email, name) {
         const user = await this.authService.validateOAuthUser(email, name);

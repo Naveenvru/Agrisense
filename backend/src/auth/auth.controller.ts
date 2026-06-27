@@ -58,8 +58,9 @@ export class AuthController {
     );
     const { accessToken } = this.authService.generateToken(user);
     
-    // Redirect to React frontend with JWT token in query parameter (or we can return JSON)
-    res.redirect(`http://localhost:3000/oauth-callback?token=${accessToken}`);
+    // Redirect to React frontend (Vite default port is 5173) with JWT token in query parameter
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/oauth-callback?token=${accessToken}`);
   }
 
   // Token login endpoint for React app directly calling Google OAuth SDK
