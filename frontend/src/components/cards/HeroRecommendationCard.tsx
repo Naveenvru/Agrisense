@@ -11,7 +11,7 @@ interface HeroRecommendationCardProps {
 
 export function HeroRecommendationCard({ greeting, recommendation }: HeroRecommendationCardProps) {
   return (
-    <Card className="glass overflow-hidden relative w-full border-primary/20">
+    <Card className="glass hover-card overflow-hidden relative w-full border-primary/20">
       {/* Decorative background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-surface to-background z-0" />
       

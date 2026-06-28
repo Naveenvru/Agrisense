@@ -15,7 +15,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, trend, description, className = '' }: StatCardProps) {
   return (
-    <Card className={`glass ${className}`}>
+    <Card className={`glass hover-card ${className}`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-text-secondary">{title}</h3>

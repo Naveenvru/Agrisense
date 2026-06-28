@@ -1,24 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
 import { SIDEBAR_ITEMS } from '@/config/sidebar';
-import { Leaf, LogOut, HelpCircle, User } from 'lucide-react';
+import { Activity, CloudRain, TrendingUp, Sprout } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
-import { useAuth } from '@/context/AuthContext';
 
 export function Sidebar() {
   const location = useLocation();
-  const { logout } = useAuth();
 
   return (
-    <div className="w-64 flex flex-col h-screen border-r border-border bg-surface glass hidden md:flex">
-      <div className="p-6">
-        <Link to={ROUTES.DASHBOARD} className="flex items-center gap-2">
-          <div className="bg-primary/20 p-2 rounded-lg">
-            <Leaf className="text-primary w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-heading font-bold text-text-primary">AgriSense</h1>
-            <p className="text-[10px] text-text-secondary">Know Before You Grow.</p>
-          </div>
+    <div className="w-64 flex flex-col h-screen border-r border-border bg-[rgba(12,18,30,0.85)] backdrop-blur-md hidden md:flex relative z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.5)]">
+      <div className="p-6 pb-2 flex justify-center">
+        <Link to={ROUTES.DASHBOARD} className="flex flex-col items-center justify-center gap-1 w-full group">
+          <img 
+            src="/logo.png" 
+            alt="AgriSense Logo" 
+            className="h-[70px] w-auto object-contain group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all" 
+          />
         </Link>
       </div>
 
@@ -46,22 +42,30 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="p-4 border-t border-border space-y-2 mt-auto">
-        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary hover:bg-hover hover:text-text-primary transition-colors">
-          <HelpCircle className="w-4 h-4" />
-          <span className="text-sm">Ask AgriSense</span>
-        </button>
-        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary hover:bg-hover hover:text-text-primary transition-colors">
-          <User className="w-4 h-4" />
-          <span className="text-sm">Profile</span>
-        </button>
-        <button 
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary/70 hover:text-error hover:bg-error/10 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="text-sm">Logout</span>
-        </button>
+      <div className="p-4 border-t border-border mt-auto">
+        {/* Ask AgriSense AI Card */}
+        <div className="bg-[rgba(15,23,42,0.72)] backdrop-blur-md border border-border rounded-xl p-4 relative overflow-hidden group hover:border-primary/50 transition-colors">
+          <h3 className="text-sm font-bold text-text-primary mb-1 flex items-center gap-2">
+            <span className="text-primary">🌱</span> Ask AgriSense AI
+          </h3>
+          <p className="text-[10px] text-text-secondary mb-3">Your Smart Farming Assistant</p>
+          
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary mb-2">Quick Actions:</p>
+          <ul className="space-y-1.5 mb-4">
+            <li className="flex items-center gap-1.5 text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer" onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}><Activity className="w-3.5 h-3.5 text-primary/70" /> Diagnose Disease</li>
+            <li className="flex items-center gap-1.5 text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer" onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}><CloudRain className="w-3.5 h-3.5 text-info/70" /> Weather Advice</li>
+            <li className="flex items-center gap-1.5 text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer" onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}><TrendingUp className="w-3.5 h-3.5 text-success/70" /> Market Intelligence</li>
+            <li className="flex items-center gap-1.5 text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer" onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}><Sprout className="w-3.5 h-3.5 text-warning/70" /> Crop Planning</li>
+            <li className="flex items-center gap-1.5 text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer" onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}><Sprout className="w-3.5 h-3.5 text-secondary/70" /> Government Schemes</li>
+          </ul>
+          
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chat'))}
+            className="w-full py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center justify-center"
+          >
+            Open AI Assistant
+          </button>
+        </div>
       </div>
     </div>
   );

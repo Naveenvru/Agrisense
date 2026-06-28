@@ -4,8 +4,10 @@ import { GreetingData, RecommendationData } from '@/types/dashboard/Recommendati
 import { HeroRecommendationCard } from '@/components/cards/HeroRecommendationCard';
 import { HeroRecommendationSkeleton } from '@/components/cards/skeletons/HeroRecommendationSkeleton';
 import { ErrorState } from '@/components/common/ErrorState';
+import { useAuth } from '@/context/AuthContext';
 
 export function HeroRecommendationSection() {
+  const { user } = useAuth();
   const [greeting, setGreeting] = useState<GreetingData | null>(null);
   const [recommendation, setRecommendation] = useState<RecommendationData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +21,10 @@ export function HeroRecommendationSection() {
         dashboardService.getGreeting(),
         dashboardService.getRecommendation()
       ]);
-      setGreeting(greetData);
+      setGreeting({
+        ...greetData,
+        userName: user?.name || greetData.userName,
+      });
       setRecommendation(recData);
     } catch (err: any) {
       setError(err);

@@ -34,7 +34,7 @@ export function ActivitySection() {
   return (
     <section className="h-full flex flex-col">
       <SectionHeader title="Recent Activity" />
-      <Card className="glass flex-1">
+      <Card className="glass hover-card flex-1">
         <CardContent className="p-6 h-full">
           {isLoading ? (
             <div className="pt-4">

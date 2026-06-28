@@ -11,7 +11,7 @@ interface QuickStatCardProps {
 
 export function QuickStatCard({ title, value, status, icon, trend = 'neutral' }: QuickStatCardProps) {
   return (
-    <Card className="glass h-full">
+    <Card className="glass hover-card h-full">
       <CardContent className="p-6 flex items-start gap-4">
         <div className="p-3 bg-surface/80 rounded-xl text-primary shrink-0">
           {icon}

@@ -19,7 +19,7 @@ export function FarmCard({ farm }: FarmCardProps) {
   };
 
   return (
-    <Card className="glass hover:border-primary/30 transition-colors group">
+    <Card className="glass hover-card hover:border-primary/30 transition-colors group">
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>

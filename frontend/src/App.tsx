@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/common/ProtectedRoute';
 import { ApplicationShell } from '@/layouts/ApplicationShell';
 import { ROUTES } from '@/config/routes';
+import { ModalProvider } from '@/components/providers/ModalProvider';
 
 // Pages
 import { LoginPage } from '@/features/auth/components/LoginPage';
@@ -18,12 +19,16 @@ import { AiPage } from '@/features/ai/components/AiPage';
 import { DiseasePage } from '@/features/disease/components/DiseasePage';
 import { ReportsPage } from '@/features/reports/components/ReportsPage';
 import { SettingsPage } from '@/features/settings/components/SettingsPage';
+import { ProfilePage } from '@/features/profile/components/ProfilePage';
+import { NotificationsPage } from '@/features/notifications/components/NotificationsPage';
+import { HelpPage } from '@/features/help/components/HelpPage';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
+        <ModalProvider>
+          <Routes>
           {/* Public Routes */}
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
           <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
@@ -41,11 +46,15 @@ function App() {
             <Route path={ROUTES.DISEASE} element={<DiseasePage />} />
             <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+            <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+            <Route path={ROUTES.HELP} element={<HelpPage />} />
           </Route>
           
           <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
         </Routes>
         <Toaster richColors position="top-right" />
+        </ModalProvider>
       </AuthProvider>
     </Router>
   );

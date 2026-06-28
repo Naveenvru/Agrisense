@@ -34,7 +34,7 @@ export function CalendarSection() {
   return (
     <section className="h-full flex flex-col">
       <SectionHeader title="Crop Calendar" />
-      <Card className="glass flex-1">
+      <Card className="glass hover-card flex-1">
         <CardContent className="p-6 h-full flex flex-col gap-4">
           {isLoading ? (
             <>

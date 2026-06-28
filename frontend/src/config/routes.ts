@@ -11,5 +11,8 @@ export const ROUTES = {
   DISEASE: '/disease',
   REPORTS: '/reports',
   SETTINGS: '/settings',
+  PROFILE: '/profile',
+  NOTIFICATIONS: '/notifications',
+  HELP: '/help',
   OAUTH_CALLBACK: '/oauth-callback'
 };

@@ -7,6 +7,10 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  preferences?: {
+    theme: 'system' | 'light' | 'dark';
+    language: string;
+  };
 }
 
 interface AuthContextType {
@@ -15,6 +19,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updatePreferences: (prefs: Partial<User['preferences']>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,8 +59,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate(ROUTES.LOGIN);
   };
 
+  const updatePreferences = (prefs: Partial<User['preferences']>) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        preferences: {
+          ...user.preferences,
+          ...prefs,
+        } as User['preferences']
+      };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, updatePreferences }}>
       {children}
     </AuthContext.Provider>
   );

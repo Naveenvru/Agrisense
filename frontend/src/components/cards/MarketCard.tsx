@@ -9,7 +9,7 @@ interface MarketCardProps {
 
 export function MarketCard({ marketItems }: MarketCardProps) {
   return (
-    <Card className="glass h-full">
+    <Card className="glass hover-card h-full">
       <CardContent className="p-0">
         <div className="p-6 pb-4 border-b border-border">
           <h3 className="text-sm font-medium text-text-secondary">Commodity Markets</h3>

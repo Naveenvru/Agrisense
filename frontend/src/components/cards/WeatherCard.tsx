@@ -8,7 +8,7 @@ interface WeatherCardProps {
 
 export function WeatherCard({ weather }: WeatherCardProps) {
   return (
-    <Card className="glass h-full relative overflow-hidden">
+    <Card className="glass hover-card h-full relative overflow-hidden">
       <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
         <CloudRain className="w-32 h-32" />
       </div>
