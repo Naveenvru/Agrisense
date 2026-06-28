@@ -46,21 +46,21 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="p-4 border-t border-border space-y-1">
+      <div className="p-4 border-t border-border space-y-2 mt-auto">
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary hover:bg-hover hover:text-text-primary transition-colors">
-          <HelpCircle className="w-5 h-5" />
-          <span>Ask AgriSense</span>
+          <HelpCircle className="w-4 h-4" />
+          <span className="text-sm">Ask AgriSense</span>
         </button>
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary hover:bg-hover hover:text-text-primary transition-colors">
-          <User className="w-5 h-5" />
-          <span>Profile</span>
+          <User className="w-4 h-4" />
+          <span className="text-sm">Profile</span>
         </button>
         <button 
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-error hover:bg-error/10 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-text-secondary/70 hover:text-error hover:bg-error/10 transition-colors"
         >
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
+          <LogOut className="w-4 h-4" />
+          <span className="text-sm">Logout</span>
         </button>
       </div>
     </div>

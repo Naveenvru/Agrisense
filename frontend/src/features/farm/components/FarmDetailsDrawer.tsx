@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Farm, LandParcel, CropSummary } from '../types';
 import { Button } from '@/components/ui/button';
-import { X, Map, CloudSun, BrainCircuit, Sprout } from 'lucide-react';
-import { SectionContainer } from './ui/SectionContainer';
+import { X, Map, CloudSun, BrainCircuit, Sprout, Bug, TrendingUp } from 'lucide-react';
+import { AccordionSection } from './ui/AccordionSection';
 import { ParcelCard } from './ParcelCard';
 import { CropSummaryCard } from './CropSummaryCard';
 import { EmptyState } from './ui/EmptyState';
@@ -43,16 +43,16 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-border bg-card">
-          <h2 className="text-xl md:text-2xl font-heading font-semibold text-text-primary">
+          <h2 className="text-xl md:text-2xl font-heading font-semibold text-text-primary tracking-tight">
             {isLoading ? 'Loading...' : farm?.name || 'Farm Details'}
           </h2>
-          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 rounded-full">
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 rounded-full hover:bg-hover">
             <X className="w-5 h-5 text-text-secondary hover:text-text-primary" />
           </Button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar bg-surface/30">
           {isLoading ? (
             <div className="space-y-6">
               {[1, 2, 3].map(i => (
@@ -67,29 +67,29 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
           ) : (
             <>
               {/* Farm Information Section */}
-              <SectionContainer title="Farm Information">
+              <AccordionSection title="Farm Information" defaultOpen>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-text-secondary">Owner</p>
+                    <p className="text-text-secondary mb-1">Owner</p>
                     <p className="font-medium text-text-primary">{farm.ownerName}</p>
                   </div>
                   <div>
-                    <p className="text-text-secondary">Location</p>
+                    <p className="text-text-secondary mb-1">Location</p>
                     <p className="font-medium text-text-primary">{farm.location}</p>
                   </div>
                   <div>
-                    <p className="text-text-secondary">Total Area</p>
+                    <p className="text-text-secondary mb-1">Total Area</p>
                     <p className="font-medium text-text-primary">{farm.totalArea} ha</p>
                   </div>
                   <div>
-                    <p className="text-text-secondary">Last Updated</p>
+                    <p className="text-text-secondary mb-1">Last Updated</p>
                     <p className="font-medium text-text-primary">{new Date(farm.lastUpdated).toLocaleDateString()}</p>
                   </div>
                 </div>
-              </SectionContainer>
+              </AccordionSection>
 
               {/* Land Parcels */}
-              <SectionContainer title={`Land Parcels (${parcels.length})`}>
+              <AccordionSection title={`Land Parcels (${parcels.length})`} defaultOpen>
                 {parcels.length > 0 ? (
                   <div className="grid grid-cols-1 gap-4">
                     {parcels.map(parcel => (
@@ -99,10 +99,10 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                 ) : (
                   <EmptyState icon={Map} title="No Parcels" description="This farm has no associated land parcels." />
                 )}
-              </SectionContainer>
+              </AccordionSection>
 
               {/* Current Crops */}
-              <SectionContainer title={`Current Crops (${crops.length})`}>
+              <AccordionSection title={`Current Crops (${crops.length})`} defaultOpen>
                 {crops.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {crops.map(crop => (
@@ -112,34 +112,68 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                 ) : (
                   <EmptyState icon={Sprout} title="No Crops" description="There are no active crops on this farm." />
                 )}
-              </SectionContainer>
+              </AccordionSection>
 
               {/* Weather Summary Placeholder */}
-              <SectionContainer title="Weather Intelligence">
-                <div className="glass rounded-lg p-4 border border-border bg-background/50 flex flex-col items-center justify-center text-center space-y-2 py-8">
-                  <CloudSun className="w-8 h-8 text-info/50" />
-                  <p className="text-text-primary font-medium">Weather Data Coming Soon</p>
-                  <p className="text-sm text-text-secondary">Integration with micro-climate sensors is pending.</p>
+              <AccordionSection title="Weather Intelligence">
+                <div className="glass rounded-xl p-6 border border-border bg-background/50 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="p-3 bg-info/10 rounded-full">
+                    <CloudSun className="w-6 h-6 text-info" />
+                  </div>
+                  <div>
+                    <p className="text-text-primary font-medium">Weather Data Coming Soon</p>
+                    <p className="text-sm text-text-secondary mt-1">Integration with micro-climate sensors is pending.</p>
+                  </div>
                 </div>
-              </SectionContainer>
+              </AccordionSection>
+
+              {/* Disease Detection Placeholder */}
+              <AccordionSection title="Disease Detection">
+                <div className="glass rounded-xl p-6 border border-border bg-background/50 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="p-3 bg-destructive/10 rounded-full">
+                    <Bug className="w-6 h-6 text-destructive" />
+                  </div>
+                  <div>
+                    <p className="text-text-primary font-medium">Pest & Disease Monitoring</p>
+                    <p className="text-sm text-text-secondary mt-1">Satellite and drone imagery analysis coming in v3.</p>
+                  </div>
+                </div>
+              </AccordionSection>
+              
+              {/* Yield Prediction Placeholder */}
+              <AccordionSection title="Yield Prediction">
+                <div className="glass rounded-xl p-6 border border-border bg-background/50 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="p-3 bg-success/10 rounded-full">
+                    <TrendingUp className="w-6 h-6 text-success" />
+                  </div>
+                  <div>
+                    <p className="text-text-primary font-medium">Harvest Forecasting</p>
+                    <p className="text-sm text-text-secondary mt-1">Advanced yield modeling is currently in training phase.</p>
+                  </div>
+                </div>
+              </AccordionSection>
               
               {/* AI Recommendation Placeholder */}
-              <SectionContainer title="AI Recommendations">
-                <div className="glass rounded-lg p-4 border border-primary/20 bg-primary/5 flex flex-col items-center justify-center text-center space-y-2 py-8">
-                  <BrainCircuit className="w-8 h-8 text-primary/50" />
-                  <p className="text-text-primary font-medium">AgriSense AI Analysis</p>
-                  <p className="text-sm text-text-secondary">Recommendations will appear here after AI analysis.</p>
+              <AccordionSection title="AI Recommendations">
+                <div className="glass rounded-xl p-6 border border-primary/20 bg-primary/5 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <BrainCircuit className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-text-primary font-medium">AgriSense AI Analysis</p>
+                    <p className="text-sm text-text-secondary mt-1">Recommendations will appear here after AI analysis.</p>
+                  </div>
                 </div>
-              </SectionContainer>
+              </AccordionSection>
 
               {/* Map Placeholder */}
-              <SectionContainer title="Farm Location Map">
-                <div className="h-48 rounded-lg bg-muted flex flex-col items-center justify-center border border-dashed border-border text-text-secondary">
-                  <Map className="w-8 h-8 mb-2 opacity-50" />
-                  <p>Map Integration Pending</p>
-                  <p className="text-xs">GPS: {farm.gpsCoordinates?.latitude}, {farm.gpsCoordinates?.longitude}</p>
+              <AccordionSection title="Farm Location Map">
+                <div className="h-48 rounded-xl bg-muted/50 flex flex-col items-center justify-center border border-dashed border-border text-text-secondary">
+                  <Map className="w-8 h-8 mb-3 opacity-50" />
+                  <p className="font-medium text-text-primary">Map Integration Pending</p>
+                  <p className="text-sm mt-1">GPS: {farm.gpsCoordinates?.latitude}, {farm.gpsCoordinates?.longitude}</p>
                 </div>
-              </SectionContainer>
+              </AccordionSection>
             </>
           )}
         </div>

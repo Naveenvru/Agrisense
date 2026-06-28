@@ -8,19 +8,19 @@ export function HealthBadge({ status }: { status: HealthStatus }) {
 
   switch (status) {
     case 'Healthy':
-      colorClass = 'bg-primary/20 text-primary hover:bg-primary/30';
+      colorClass = 'bg-success/15 text-success hover:bg-success/25 border-success/30';
       Icon = CheckCircle2;
       break;
     case 'Medium Risk':
-      colorClass = 'bg-warning/20 text-warning hover:bg-warning/30 border-warning/50';
+      colorClass = 'bg-warning/15 text-warning hover:bg-warning/25 border-warning/30';
       Icon = AlertTriangle;
       break;
     case 'Needs Attention':
-      colorClass = 'bg-warning/20 text-warning hover:bg-warning/30 border-warning/50';
+      colorClass = 'bg-warning/15 text-warning hover:bg-warning/25 border-warning/30';
       Icon = AlertTriangle;
       break;
     case 'Critical':
-      colorClass = 'bg-destructive/20 text-destructive hover:bg-destructive/30 border-destructive/50';
+      colorClass = 'bg-error/15 text-error hover:bg-error/25 border-error/30';
       Icon = XCircle;
       break;
   }
@@ -38,11 +38,17 @@ export function GrowthStageBadge({ stage }: { stage: CropStage }) {
   let Icon = Leaf;
 
   if (stage === 'Harvest Ready') {
-    colorClass = 'bg-primary/20 text-primary hover:bg-primary/30 border-primary/50';
+    colorClass = 'bg-primary/15 text-primary hover:bg-primary/25 border-primary/30';
     Icon = Target;
+  } else if (stage === 'Flowering') {
+    colorClass = 'bg-secondary/15 text-secondary hover:bg-secondary/25 border-secondary/30';
+    Icon = Leaf;
   } else if (stage === 'Completed') {
-    colorClass = 'bg-muted text-muted-foreground';
+    colorClass = 'bg-muted text-text-secondary border-border';
     Icon = CheckCircle2;
+  } else {
+    colorClass = 'bg-info/15 text-info hover:bg-info/25 border-info/30';
+    Icon = Leaf;
   }
 
   return (
@@ -85,18 +91,19 @@ export function HarvestCountdown({ dateString }: { dateString: string }) {
   
   if (diffDays < 0) {
     text = 'Harvest Completed';
-    colorClass = 'text-muted-foreground bg-muted';
+    colorClass = 'text-text-secondary bg-muted border-border';
   } else if (diffDays === 0) {
     text = 'Harvest Today';
-    colorClass = 'text-primary bg-primary/10 border-primary/20';
+    colorClass = 'text-success bg-success/10 border-success/30 font-medium';
   } else if (diffDays === 1) {
     text = 'Harvest Tomorrow';
-    colorClass = 'text-primary bg-primary/10 border-primary/20';
+    colorClass = 'text-success bg-success/10 border-success/30 font-medium';
   } else if (diffDays <= 7) {
     text = `Harvest in ${diffDays} Days`;
-    colorClass = 'text-warning bg-warning/10 border-warning/20';
+    colorClass = 'text-warning bg-warning/10 border-warning/30 font-medium';
   } else {
     text = `Harvest in ${diffDays} Days`;
+    colorClass = 'text-primary bg-primary/5 border-primary/20';
   }
 
   return (

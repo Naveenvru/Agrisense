@@ -8,10 +8,11 @@ interface FarmListProps {
   isLoading: boolean;
   error: Error | null;
   viewMode: 'grid' | 'list';
+  selectedFarmId?: string | null;
   onFarmClick: (id: string) => void;
 }
 
-export function FarmList({ farms, isLoading, error, viewMode, onFarmClick }: FarmListProps) {
+export function FarmList({ farms, isLoading, error, viewMode, selectedFarmId, onFarmClick }: FarmListProps) {
   if (error) {
     return (
       <div className="py-12">
@@ -53,6 +54,7 @@ export function FarmList({ farms, isLoading, error, viewMode, onFarmClick }: Far
           key={farm.id} 
           farm={farm} 
           viewMode={viewMode} 
+          isSelected={farm.id === selectedFarmId}
           onClick={onFarmClick} 
         />
       ))}

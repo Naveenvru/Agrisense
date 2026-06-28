@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Plus, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
+import { useAuth } from '@/context/AuthContext';
 
 import { FarmService } from '../services/FarmService';
 import { Farm, FarmDashboardSummaryStats, LandParcel, CropSummary } from '../types';
@@ -14,6 +14,8 @@ import { FarmList } from './FarmList';
 import { FarmDetailsDrawer } from './FarmDetailsDrawer';
 
 export function FarmPage() {
+  const { user } = useAuth();
+  
   // State
   const [dashboardStats, setDashboardStats] = useState<FarmDashboardSummaryStats | null>(null);
   const [farms, setFarms] = useState<Farm[]>([]);
@@ -132,13 +134,32 @@ export function FarmPage() {
         <span className="text-text-primary font-medium">My Farm</span>
       </div>
 
-      <PageHeader 
-        title="My Farm" 
-        description="Manage your farms, land parcels, and crops." 
-        action={<Button className="gap-2"><Plus className="w-4 h-4"/> Add Farm</Button>}
-      />
+      {/* Hero Section */}
+      <div className="bg-primary/5 rounded-2xl border border-primary/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+        {/* Subtle background decoration */}
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
+        
+        <div className="relative z-10 space-y-2">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary">
+            👋 Good Afternoon, {user?.name || 'Farmer'}
+          </h1>
+          <p className="text-text-secondary text-base md:text-lg max-w-xl">
+            Manage all your farms, parcels and crops from one intelligent workspace.
+          </p>
+        </div>
+        
+        <div className="relative z-10 w-full md:w-auto">
+          <Button 
+            className="w-full md:w-auto gap-2 rounded-xl h-14 px-8 text-lg font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+            Add Farm
+          </Button>
+        </div>
+      </div>
 
-      {/* Dashboard Summary */}
+      {/* Dashboard Summary inline within the page layout */}
       {dashboardStats && !isLoading && !error && (
         <FarmDashboardSummary stats={dashboardStats} />
       )}
@@ -159,6 +180,7 @@ export function FarmPage() {
           isLoading={isLoading}
           error={error}
           viewMode={viewMode}
+          selectedFarmId={selectedFarmId}
           onFarmClick={handleFarmClick}
         />
       </div>

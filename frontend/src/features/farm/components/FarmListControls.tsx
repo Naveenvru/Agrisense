@@ -30,13 +30,13 @@ export function FarmListControls({
   return (
     <div className="flex flex-col gap-4 mb-6">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+        <div className="relative w-full md:w-[480px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
           <Input 
             placeholder="Search farms, crops, locations..." 
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9 bg-background/50 border-border"
+            className="pl-10 h-10 bg-background/50 border-border focus:ring-2 focus:ring-primary/20 transition-all rounded-lg text-base md:text-sm"
           />
         </div>
         
