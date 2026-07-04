@@ -26,6 +26,12 @@ export type DomainEventType =
   | 'harvest.delayed'
   | 'harvest.completed'
   | 'harvest.readiness.alert'
+  // Yield Intelligence (Phase 12)
+  | 'yield.predicted'
+  | 'yield.updated'
+  | 'yield.reduced'
+  | 'yield.warning'
+  | 'yield.completed'
   // System
   | 'system.data.cleanup.completed'
   | 'system.archive.completed';

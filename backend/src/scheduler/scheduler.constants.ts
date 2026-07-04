@@ -16,6 +16,8 @@ export const SCHEDULER_CONSTANTS = {
     GENERATE_REPORTS: 'generate_reports',
     /** Phase 11 — daily harvest readiness assessment for all active crops */
     HARVEST_ASSESS: 'harvest_assess',
+    /** Phase 12 — daily yield intelligence recalculation for all active crops */
+    YIELD_ASSESS: 'yield_assess',
   },
 
   /** Cron expressions — set here, referenced in job definitions */
@@ -46,6 +48,7 @@ export const SCHEDULER_CONSTANTS = {
   /** Job-specific timeout configurations (ms) */
   TIMEOUTS: {
     HARVEST_ASSESS: 5 * 60 * 1000, // 5 minutes
+    YIELD_ASSESS: 5 * 60 * 1000, // 5 minutes
   },
 } as const;
 

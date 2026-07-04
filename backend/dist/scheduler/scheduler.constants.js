@@ -10,6 +10,7 @@ exports.SCHEDULER_CONSTANTS = {
         ARCHIVE_RAW: 'archive_raw',
         GENERATE_REPORTS: 'generate_reports',
         HARVEST_ASSESS: 'harvest_assess',
+        YIELD_ASSESS: 'yield_assess',
     },
     CRON: {
         EVERY_30_MINUTES: '*/30 * * * *',
@@ -28,6 +29,7 @@ exports.SCHEDULER_CONSTANTS = {
     },
     TIMEOUTS: {
         HARVEST_ASSESS: 5 * 60 * 1000,
+        YIELD_ASSESS: 5 * 60 * 1000,
     },
 };
 //# sourceMappingURL=scheduler.constants.js.map

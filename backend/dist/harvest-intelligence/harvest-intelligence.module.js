@@ -60,6 +60,7 @@ exports.HarvestIntelligenceModule = HarvestIntelligenceModule = __decorate([
         exports: [
             harvest_intelligence_service_1.HarvestIntelligenceService,
             crop_lifecycle_engine_1.CropLifecycleEngine,
+            harvest_assessment_engine_1.HarvestAssessmentEngine,
         ],
     })
 ], HarvestIntelligenceModule);

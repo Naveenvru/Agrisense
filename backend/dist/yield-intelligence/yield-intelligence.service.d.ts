@@ -1,0 +1,72 @@
+import { DataSource } from 'typeorm';
+import { WeatherService } from '../weather/weather.service';
+import { CalendarService } from '../calendar/calendar.service';
+import { GeoBoundaryService } from '../geoboundary/geoboundary.service';
+import { CropLifecycleEngine } from '../harvest-intelligence/engines/crop-lifecycle.engine';
+import { HarvestAssessmentEngine } from '../harvest-intelligence/engines/harvest-assessment.engine';
+import { YieldMongoService } from '../mongodb/yield/yield-mongo.service';
+import type { YieldEstimatorStrategy } from './interfaces/yield-estimator.interface';
+import { YieldEventPublisher } from './events/yield-event.publisher';
+import { RegionalYieldService } from './regional/regional-yield.service';
+import { YieldAnalyticsService } from './services/yield-analytics.service';
+import type { YieldPredictionResult } from './interfaces/yield-intelligence.types';
+export declare class YieldIntelligenceService {
+    private readonly dataSource;
+    private readonly weatherService;
+    private readonly calendarService;
+    private readonly geoBoundaryService;
+    private readonly lifecycleEngine;
+    private readonly harvestAssessmentEngine;
+    private readonly mongoService;
+    private readonly eventPublisher;
+    private readonly regionalService;
+    private readonly analyticsService;
+    private readonly yieldEstimator;
+    private readonly logger;
+    constructor(dataSource: DataSource, weatherService: WeatherService, calendarService: CalendarService, geoBoundaryService: GeoBoundaryService, lifecycleEngine: CropLifecycleEngine, harvestAssessmentEngine: HarvestAssessmentEngine, mongoService: YieldMongoService, eventPublisher: YieldEventPublisher, regionalService: RegionalYieldService, analyticsService: YieldAnalyticsService, yieldEstimator: YieldEstimatorStrategy);
+    assess(farmerCropId: string, userId: string): Promise<YieldPredictionResult>;
+    getAssessment(farmerCropId: string, userId: string): Promise<YieldPredictionResult>;
+    getMyAssessments(userId: string): Promise<any[]>;
+    getRisk(farmerCropId: string, userId: string): Promise<{
+        farmerCropId: string;
+        cropName: string;
+        riskLevel: import("../harvest-intelligence/interfaces/harvest-intelligence.types").RiskLevel;
+        riskScore: number;
+        reasons: string[];
+        mitigationRecommendations: string[];
+        explanations: string[];
+    }>;
+    getConfidence(farmerCropId: string, userId: string): Promise<{
+        farmerCropId: string;
+        cropName: string;
+        confidence: number;
+        confidenceBand: import("./interfaces/yield-intelligence.types").YieldConfidenceBand;
+        explanation: string;
+        reasons: string[];
+    }>;
+    getLoss(farmerCropId: string, userId: string): Promise<{
+        farmerCropId: string;
+        cropName: string;
+        expectedLossPercent: number;
+        expectedLossQuantityKg: number;
+        explanation: string;
+        reasons: string[];
+    }>;
+    getSummary(userId: string): Promise<any[]>;
+    getHistory(farmerCropId: string, userId: string, limit?: number): Promise<import("../mongodb/yield/yield-history.schema").YieldHistoryDocument[]>;
+    getRegional(level: string, name: string): Promise<import("./interfaces/yield-intelligence.types").YieldRegionalSummary>;
+    getAnalytics(regionLevel?: string, regionName?: string, periodType?: string, limit?: number): Promise<any[]>;
+    refreshAnalytics(): Promise<import("./interfaces/yield-intelligence.types").YieldAnalyticsSnapshot>;
+    runBulkAssessment(): Promise<{
+        assessed: number;
+        failed: number;
+    }>;
+    private loadAssessmentContext;
+    private loadCropData;
+    private buildWeatherContext;
+    private buildWeatherHistory;
+    private buildActivityContext;
+    private loadHistoricalYields;
+    private deriveSoilFertilityScore;
+    private resolveProfileId;
+}

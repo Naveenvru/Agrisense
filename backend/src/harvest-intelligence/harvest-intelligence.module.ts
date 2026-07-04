@@ -52,6 +52,7 @@ import { EventBusService } from '../common/events/event-bus.service';
   exports: [
     HarvestIntelligenceService,
     CropLifecycleEngine,
+    HarvestAssessmentEngine,
   ],
 })
 export class HarvestIntelligenceModule {}

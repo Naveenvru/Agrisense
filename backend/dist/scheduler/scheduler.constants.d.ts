@@ -7,6 +7,7 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly ARCHIVE_RAW: "archive_raw";
         readonly GENERATE_REPORTS: "generate_reports";
         readonly HARVEST_ASSESS: "harvest_assess";
+        readonly YIELD_ASSESS: "yield_assess";
     };
     readonly CRON: {
         readonly EVERY_30_MINUTES: "*/30 * * * *";
@@ -25,6 +26,7 @@ export declare const SCHEDULER_CONSTANTS: {
     };
     readonly TIMEOUTS: {
         readonly HARVEST_ASSESS: number;
+        readonly YIELD_ASSESS: number;
     };
 };
 export type SchedulerJobName = (typeof SCHEDULER_CONSTANTS.JOBS)[keyof typeof SCHEDULER_CONSTANTS.JOBS];
