@@ -32,6 +32,11 @@ export type DomainEventType =
   | 'yield.reduced'
   | 'yield.warning'
   | 'yield.completed'
+  // Supply Intelligence (Phase 13)
+  | 'supply.predicted'
+  | 'supply.updated'
+  | 'supply.warning'
+  | 'supply.completed'
   // System
   | 'system.data.cleanup.completed'
   | 'system.archive.completed';
