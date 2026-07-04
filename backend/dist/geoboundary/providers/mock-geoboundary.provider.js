@@ -23,6 +23,31 @@ let MockGeoBoundaryProvider = MockGeoBoundaryProvider_1 = class MockGeoBoundaryP
             provider: 'mock',
         };
     }
+    async fetchBoundaryPolygon(adminLevel, name) {
+        this.logger.debug(`Mocking boundary polygon for adminLevel=${adminLevel}, name=${name}`);
+        const mockPolygon = {
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [77.4600, 12.8340],
+                        [77.7800, 12.8340],
+                        [77.7800, 13.1400],
+                        [77.4600, 13.1400],
+                        [77.4600, 12.8340],
+                    ],
+                ],
+            },
+            properties: {
+                adminLevel,
+                name,
+                source: 'mock',
+                note: 'Approximate bounding box — replace with real polygon data in production.',
+            },
+        };
+        return mockPolygon;
+    }
 };
 exports.MockGeoBoundaryProvider = MockGeoBoundaryProvider;
 exports.MockGeoBoundaryProvider = MockGeoBoundaryProvider = MockGeoBoundaryProvider_1 = __decorate([

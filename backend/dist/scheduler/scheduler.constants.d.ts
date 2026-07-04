@@ -6,12 +6,14 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly DATA_CLEANUP: "data_cleanup";
         readonly ARCHIVE_RAW: "archive_raw";
         readonly GENERATE_REPORTS: "generate_reports";
+        readonly HARVEST_ASSESS: "harvest_assess";
     };
     readonly CRON: {
         readonly EVERY_30_MINUTES: "*/30 * * * *";
         readonly EVERY_HOUR: "0 * * * *";
         readonly EVERY_6_HOURS: "0 */6 * * *";
         readonly DAILY_MIDNIGHT: "0 0 * * *";
+        readonly DAILY_6AM: "0 6 * * *";
         readonly WEEKLY: "0 2 * * 0";
     };
     readonly PRIORITY: {
@@ -20,6 +22,9 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly NORMAL: 3;
         readonly LOW: 4;
         readonly BACKGROUND: 5;
+    };
+    readonly TIMEOUTS: {
+        readonly HARVEST_ASSESS: number;
     };
 };
 export type SchedulerJobName = (typeof SCHEDULER_CONSTANTS.JOBS)[keyof typeof SCHEDULER_CONSTANTS.JOBS];

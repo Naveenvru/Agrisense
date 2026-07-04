@@ -24,6 +24,7 @@ let GeoBoundaryService = GeoBoundaryService_1 = class GeoBoundaryService {
     hashMapService;
     logger = new common_1.Logger(GeoBoundaryService_1.name);
     coordinateCache = new Map();
+    polygonCache = new Map();
     constructor(repository, provider, hashMapService) {
         this.repository = repository;
         this.provider = provider;
@@ -59,6 +60,28 @@ let GeoBoundaryService = GeoBoundaryService_1 = class GeoBoundaryService {
         await this.repository.save(resolvedResult);
         this.coordinateCache.set(cacheKey, resolvedResult);
         return resolvedResult;
+    }
+    async resolveBoundaryPolygon(adminLevel, name) {
+        const cacheKey = `${adminLevel}:${name.toLowerCase()}`;
+        this.logger.log(`Resolving boundary polygon for ${cacheKey}`);
+        if (this.polygonCache.has(cacheKey)) {
+            this.logger.debug(`L1 Polygon Cache hit for ${cacheKey}`);
+            return this.polygonCache.get(cacheKey);
+        }
+        const cachedPolygon = await this.repository.findPolygonByAdminUnit(adminLevel, name);
+        if (cachedPolygon) {
+            this.logger.debug(`L2 MongoDB Polygon Cache hit for ${cacheKey}`);
+            this.polygonCache.set(cacheKey, cachedPolygon);
+            return cachedPolygon;
+        }
+        this.logger.debug(`Polygon cache miss for ${cacheKey}. Calling provider...`);
+        const polygon = await this.provider.fetchBoundaryPolygon(adminLevel, name);
+        if (!polygon) {
+            throw new common_1.NotFoundException(`Boundary polygon not found for adminLevel='${adminLevel}', name='${name}'`);
+        }
+        await this.repository.savePolygon(adminLevel, name, polygon);
+        this.polygonCache.set(cacheKey, polygon);
+        return polygon;
     }
     healthCheck() {
         this.logger.log('GeoBoundaryService health check called');

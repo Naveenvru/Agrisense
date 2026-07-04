@@ -20,6 +20,12 @@ export type DomainEventType =
   | 'farmer.profile.created'
   | 'farmer.crop.sown'
   | 'farmer.crop.harvested'
+  // Harvest Intelligence (Phase 11)
+  | 'harvest.predicted'
+  | 'harvest.updated'
+  | 'harvest.delayed'
+  | 'harvest.completed'
+  | 'harvest.readiness.alert'
   // System
   | 'system.data.cleanup.completed'
   | 'system.archive.completed';

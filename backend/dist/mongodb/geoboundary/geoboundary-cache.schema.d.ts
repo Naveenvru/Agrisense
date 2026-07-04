@@ -12,7 +12,9 @@ export declare class GeoBoundaryCache extends Document {
     talukId?: string;
     districtId?: string;
     stateId?: string;
+    boundaryPolygon?: Record<string, any>;
     provider: string;
+    polygonCacheKey?: string;
     resolvedAt: Date;
 }
 export declare const GeoBoundaryCacheSchema: import("mongoose").Schema<GeoBoundaryCache, import("mongoose").Model<GeoBoundaryCache, any, any, any, any, any, GeoBoundaryCache>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, GeoBoundaryCache, Document<unknown, {}, GeoBoundaryCache, {
@@ -142,6 +144,24 @@ export declare const GeoBoundaryCacheSchema: import("mongoose").Schema<GeoBounda
         id: string;
     }> | undefined;
     villageId?: import("mongoose").SchemaDefinitionProperty<string | undefined, GeoBoundaryCache, Document<unknown, {}, GeoBoundaryCache, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<GeoBoundaryCache & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    boundaryPolygon?: import("mongoose").SchemaDefinitionProperty<Record<string, any> | undefined, GeoBoundaryCache, Document<unknown, {}, GeoBoundaryCache, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<GeoBoundaryCache & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    polygonCacheKey?: import("mongoose").SchemaDefinitionProperty<string | undefined, GeoBoundaryCache, Document<unknown, {}, GeoBoundaryCache, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<GeoBoundaryCache & Required<{
         _id: import("mongoose").Types.ObjectId;

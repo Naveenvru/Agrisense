@@ -19,6 +19,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { MarketModule } from './market/market.module';
 import { MasterDataModule } from './master-data/master-data.module';
 import { GeoBoundaryModule } from './geoboundary/geoboundary.module';
+import { HarvestIntelligenceModule } from './harvest-intelligence/harvest-intelligence.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -77,6 +78,7 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     MarketModule,
     MasterDataModule,
     GeoBoundaryModule,
+    HarvestIntelligenceModule,   // Phase 11 – Harvest Intelligence
   ],
 })
 export class AppModule {}

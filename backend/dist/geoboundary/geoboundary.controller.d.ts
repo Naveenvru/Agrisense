@@ -1,5 +1,5 @@
 import { GeoBoundaryService } from './geoboundary.service';
-import { ReverseGeocodeDto } from './dto/geoboundary.dto';
+import { ReverseGeocodeDto, PolygonLookupDto } from './dto/geoboundary.dto';
 export declare class GeoBoundaryController {
     private readonly geoboundaryService;
     constructor(geoboundaryService: GeoBoundaryService);
@@ -8,4 +8,5 @@ export declare class GeoBoundaryController {
         module: string;
     };
     reverseGeocode(query: ReverseGeocodeDto): Promise<import("./interfaces/geoboundary.interface").GeoBoundaryResult>;
+    getBoundaryPolygon(query: PolygonLookupDto): Promise<import("./interfaces/geoboundary.interface").GeoJsonFeature>;
 }

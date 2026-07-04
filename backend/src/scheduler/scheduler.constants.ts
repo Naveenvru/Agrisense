@@ -14,6 +14,8 @@ export const SCHEDULER_CONSTANTS = {
     DATA_CLEANUP: 'data_cleanup',
     ARCHIVE_RAW: 'archive_raw',
     GENERATE_REPORTS: 'generate_reports',
+    /** Phase 11 — daily harvest readiness assessment for all active crops */
+    HARVEST_ASSESS: 'harvest_assess',
   },
 
   /** Cron expressions — set here, referenced in job definitions */
@@ -26,6 +28,8 @@ export const SCHEDULER_CONSTANTS = {
     EVERY_6_HOURS: '0 */6 * * *',
     /** Once per day at midnight */
     DAILY_MIDNIGHT: '0 0 * * *',
+    /** Once per day at 6 AM */
+    DAILY_6AM: '0 6 * * *',
     /** Once per week on Sunday at 2am */
     WEEKLY: '0 2 * * 0',
   },
@@ -37,6 +41,11 @@ export const SCHEDULER_CONSTANTS = {
     NORMAL: 3,
     LOW: 4,
     BACKGROUND: 5,
+  },
+
+  /** Job-specific timeout configurations (ms) */
+  TIMEOUTS: {
+    HARVEST_ASSESS: 5 * 60 * 1000, // 5 minutes
   },
 } as const;
 

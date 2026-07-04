@@ -9,12 +9,14 @@ exports.SCHEDULER_CONSTANTS = {
         DATA_CLEANUP: 'data_cleanup',
         ARCHIVE_RAW: 'archive_raw',
         GENERATE_REPORTS: 'generate_reports',
+        HARVEST_ASSESS: 'harvest_assess',
     },
     CRON: {
         EVERY_30_MINUTES: '*/30 * * * *',
         EVERY_HOUR: '0 * * * *',
         EVERY_6_HOURS: '0 */6 * * *',
         DAILY_MIDNIGHT: '0 0 * * *',
+        DAILY_6AM: '0 6 * * *',
         WEEKLY: '0 2 * * 0',
     },
     PRIORITY: {
@@ -23,6 +25,9 @@ exports.SCHEDULER_CONSTANTS = {
         NORMAL: 3,
         LOW: 4,
         BACKGROUND: 5,
+    },
+    TIMEOUTS: {
+        HARVEST_ASSESS: 5 * 60 * 1000,
     },
 };
 //# sourceMappingURL=scheduler.constants.js.map

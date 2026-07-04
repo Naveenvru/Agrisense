@@ -31,6 +31,7 @@ const scheduler_module_1 = require("./scheduler/scheduler.module");
 const market_module_1 = require("./market/market.module");
 const master_data_module_1 = require("./master-data/master-data.module");
 const geoboundary_module_1 = require("./geoboundary/geoboundary.module");
+const harvest_intelligence_module_1 = require("./harvest-intelligence/harvest-intelligence.module");
 const user_entity_1 = require("./users/user.entity");
 const farmer_profile_entity_1 = require("./farmer-profiles/farmer-profile.entity");
 const land_parcel_entity_1 = require("./land-parcels/land-parcel.entity");
@@ -92,6 +93,7 @@ exports.AppModule = AppModule = __decorate([
             market_module_1.MarketModule,
             master_data_module_1.MasterDataModule,
             geoboundary_module_1.GeoBoundaryModule,
+            harvest_intelligence_module_1.HarvestIntelligenceModule,
         ],
     })
 ], AppModule);

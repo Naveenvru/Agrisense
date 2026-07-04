@@ -25,7 +25,9 @@ let GeoBoundaryCache = class GeoBoundaryCache extends mongoose_2.Document {
     talukId;
     districtId;
     stateId;
+    boundaryPolygon;
     provider;
+    polygonCacheKey;
     resolvedAt;
 };
 exports.GeoBoundaryCache = GeoBoundaryCache;
@@ -78,9 +80,17 @@ __decorate([
     __metadata("design:type", String)
 ], GeoBoundaryCache.prototype, "stateId", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ type: Object }),
+    __metadata("design:type", Object)
+], GeoBoundaryCache.prototype, "boundaryPolygon", void 0);
+__decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], GeoBoundaryCache.prototype, "provider", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String }),
+    __metadata("design:type", String)
+], GeoBoundaryCache.prototype, "polygonCacheKey", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: Date, default: Date.now }),
     __metadata("design:type", Date)
@@ -90,4 +100,5 @@ exports.GeoBoundaryCache = GeoBoundaryCache = __decorate([
 ], GeoBoundaryCache);
 exports.GeoBoundaryCacheSchema = mongoose_1.SchemaFactory.createForClass(GeoBoundaryCache);
 exports.GeoBoundaryCacheSchema.index({ latitude: 1, longitude: 1 }, { unique: true });
+exports.GeoBoundaryCacheSchema.index({ polygonCacheKey: 1 }, { unique: true, sparse: true });
 //# sourceMappingURL=geoboundary-cache.schema.js.map

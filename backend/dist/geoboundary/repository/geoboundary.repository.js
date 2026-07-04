@@ -48,6 +48,31 @@ let GeoBoundaryRepository = GeoBoundaryRepository_1 = class GeoBoundaryRepositor
     async save(result) {
         await this.cacheModel.updateOne({ latitude: result.latitude, longitude: result.longitude }, { $set: result }, { upsert: true }).exec();
     }
+    async findPolygonByAdminUnit(adminLevel, name) {
+        const record = await this.cacheModel
+            .findOne({
+            polygonCacheKey: `${adminLevel}:${name.toLowerCase()}`,
+        })
+            .exec();
+        if (!record || !record.boundaryPolygon)
+            return null;
+        this.logger.debug(`Polygon cache hit for adminLevel=${adminLevel}, name=${name}`);
+        return record.boundaryPolygon;
+    }
+    async savePolygon(adminLevel, name, polygon) {
+        const key = `${adminLevel}:${name.toLowerCase()}`;
+        await this.cacheModel.updateOne({ polygonCacheKey: key }, {
+            $set: {
+                polygonCacheKey: key,
+                latitude: 0,
+                longitude: 0,
+                provider: polygon.properties?.source ?? 'unknown',
+                boundaryPolygon: polygon,
+                resolvedAt: new Date(),
+            },
+        }, { upsert: true }).exec();
+        this.logger.debug(`Polygon cached for adminLevel=${adminLevel}, name=${name}`);
+    }
 };
 exports.GeoBoundaryRepository = GeoBoundaryRepository;
 exports.GeoBoundaryRepository = GeoBoundaryRepository = GeoBoundaryRepository_1 = __decorate([
