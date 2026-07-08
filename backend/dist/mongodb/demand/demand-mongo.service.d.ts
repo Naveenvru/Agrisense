@@ -1,23 +1,19 @@
 import { Model } from 'mongoose';
-import { DemandAnalyticsDocument, DemandHistoryDocument, DemandIntelligenceDocument } from './demand-intelligence.schema';
+import { DemandAnalyticsDocument } from './demand-analytics.schema';
+import { DemandHistoryDocument } from './demand-history.schema';
+import { DemandIntelligenceDocument } from './demand-intelligence.schema';
 export declare class DemandMongoService {
     private readonly intelligenceModel;
     private readonly historyModel;
     private readonly analyticsModel;
     private readonly logger;
     constructor(intelligenceModel: Model<DemandIntelligenceDocument>, historyModel: Model<DemandHistoryDocument>, analyticsModel: Model<DemandAnalyticsDocument>);
-    upsertAssessment(key: {
-        cropName: string;
-        regionLevel: string;
-        regionName: string;
-    }, data: Partial<DemandIntelligenceDocument>): Promise<void>;
-    findByKey(key: {
-        cropName: string;
-        regionLevel: string;
-        regionName: string;
-    }): Promise<DemandIntelligenceDocument | null>;
+    upsertAssessment(farmerCropId: string, data: Partial<DemandIntelligenceDocument>): Promise<void>;
+    findByFarmerCropId(farmerCropId: string): Promise<DemandIntelligenceDocument | null>;
+    findByFarmerProfileId(farmerProfileId: string): Promise<DemandIntelligenceDocument[]>;
     findAllPredictions(): Promise<DemandIntelligenceDocument[]>;
     appendHistory(entry: Partial<DemandHistoryDocument>): Promise<void>;
+    findHistory(farmerCropId: string, limit?: number): Promise<DemandHistoryDocument[]>;
     upsertAnalytics(scope: string, periodType: string, periodStart: Date, data: Partial<DemandAnalyticsDocument>): Promise<void>;
     findAnalytics(regionLevel?: string, regionName?: string, periodType?: string, limit?: number): Promise<DemandAnalyticsDocument[]>;
 }

@@ -9,56 +9,65 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DemandActionQueryDto = exports.AnalyticsQueryDto = exports.RegionalQueryDto = void 0;
+exports.DemandActionQueryDto = exports.DemandAnalyticsQueryDto = exports.RegionalDemandQueryDto = void 0;
 const class_validator_1 = require("class-validator");
-class RegionalQueryDto {
+const swagger_1 = require("@nestjs/swagger");
+class RegionalDemandQueryDto {
     level;
     name;
 }
-exports.RegionalQueryDto = RegionalQueryDto;
+exports.RegionalDemandQueryDto = RegionalDemandQueryDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['village', 'taluk', 'district', 'state']),
-    __metadata("design:type", String)
-], RegionalQueryDto.prototype, "level", void 0);
-__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'district', description: 'Region level: village | taluk | district | state' }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], RegionalQueryDto.prototype, "name", void 0);
-class AnalyticsQueryDto {
+], RegionalDemandQueryDto.prototype, "level", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'Bengaluru Urban', description: 'Region name to query' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegionalDemandQueryDto.prototype, "name", void 0);
+class DemandAnalyticsQueryDto {
     regionLevel;
     regionName;
     periodType;
     limit;
 }
-exports.AnalyticsQueryDto = AnalyticsQueryDto;
+exports.DemandAnalyticsQueryDto = DemandAnalyticsQueryDto;
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'district' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AnalyticsQueryDto.prototype, "regionLevel", void 0);
+], DemandAnalyticsQueryDto.prototype, "regionLevel", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'Bengaluru Urban' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AnalyticsQueryDto.prototype, "regionName", void 0);
+], DemandAnalyticsQueryDto.prototype, "regionName", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'monthly' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AnalyticsQueryDto.prototype, "periodType", void 0);
+], DemandAnalyticsQueryDto.prototype, "periodType", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: '12' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumberString)(),
     __metadata("design:type", String)
-], AnalyticsQueryDto.prototype, "limit", void 0);
+], DemandAnalyticsQueryDto.prototype, "limit", void 0);
 class DemandActionQueryDto {
-    cropId;
+    farmerCropId;
 }
 exports.DemandActionQueryDto = DemandActionQueryDto;
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: '1', description: 'farmerCropId to recalculate, or omit for full portfolio' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], DemandActionQueryDto.prototype, "cropId", void 0);
+], DemandActionQueryDto.prototype, "farmerCropId", void 0);
 //# sourceMappingURL=demand-query.dto.js.map

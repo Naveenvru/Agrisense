@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DemandMongoModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const demand_analytics_schema_1 = require("./demand-analytics.schema");
+const demand_history_schema_1 = require("./demand-history.schema");
 const demand_intelligence_schema_1 = require("./demand-intelligence.schema");
 const demand_mongo_service_1 = require("./demand-mongo.service");
 let DemandMongoModule = class DemandMongoModule {
@@ -19,8 +21,8 @@ exports.DemandMongoModule = DemandMongoModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([
                 { name: demand_intelligence_schema_1.DemandIntelligenceDocument.name, schema: demand_intelligence_schema_1.DemandIntelligenceSchema },
-                { name: demand_intelligence_schema_1.DemandHistoryDocument.name, schema: demand_intelligence_schema_1.DemandHistorySchema },
-                { name: demand_intelligence_schema_1.DemandAnalyticsDocument.name, schema: demand_intelligence_schema_1.DemandAnalyticsSchema },
+                { name: demand_history_schema_1.DemandHistoryDocument.name, schema: demand_history_schema_1.DemandHistorySchema },
+                { name: demand_analytics_schema_1.DemandAnalyticsDocument.name, schema: demand_analytics_schema_1.DemandAnalyticsSchema },
             ]),
         ],
         providers: [demand_mongo_service_1.DemandMongoService],

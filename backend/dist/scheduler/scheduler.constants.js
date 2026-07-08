@@ -12,6 +12,7 @@ exports.SCHEDULER_CONSTANTS = {
         HARVEST_ASSESS: 'harvest_assess',
         YIELD_ASSESS: 'yield_assess',
         SUPPLY_ASSESS: 'supply_assess',
+        DEMAND_ASSESS: 'demand_assess',
     },
     CRON: {
         EVERY_30_MINUTES: '*/30 * * * *',
@@ -19,6 +20,7 @@ exports.SCHEDULER_CONSTANTS = {
         EVERY_6_HOURS: '0 */6 * * *',
         DAILY_MIDNIGHT: '0 0 * * *',
         DAILY_6AM: '0 6 * * *',
+        DAILY_7AM: '0 7 * * *',
         WEEKLY: '0 2 * * 0',
     },
     PRIORITY: {
@@ -32,6 +34,7 @@ exports.SCHEDULER_CONSTANTS = {
         HARVEST_ASSESS: 5 * 60 * 1000,
         YIELD_ASSESS: 5 * 60 * 1000,
         SUPPLY_ASSESS: 5 * 60 * 1000,
+        DEMAND_ASSESS: 5 * 60 * 1000,
     },
 };
 //# sourceMappingURL=scheduler.constants.js.map

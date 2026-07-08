@@ -1,13 +1,13 @@
-export declare class RegionalQueryDto {
-    level: 'village' | 'taluk' | 'district' | 'state';
-    name: string;
+export declare class RegionalDemandQueryDto {
+    level?: 'village' | 'taluk' | 'district' | 'state';
+    name?: string;
 }
-export declare class AnalyticsQueryDto {
+export declare class DemandAnalyticsQueryDto {
     regionLevel?: string;
     regionName?: string;
     periodType?: string;
     limit?: string;
 }
 export declare class DemandActionQueryDto {
-    cropId?: string;
+    farmerCropId?: string;
 }

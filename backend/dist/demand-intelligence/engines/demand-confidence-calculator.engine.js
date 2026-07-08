@@ -10,17 +10,41 @@ exports.DemandConfidenceCalculatorEngine = void 0;
 const common_1 = require("@nestjs/common");
 const yield_rule_utils_1 = require("../../yield-intelligence/utils/yield-rule.utils");
 let DemandConfidenceCalculatorEngine = class DemandConfidenceCalculatorEngine {
-    calculate(context, expectedDemandKg) {
-        let confidence = 55;
-        confidence += context.recentTransactionCount >= 10 ? 12 : context.recentTransactionCount < 4 ? -10 : 0;
-        confidence += context.recentBuyerCount >= 5 ? 8 : context.recentBuyerCount < 2 ? -8 : 0;
-        confidence += context.marketMomentumIndex >= 0.75 ? 10 : context.marketMomentumIndex < 0.4 ? -10 : 0;
-        confidence += context.buyerActivityIndex >= 0.75 ? 8 : context.buyerActivityIndex < 0.4 ? -8 : 0;
-        confidence += context.supplyPressureIndex <= 0.4 ? 6 : context.supplyPressureIndex >= 0.7 ? -8 : 0;
-        confidence += context.seasonalDemandIndex >= 0.9 ? 8 : context.seasonalDemandIndex < 0.7 ? -8 : 0;
-        confidence += context.priceTrend === 'rising' ? 6 : context.priceTrend === 'falling' ? -6 : 0;
-        const transactionStability = (0, yield_rule_utils_1.clamp)(100 - Math.abs(context.recentTransactionCount - context.recentBuyerCount) * 4, 0, 100);
-        confidence += (transactionStability - 50) * 0.08;
+    calculate(context, expectedDemandKg, currentDemandKg) {
+        let confidence = 52;
+        const hasPriceData = context.marketModalPrice > 0;
+        const hasArrivalData = context.recentArrivalQty > 0;
+        confidence += hasPriceData ? 10 : -12;
+        confidence += hasArrivalData ? 6 : -8;
+        if (context.marketTrendDirection === 'stable')
+            confidence += 6;
+        if (context.marketTrendDirection === 'rising')
+            confidence += 2;
+        if (context.marketTrendDirection === 'falling')
+            confidence -= 4;
+        confidence += context.yieldConfidence >= 75 ? 8 : context.yieldConfidence < 50 ? -10 : 0;
+        confidence += context.harvestReadinessScore >= 70 ? 8 : context.harvestReadinessScore < 40 ? -8 : 0;
+        const supplyRatio = expectedDemandKg > 0 && context.availableSupplyKg > 0
+            ? context.availableSupplyKg / expectedDemandKg
+            : 0;
+        confidence += supplyRatio >= 0.9 ? 6 : supplyRatio < 0.5 ? -8 : 0;
+        if (context.historicalDemandKg.length >= 3) {
+            const avgHistorical = (0, yield_rule_utils_1.average)(context.historicalDemandKg);
+            const variance = avgHistorical > 0
+                ? Math.abs(expectedDemandKg - avgHistorical) / avgHistorical
+                : 0;
+            confidence += variance < 0.15 ? 8 : variance < 0.30 ? 2 : -6;
+        }
+        if (context.isMspCrop)
+            confidence += 5;
+        if (context.isExportCrop)
+            confidence += 4;
+        if (context.weather.hasFloodRisk || context.weather.hasHeatStress)
+            confidence -= 6;
+        if (context.regionalEventNotes.length > 0)
+            confidence -= 5;
+        if (context.yieldRiskLevel === 'critical')
+            confidence -= 10;
         return (0, yield_rule_utils_1.clamp)(Math.round(confidence), 0, 100);
     }
 };

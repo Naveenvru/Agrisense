@@ -22,6 +22,7 @@ import { GeoBoundaryModule } from './geoboundary/geoboundary.module';
 import { HarvestIntelligenceModule } from './harvest-intelligence/harvest-intelligence.module';
 import { YieldIntelligenceModule } from './yield-intelligence/yield-intelligence.module';
 import { SupplyIntelligenceModule } from './supply-intelligence/supply-intelligence.module';
+import { DemandIntelligenceModule } from './demand-intelligence/demand-intelligence.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -83,6 +84,7 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     HarvestIntelligenceModule,   // Phase 11 – Harvest Intelligence
     YieldIntelligenceModule,     // Phase 12 – Yield Intelligence
     SupplyIntelligenceModule,    // Phase 13 – Supply Intelligence
+    DemandIntelligenceModule,    // Phase 14 – Demand Intelligence
   ],
 })
 export class AppModule {}

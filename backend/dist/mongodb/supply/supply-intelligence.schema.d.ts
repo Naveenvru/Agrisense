@@ -52,16 +52,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    version?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -79,52 +70,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    confidence?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    supplyDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    explanations?: import("mongoose").SchemaDefinitionProperty<string[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    recommendations?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    version?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    cropCategory?: import("mongoose").SchemaDefinitionProperty<string | undefined, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -142,7 +88,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    cropCategory?: import("mongoose").SchemaDefinitionProperty<string | undefined, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    expectedHarvestDate?: import("mongoose").SchemaDefinitionProperty<Date | undefined, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -151,7 +97,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    regionLevel?: import("mongoose").SchemaDefinitionProperty<"village" | "taluk" | "district" | "state", SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -160,7 +106,16 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    regionName?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    areaAcres?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -205,7 +160,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    areaAcres?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -214,16 +169,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    expectedHarvestDate?: import("mongoose").SchemaDefinitionProperty<Date | undefined, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    expectedSupplyKg?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    mitigationRecommendations?: import("mongoose").SchemaDefinitionProperty<string[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -241,7 +187,7 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    availableSupplyKg?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    explanations?: import("mongoose").SchemaDefinitionProperty<string[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -250,7 +196,43 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    confidenceBand?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    assessedAt?: import("mongoose").SchemaDefinitionProperty<Date, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    regionLevel?: import("mongoose").SchemaDefinitionProperty<"district" | "state" | "village" | "taluk", SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    regionName?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    confidence?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    recommendations?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -286,7 +268,34 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
     }, "id"> & {
         id: string;
     }> | undefined;
-    mitigationRecommendations?: import("mongoose").SchemaDefinitionProperty<string[], SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+    confidenceBand?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    supplyDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    expectedSupplyKg?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    availableSupplyKg?: import("mongoose").SchemaDefinitionProperty<number, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -332,15 +341,6 @@ export declare const SupplyIntelligenceSchema: import("mongoose").Schema<SupplyI
         id: string;
     }> | undefined;
     weatherSummary?: import("mongoose").SchemaDefinitionProperty<string, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    assessedAt?: import("mongoose").SchemaDefinitionProperty<Date, SupplyIntelligenceDocument, Document<unknown, {}, SupplyIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<SupplyIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;

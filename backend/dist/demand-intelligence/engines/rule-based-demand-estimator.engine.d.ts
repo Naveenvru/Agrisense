@@ -9,4 +9,15 @@ export declare class RuleBasedDemandEstimatorEngine implements DemandEstimatorSt
     private readonly recommendationEngine;
     constructor(riskAnalyzer: DemandRiskAnalyzerEngine, confidenceCalculator: DemandConfidenceCalculatorEngine, recommendationEngine: DemandRecommendationEngine);
     estimate(context: DemandAssessmentContext): DemandPredictionResult;
+    private resolveBaseDemandPerAcre;
+    private resolvePriceFactor;
+    private resolveSupplyFactor;
+    private resolveSeasonFactor;
+    private resolveFestivalFactor;
+    private resolveExportFactor;
+    private resolveProcurementFactor;
+    private resolveWeatherFactor;
+    private resolveHistoricalFactor;
+    private buildDemandTimeline;
+    private buildSeasonalAnalysis;
 }

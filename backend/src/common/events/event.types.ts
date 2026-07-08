@@ -37,6 +37,11 @@ export type DomainEventType =
   | 'supply.updated'
   | 'supply.warning'
   | 'supply.completed'
+  // Demand Intelligence (Phase 14)
+  | 'demand.predicted'
+  | 'demand.updated'
+  | 'demand.warning'
+  | 'demand.completed'
   // System
   | 'system.data.cleanup.completed'
   | 'system.archive.completed';

@@ -9,6 +9,7 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly HARVEST_ASSESS: "harvest_assess";
         readonly YIELD_ASSESS: "yield_assess";
         readonly SUPPLY_ASSESS: "supply_assess";
+        readonly DEMAND_ASSESS: "demand_assess";
     };
     readonly CRON: {
         readonly EVERY_30_MINUTES: "*/30 * * * *";
@@ -16,6 +17,7 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly EVERY_6_HOURS: "0 */6 * * *";
         readonly DAILY_MIDNIGHT: "0 0 * * *";
         readonly DAILY_6AM: "0 6 * * *";
+        readonly DAILY_7AM: "0 7 * * *";
         readonly WEEKLY: "0 2 * * 0";
     };
     readonly PRIORITY: {
@@ -29,6 +31,7 @@ export declare const SCHEDULER_CONSTANTS: {
         readonly HARVEST_ASSESS: number;
         readonly YIELD_ASSESS: number;
         readonly SUPPLY_ASSESS: number;
+        readonly DEMAND_ASSESS: number;
     };
 };
 export type SchedulerJobName = (typeof SCHEDULER_CONSTANTS.JOBS)[keyof typeof SCHEDULER_CONSTANTS.JOBS];

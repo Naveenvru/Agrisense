@@ -17,6 +17,8 @@ exports.DemandMongoService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const demand_analytics_schema_1 = require("./demand-analytics.schema");
+const demand_history_schema_1 = require("./demand-history.schema");
 const demand_intelligence_schema_1 = require("./demand-intelligence.schema");
 let DemandMongoService = DemandMongoService_1 = class DemandMongoService {
     intelligenceModel;
@@ -28,18 +30,25 @@ let DemandMongoService = DemandMongoService_1 = class DemandMongoService {
         this.historyModel = historyModel;
         this.analyticsModel = analyticsModel;
     }
-    async upsertAssessment(key, data) {
-        await this.intelligenceModel.updateOne(key, { $set: { ...data, assessedAt: new Date() } }, { upsert: true }).exec();
-        this.logger.debug(`Demand assessment upserted for ${key.cropName}/${key.regionLevel}/${key.regionName}`);
+    async upsertAssessment(farmerCropId, data) {
+        await this.intelligenceModel.updateOne({ farmerCropId }, { $set: { ...data, assessedAt: new Date() } }, { upsert: true }).exec();
+        this.logger.debug(`Demand assessment upserted for farmerCropId=${farmerCropId}`);
     }
-    async findByKey(key) {
-        return this.intelligenceModel.findOne(key).exec();
+    async findByFarmerCropId(farmerCropId) {
+        return this.intelligenceModel.findOne({ farmerCropId }).exec();
+    }
+    async findByFarmerProfileId(farmerProfileId) {
+        return this.intelligenceModel.find({ farmerProfileId }).sort({ assessedAt: -1 }).exec();
     }
     async findAllPredictions() {
         return this.intelligenceModel.find({}).sort({ assessedAt: -1 }).exec();
     }
     async appendHistory(entry) {
         await this.historyModel.create({ ...entry, predictionTimestamp: new Date() });
+        this.logger.debug(`Demand history appended for farmerCropId=${entry.farmerCropId}`);
+    }
+    async findHistory(farmerCropId, limit = 20) {
+        return this.historyModel.find({ farmerCropId }).sort({ predictionTimestamp: -1 }).limit(limit).exec();
     }
     async upsertAnalytics(scope, periodType, periodStart, data) {
         await this.analyticsModel.updateOne({ scope, periodType, periodStart, regionLevel: data.regionLevel, regionName: data.regionName, cropName: data.cropName }, { $set: { ...data, generatedAt: new Date() } }, { upsert: true }).exec();
@@ -59,8 +68,8 @@ exports.DemandMongoService = DemandMongoService;
 exports.DemandMongoService = DemandMongoService = DemandMongoService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(demand_intelligence_schema_1.DemandIntelligenceDocument.name)),
-    __param(1, (0, mongoose_1.InjectModel)(demand_intelligence_schema_1.DemandHistoryDocument.name)),
-    __param(2, (0, mongoose_1.InjectModel)(demand_intelligence_schema_1.DemandAnalyticsDocument.name)),
+    __param(1, (0, mongoose_1.InjectModel)(demand_history_schema_1.DemandHistoryDocument.name)),
+    __param(2, (0, mongoose_1.InjectModel)(demand_analytics_schema_1.DemandAnalyticsDocument.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])

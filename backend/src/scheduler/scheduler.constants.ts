@@ -20,6 +20,8 @@ export const SCHEDULER_CONSTANTS = {
     YIELD_ASSESS: 'yield_assess',
     /** Phase 13 — daily supply intelligence recalculation for all active crops */
     SUPPLY_ASSESS: 'supply_assess',
+    /** Phase 14 — daily demand intelligence recalculation for all active crops */
+    DEMAND_ASSESS: 'demand_assess',
   },
 
   /** Cron expressions — set here, referenced in job definitions */
@@ -34,6 +36,8 @@ export const SCHEDULER_CONSTANTS = {
     DAILY_MIDNIGHT: '0 0 * * *',
     /** Once per day at 6 AM */
     DAILY_6AM: '0 6 * * *',
+    /** Once per day at 7 AM */
+    DAILY_7AM: '0 7 * * *',
     /** Once per week on Sunday at 2am */
     WEEKLY: '0 2 * * 0',
   },
@@ -52,6 +56,7 @@ export const SCHEDULER_CONSTANTS = {
     HARVEST_ASSESS: 5 * 60 * 1000, // 5 minutes
     YIELD_ASSESS: 5 * 60 * 1000, // 5 minutes
     SUPPLY_ASSESS: 5 * 60 * 1000, // 5 minutes
+    DEMAND_ASSESS: 5 * 60 * 1000, // 5 minutes
   },
 } as const;
 
