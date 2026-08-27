@@ -32,16 +32,7 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+    version?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -59,7 +50,7 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    previousDemandKg?: import("mongoose").SchemaDefinitionProperty<number | undefined, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -68,7 +59,34 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    newDemandKg?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    explanations?: import("mongoose").SchemaDefinitionProperty<string[], DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    predictionTimestamp?: import("mongoose").SchemaDefinitionProperty<Date, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -95,33 +113,6 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    demandDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    explanations?: import("mongoose").SchemaDefinitionProperty<string[], DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
     recommendations?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
@@ -131,7 +122,7 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    version?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+    previousDemandKg?: import("mongoose").SchemaDefinitionProperty<number | undefined, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -140,7 +131,16 @@ export declare const DemandHistorySchema: import("mongoose").Schema<DemandHistor
     }, "id"> & {
         id: string;
     }> | undefined;
-    predictionTimestamp?: import("mongoose").SchemaDefinitionProperty<Date, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+    newDemandKg?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    demandDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, DemandHistoryDocument, Document<unknown, {}, DemandHistoryDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandHistoryDocument & Required<{
         _id: import("mongoose").Types.ObjectId;

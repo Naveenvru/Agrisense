@@ -66,7 +66,7 @@ export declare class HarvestIntelligenceController {
     }>;
     getRegional(query: RegionalQueryDto): Promise<{
         data: {
-            regionLevel: "village" | "taluk" | "district" | "state";
+            regionLevel: "district" | "state" | "village" | "taluk";
             regionName: string;
             totalFarmers: number;
             totalCrops: number;
@@ -80,7 +80,7 @@ export declare class HarvestIntelligenceController {
             cropBreakdown?: undefined;
             generatedAt?: undefined;
         } | {
-            regionLevel: "village" | "taluk" | "district" | "state";
+            regionLevel: "district" | "state" | "village" | "taluk";
             regionName: string;
             totalFarmers: number;
             totalCrops: number;

@@ -48,6 +48,15 @@ export declare const DemandAnalyticsSchema: import("mongoose").Schema<DemandAnal
     }, "id"> & {
         id: string;
     }> | undefined;
+    cropName?: import("mongoose").SchemaDefinitionProperty<string | undefined, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
     scope?: import("mongoose").SchemaDefinitionProperty<string, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
@@ -75,15 +84,6 @@ export declare const DemandAnalyticsSchema: import("mongoose").Schema<DemandAnal
     }, "id"> & {
         id: string;
     }> | undefined;
-    cropName?: import("mongoose").SchemaDefinitionProperty<string | undefined, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
     periodType?: import("mongoose").SchemaDefinitionProperty<string, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
@@ -103,6 +103,28 @@ export declare const DemandAnalyticsSchema: import("mongoose").Schema<DemandAnal
         id: string;
     }> | undefined;
     periodEnd?: import("mongoose").SchemaDefinitionProperty<Date, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    generatedAt?: import("mongoose").SchemaDefinitionProperty<Date, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    cropDistribution?: import("mongoose").SchemaDefinitionProperty<{
+        cropName: string;
+        demandKg: number;
+        sharePercent: number;
+    }[], DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -183,28 +205,6 @@ export declare const DemandAnalyticsSchema: import("mongoose").Schema<DemandAnal
         demandKg: number;
         confidence: number;
     }[], DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    cropDistribution?: import("mongoose").SchemaDefinitionProperty<{
-        cropName: string;
-        demandKg: number;
-        sharePercent: number;
-    }[], DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    generatedAt?: import("mongoose").SchemaDefinitionProperty<Date, DemandAnalyticsDocument, Document<unknown, {}, DemandAnalyticsDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandAnalyticsDocument & Required<{
         _id: import("mongoose").Types.ObjectId;

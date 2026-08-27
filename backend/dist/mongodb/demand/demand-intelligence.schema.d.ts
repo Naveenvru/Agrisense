@@ -53,16 +53,7 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+    version?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -80,15 +71,6 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    cropVariety?: import("mongoose").SchemaDefinitionProperty<string | undefined, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
     cropCategory?: import("mongoose").SchemaDefinitionProperty<string | undefined, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
@@ -98,7 +80,7 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    regionLevel?: import("mongoose").SchemaDefinitionProperty<"village" | "taluk" | "district" | "state", DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+    cropVariety?: import("mongoose").SchemaDefinitionProperty<string | undefined, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -107,7 +89,34 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    regionName?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+    expectedHarvestDate?: import("mongoose").SchemaDefinitionProperty<Date | undefined, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    farmerProfileId?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    areaAcres?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    farmerCropId?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -152,7 +161,7 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    areaAcres?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -161,7 +170,124 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
     }, "id"> & {
         id: string;
     }> | undefined;
-    expectedHarvestDate?: import("mongoose").SchemaDefinitionProperty<Date | undefined, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+    mitigationRecommendations?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    explanations?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    assessedAt?: import("mongoose").SchemaDefinitionProperty<Date, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    regionLevel?: import("mongoose").SchemaDefinitionProperty<"district" | "state" | "village" | "taluk", DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    regionName?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    confidence?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    recommendations?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    explanation?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    riskScore?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    riskReasons?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    confidenceBand?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    seasonalAnalysis?: import("mongoose").SchemaDefinitionProperty<Record<string, any>, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    timeline?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    demandDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -225,132 +351,6 @@ export declare const DemandIntelligenceSchema: import("mongoose").Schema<DemandI
         id: string;
     }> | undefined;
     festivalDemandKg?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    demandDensityKgPerAcre?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    confidence?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    confidenceBand?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    explanation?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    explanations?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    riskLevel?: import("mongoose").SchemaDefinitionProperty<string, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    riskScore?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    riskReasons?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    mitigationRecommendations?: import("mongoose").SchemaDefinitionProperty<string[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    seasonalAnalysis?: import("mongoose").SchemaDefinitionProperty<Record<string, any>, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    timeline?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    recommendations?: import("mongoose").SchemaDefinitionProperty<Record<string, any>[], DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    assessedAt?: import("mongoose").SchemaDefinitionProperty<Date, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    version?: import("mongoose").SchemaDefinitionProperty<number, DemandIntelligenceDocument, Document<unknown, {}, DemandIntelligenceDocument, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<DemandIntelligenceDocument & Required<{
         _id: import("mongoose").Types.ObjectId;

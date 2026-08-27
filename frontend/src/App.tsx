@@ -23,40 +23,46 @@ import { ProfilePage } from '@/features/profile/components/ProfilePage';
 import { NotificationsPage } from '@/features/notifications/components/NotificationsPage';
 import { HelpPage } from '@/features/help/components/HelpPage';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <ModalProvider>
-          <Routes>
-          {/* Public Routes */}
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
-          <Route path={ROUTES.OAUTH_CALLBACK} element={<OAuthCallbackPage />} />
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AuthProvider>
+          <ModalProvider>
+            <Routes>
+            {/* Public Routes */}
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
+            <Route path={ROUTES.OAUTH_CALLBACK} element={<OAuthCallbackPage />} />
 
-          {/* Protected Routes wrapped in Application Shell */}
-          <Route element={<ProtectedRoute><ApplicationShell><Outlet /></ApplicationShell></ProtectedRoute>}>
-            <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-            <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-            <Route path={ROUTES.FARM} element={<FarmPage />} />
-            <Route path={ROUTES.WEATHER} element={<WeatherPage />} />
-            <Route path={ROUTES.MARKET} element={<MarketPage />} />
-            <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
-            <Route path={ROUTES.AI} element={<AiPage />} />
-            <Route path={ROUTES.DISEASE} element={<DiseasePage />} />
-            <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
-            <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
-            <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-            <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
-            <Route path={ROUTES.HELP} element={<HelpPage />} />
-          </Route>
-          
-          <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-        </Routes>
-        <Toaster richColors position="top-right" />
-        </ModalProvider>
-      </AuthProvider>
-    </Router>
+            {/* Protected Routes wrapped in Application Shell */}
+            <Route element={<ProtectedRoute><ApplicationShell><Outlet /></ApplicationShell></ProtectedRoute>}>
+              <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+              <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+              <Route path={ROUTES.FARM} element={<FarmPage />} />
+              <Route path={ROUTES.WEATHER} element={<WeatherPage />} />
+              <Route path={ROUTES.MARKET} element={<MarketPage />} />
+              <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
+              <Route path={ROUTES.AI} element={<AiPage />} />
+              <Route path={ROUTES.DISEASE} element={<DiseasePage />} />
+              <Route path={ROUTES.REPORTS} element={<ReportsPage />} />
+              <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+              <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+              <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+              <Route path={ROUTES.HELP} element={<HelpPage />} />
+            </Route>
+            
+            <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+          </Routes>
+          <Toaster richColors position="top-right" />
+          </ModalProvider>
+        </AuthProvider>
+      </Router>
+    </QueryClientProvider>
   );
 }
 

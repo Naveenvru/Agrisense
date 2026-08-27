@@ -63,7 +63,7 @@ export declare class HarvestIntelligenceService {
     }>;
     getAnalytics(regionLevel: string, regionName?: string, periodType?: string, limit?: number): Promise<import("../mongodb/harvest/harvest-analytics.schema").HarvestAnalyticsDocument[]>;
     getRegional(level: string, name: string): Promise<{
-        regionLevel: "village" | "taluk" | "district" | "state";
+        regionLevel: "district" | "state" | "village" | "taluk";
         regionName: string;
         totalFarmers: number;
         totalCrops: number;
@@ -77,7 +77,7 @@ export declare class HarvestIntelligenceService {
         cropBreakdown?: undefined;
         generatedAt?: undefined;
     } | {
-        regionLevel: "village" | "taluk" | "district" | "state";
+        regionLevel: "district" | "state" | "village" | "taluk";
         regionName: string;
         totalFarmers: number;
         totalCrops: number;
