@@ -12,7 +12,7 @@ export declare class AuthService {
         accessToken: string;
         user: Omit<User, 'passwordHash'>;
     }>;
-    validateOAuthUser(email: string, name: string): Promise<User>;
+    validateOAuthUser(email: string, name: string, googleId?: string): Promise<User>;
     generateToken(user: User): {
         accessToken: string;
     };

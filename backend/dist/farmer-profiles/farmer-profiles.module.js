@@ -10,6 +10,7 @@ exports.FarmerProfilesModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const farmer_profile_entity_1 = require("./farmer-profile.entity");
+const user_entity_1 = require("../users/user.entity");
 const farmer_profiles_service_1 = require("./farmer-profiles.service");
 const farmer_profiles_controller_1 = require("./farmer-profiles.controller");
 let FarmerProfilesModule = class FarmerProfilesModule {
@@ -17,7 +18,7 @@ let FarmerProfilesModule = class FarmerProfilesModule {
 exports.FarmerProfilesModule = FarmerProfilesModule;
 exports.FarmerProfilesModule = FarmerProfilesModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([farmer_profile_entity_1.FarmerProfile])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([farmer_profile_entity_1.FarmerProfile, user_entity_1.User])],
         controllers: [farmer_profiles_controller_1.FarmerProfilesController],
         providers: [farmer_profiles_service_1.FarmerProfilesService],
         exports: [farmer_profiles_service_1.FarmerProfilesService],

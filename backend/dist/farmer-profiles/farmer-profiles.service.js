@@ -17,10 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const farmer_profile_entity_1 = require("./farmer-profile.entity");
+const user_entity_1 = require("../users/user.entity");
 let FarmerProfilesService = class FarmerProfilesService {
     farmerProfilesRepository;
-    constructor(farmerProfilesRepository) {
+    usersRepository;
+    constructor(farmerProfilesRepository, usersRepository) {
         this.farmerProfilesRepository = farmerProfilesRepository;
+        this.usersRepository = usersRepository;
     }
     async create(userId, createDto) {
         const existing = await this.farmerProfilesRepository.findOne({
@@ -41,21 +44,33 @@ let FarmerProfilesService = class FarmerProfilesService {
         return this.farmerProfilesRepository.save(profile);
     }
     async findByUserId(userId) {
-        const profile = await this.farmerProfilesRepository.findOne({
+        let profile = await this.farmerProfilesRepository.findOne({
             where: { userId },
             relations: { user: true },
         });
         if (!profile) {
-            throw new common_1.NotFoundException('Farmer profile not found');
+            const user = await this.usersRepository.findOne({ where: { id: userId } });
+            profile = this.farmerProfilesRepository.create({
+                userId,
+                district: null,
+                state: null,
+                village: null,
+                totalLandArea: 0,
+            });
+            await this.farmerProfilesRepository.save(profile);
+            if (user) {
+                profile.user = user;
+            }
         }
         return profile;
     }
     async update(userId, updateDto) {
-        const profile = await this.farmerProfilesRepository.findOne({
+        let profile = await this.farmerProfilesRepository.findOne({
             where: { userId },
+            relations: { user: true },
         });
         if (!profile) {
-            throw new common_1.NotFoundException('Farmer profile not found. Please create one first.');
+            profile = await this.findByUserId(userId);
         }
         if (updateDto.district !== undefined)
             profile.district = updateDto.district;
@@ -69,13 +84,32 @@ let FarmerProfilesService = class FarmerProfilesService {
             profile.primarySoilType = updateDto.primarySoilType;
         if (updateDto.primaryIrrigationType !== undefined)
             profile.primaryIrrigationType = updateDto.primaryIrrigationType;
-        return this.farmerProfilesRepository.save(profile);
+        const savedProfile = await this.farmerProfilesRepository.save(profile);
+        const phone = updateDto.phoneNumber || updateDto.phone;
+        const lang = updateDto.preferredLanguage || updateDto.language;
+        const userUpdates = {};
+        if (updateDto.name !== undefined)
+            userUpdates.name = updateDto.name;
+        if (phone !== undefined)
+            userUpdates.phoneNumber = phone;
+        if (lang !== undefined)
+            userUpdates.preferredLanguage = lang;
+        if (Object.keys(userUpdates).length > 0) {
+            await this.usersRepository.update(userId, userUpdates);
+            const updatedUser = await this.usersRepository.findOne({ where: { id: userId } });
+            if (updatedUser) {
+                savedProfile.user = updatedUser;
+            }
+        }
+        return savedProfile;
     }
 };
 exports.FarmerProfilesService = FarmerProfilesService;
 exports.FarmerProfilesService = FarmerProfilesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(farmer_profile_entity_1.FarmerProfile)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], FarmerProfilesService);
 //# sourceMappingURL=farmer-profiles.service.js.map

@@ -3,6 +3,7 @@ import { X, Send, Mic, Paperclip, Sparkles, Sprout, Cloud, TrendingUp, AlertTria
 import { Button } from '@/components/ui/button';
 import { useModal } from '@/components/providers/ModalProvider';
 import { TreeMascot } from '@/components/ui/TreeMascot';
+import { geminiService } from '@/features/ai/services/gemini.service';
 
 interface AiChatDrawerProps {
   isOpen: boolean;
@@ -59,45 +60,64 @@ export function AiChatDrawer({ isOpen, onClose }: AiChatDrawerProps) {
     { icon: TrendingUp, text: "Market price today?" },
   ];
 
-  const handleSend = (text: string = message) => {
-    if (!text.trim()) return;
+  const handleSend = async (text: string = message) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
 
     const userMsg: ChatMessage = { 
       id: Date.now().toString(), 
       role: 'user', 
-      content: text.trim(),
+      content: trimmed,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
+    // Format history for backend Gemini API
+    const historyPayload = chatHistory
+      .filter(m => !m.isTyping)
+      .map(m => ({
+        role: (m.role === 'user' ? 'user' : 'model') as 'user' | 'model',
+        content: m.content
+      }));
+
     setChatHistory(prev => [...prev, userMsg]);
     setMessage('');
 
-    // Simulate AI thinking
     const typingId = (Date.now() + 1).toString();
-    setTimeout(() => {
-      setChatHistory(prev => [...prev, { 
-        id: typingId, 
-        role: 'ai', 
-        content: '', 
-        isTyping: true,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }]);
-      
-      // Simulate AI response
-      setTimeout(() => {
-        setChatHistory(prev => prev.map(msg => 
-          msg.id === typingId 
-            ? { 
-                id: typingId, 
-                role: 'ai', 
-                content: "**Analysis Complete**\n\nBased on the current meteorological data and your farm's soil moisture levels, I recommend waiting **24 hours** before irrigating.\n\n- There is a 60% chance of rainfall tonight.\n- Conserving water now will prevent root rot.\n\nWould you like me to schedule a reminder?", 
-                isTyping: false,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              } 
-            : msg
-        ));
-      }, 1500);
-    }, 500);
+    setChatHistory(prev => [...prev, { 
+      id: typingId, 
+      role: 'ai', 
+      content: '', 
+      isTyping: true,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }]);
+
+    try {
+      const responseText = await geminiService.sendChatMessage(trimmed, historyPayload);
+      setChatHistory(prev => prev.map(msg => 
+        msg.id === typingId 
+          ? { 
+              id: typingId, 
+              role: 'ai', 
+              content: responseText, 
+              isTyping: false,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            } 
+          : msg
+      ));
+    } catch (error: any) {
+      const errorMsg = error?.response?.data?.message || 'Unable to connect to AgriSense AI service. Please check your backend connection.';
+      setChatHistory(prev => prev.map(msg => 
+        msg.id === typingId 
+          ? { 
+              id: typingId, 
+              role: 'ai', 
+              content: `⚠️ **AgriSense AI Warning**\n\n${errorMsg}`, 
+              isTyping: false,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            } 
+          : msg
+      ));
+    }
   };
 
   const handleCopy = (id: string, content: string) => {

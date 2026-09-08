@@ -23,6 +23,7 @@ import { HarvestIntelligenceModule } from './harvest-intelligence/harvest-intell
 import { YieldIntelligenceModule } from './yield-intelligence/yield-intelligence.module';
 import { SupplyIntelligenceModule } from './supply-intelligence/supply-intelligence.module';
 import { DemandIntelligenceModule } from './demand-intelligence/demand-intelligence.module';
+import { GeminiModule } from './gemini/gemini.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -85,6 +86,7 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     YieldIntelligenceModule,     // Phase 12 – Yield Intelligence
     SupplyIntelligenceModule,    // Phase 13 – Supply Intelligence
     DemandIntelligenceModule,    // Phase 14 – Demand Intelligence
+    GeminiModule,
   ],
 })
 export class AppModule {}

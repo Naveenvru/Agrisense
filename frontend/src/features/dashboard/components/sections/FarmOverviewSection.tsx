@@ -9,11 +9,14 @@ import { SectionHeader } from '@/components/common/SectionHeader';
 import { DashboardGrid } from '@/components/layout/DashboardGrid';
 import { Button } from '@/components/ui/button';
 import { Map, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/config/routes';
 
 export function FarmOverviewSection() {
   const [farms, setFarms] = useState<FarmData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const navigate = useNavigate();
 
   const loadData = async () => {
     setIsLoading(true);
@@ -37,7 +40,7 @@ export function FarmOverviewSection() {
       <SectionHeader 
         title="My Farm Overview" 
         subtitle="Real-time status of your connected fields."
-        action={<Button variant="outline" className="gap-2"><Map className="w-4 h-4"/> View Map</Button>}
+        action={<Button variant="outline" className="gap-2" onClick={() => navigate(ROUTES.FARM)}><Map className="w-4 h-4"/> View Map</Button>}
       />
       
       {isLoading ? (
@@ -51,7 +54,7 @@ export function FarmOverviewSection() {
           icon={<Map className="w-12 h-12" />}
           title="No Farms Connected"
           description="You haven't added any fields yet. Add your first field to get AI insights."
-          action={<Button className="gap-2"><Plus className="w-4 h-4"/> Add Field</Button>}
+          action={<Button className="gap-2" onClick={() => navigate(ROUTES.FARM)}><Plus className="w-4 h-4"/> Add Field</Button>}
         />
       ) : (
         <DashboardGrid>
@@ -61,3 +64,4 @@ export function FarmOverviewSection() {
     </section>
   );
 }
+

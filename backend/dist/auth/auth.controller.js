@@ -38,7 +38,8 @@ let AuthController = class AuthController {
     }
     async googleAuthRedirect(req, res) {
         const oauthUser = req.user;
-        const user = await this.authService.validateOAuthUser(oauthUser.email, `${oauthUser.firstName} ${oauthUser.lastName}`);
+        const name = oauthUser.displayName || `${oauthUser.firstName || ''} ${oauthUser.lastName || ''}`.trim();
+        const user = await this.authService.validateOAuthUser(oauthUser.email, name, oauthUser.googleId);
         const { accessToken } = this.authService.generateToken(user);
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         res.redirect(`${frontendUrl}/oauth-callback?token=${accessToken}`);

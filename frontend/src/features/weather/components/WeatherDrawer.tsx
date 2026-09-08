@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DailyForecast } from '../types';
 import { Button } from '@/components/ui/button';
 import { X, Calendar, Droplets, Thermometer, Wind, CheckCircle2, History } from 'lucide-react';
 import { AccordionSection } from '../../farm/components/ui/AccordionSection';
+import { FarmService } from '../../farm/services/FarmService';
+import { Farm } from '../../farm/types';
 
 interface WeatherDrawerProps {
   day: DailyForecast | null;
@@ -11,9 +13,12 @@ interface WeatherDrawerProps {
 }
 
 export function WeatherDrawer({ day, isOpen, onClose }: WeatherDrawerProps) {
+  const [farms, setFarms] = useState<Farm[]>([]);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      FarmService.getFarms().then(data => setFarms(data)).catch(() => {});
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -98,10 +103,20 @@ export function WeatherDrawer({ day, isOpen, onClose }: WeatherDrawerProps) {
           </AccordionSection>
 
           <AccordionSection title="Affected Farms">
-            <p className="text-sm text-text-secondary italic mb-2">Impacted locations will appear here.</p>
+            <p className="text-sm text-text-secondary italic mb-2">Impacted locations for your account:</p>
             <div className="space-y-2">
-              <div className="bg-background border border-border p-3 rounded-lg text-sm text-text-primary font-medium">Sunny Valley Farm</div>
-              <div className="bg-background border border-border p-3 rounded-lg text-sm text-text-primary font-medium">Riverbed Acres</div>
+              {farms.length > 0 ? (
+                farms.map((f) => (
+                  <div key={f.id} className="bg-background border border-border p-3 rounded-lg text-sm font-medium flex justify-between items-center text-text-primary">
+                    <span>{f.name}</span>
+                    <span className="text-xs text-text-secondary font-bold">{f.totalArea} Acres</span>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-background border border-border p-3 rounded-lg text-sm text-text-secondary">
+                  No registered land parcels yet.
+                </div>
+              )}
             </div>
           </AccordionSection>
           

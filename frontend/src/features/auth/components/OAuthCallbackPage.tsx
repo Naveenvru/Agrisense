@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/config/routes';
+import { apiClient } from '@/lib/axios';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,38 +12,32 @@ export function OAuthCallbackPage() {
   const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
+    const handleOAuthCallback = async () => {
+      const params = new URLSearchParams(location.search);
+      const token = params.get('token');
 
-    if (token) {
-      // Typically we decode the JWT to get user info if we don't have a separate /me endpoint.
-      // Assuming payload has { sub: id, email, name: email.split('@')[0] }
-      // Or we can just fetch /auth/me or /users/me. But for now, we'll store the token
-      // and construct a basic user object from the token payload.
-      
-      try {
-        const payloadBase64 = token.split('.')[1];
-        const decodedPayload = JSON.parse(atob(payloadBase64));
-        
-        login(token, {
-          id: decodedPayload.sub,
-          email: decodedPayload.email,
-          name: decodedPayload.email.split('@')[0]
-        });
-        
-        toast.success('Successfully logged in with Google!');
-        
-        // Redirect will happen automatically inside login(), but just in case:
-        navigate(ROUTES.DASHBOARD);
-      } catch (error) {
-        console.error('Failed to parse OAuth token', error);
-        toast.error('Authentication failed. Please try again.');
+      if (token) {
+        try {
+          // Temporarily set token so apiClient interceptor sends Authorization header
+          localStorage.setItem('token', token);
+          const response = await apiClient.get('/auth/profile');
+          
+          login(token, response.data);
+          toast.success('Successfully logged in with Google!');
+          navigate(ROUTES.DASHBOARD);
+        } catch (error) {
+          console.error('Failed to authenticate with OAuth token', error);
+          localStorage.removeItem('token');
+          toast.error('Google authentication failed. Please try again.');
+          navigate(ROUTES.LOGIN);
+        }
+      } else {
+        toast.error('Authentication failed. No token received.');
         navigate(ROUTES.LOGIN);
       }
-    } else {
-      toast.error('Authentication failed. No token received.');
-      navigate(ROUTES.LOGIN);
-    }
+    };
+
+    handleOAuthCallback();
   }, [location, login, navigate]);
 
   return (

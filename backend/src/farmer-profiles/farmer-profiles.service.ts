@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FarmerProfile } from './farmer-profile.entity';
+import { User } from '../users/user.entity';
 import { CreateFarmerProfileDto } from './dto/create-farmer-profile.dto';
 import { UpdateFarmerProfileDto } from './dto/update-farmer-profile.dto';
 
@@ -14,6 +15,8 @@ export class FarmerProfilesService {
   constructor(
     @InjectRepository(FarmerProfile)
     private farmerProfilesRepository: Repository<FarmerProfile>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(
@@ -42,13 +45,26 @@ export class FarmerProfilesService {
   }
 
   async findByUserId(userId: string): Promise<FarmerProfile> {
-    const profile = await this.farmerProfilesRepository.findOne({
+    let profile = await this.farmerProfilesRepository.findOne({
       where: { userId },
       relations: { user: true },
     });
+
     if (!profile) {
-      throw new NotFoundException('Farmer profile not found');
+      const user = await this.usersRepository.findOne({ where: { id: userId } });
+      profile = this.farmerProfilesRepository.create({
+        userId,
+        district: null,
+        state: null,
+        village: null,
+        totalLandArea: 0,
+      });
+      await this.farmerProfilesRepository.save(profile);
+      if (user) {
+        profile.user = user;
+      }
     }
+
     return profile;
   }
 
@@ -56,14 +72,16 @@ export class FarmerProfilesService {
     userId: string,
     updateDto: UpdateFarmerProfileDto,
   ): Promise<FarmerProfile> {
-    const profile = await this.farmerProfilesRepository.findOne({
+    let profile = await this.farmerProfilesRepository.findOne({
       where: { userId },
+      relations: { user: true },
     });
+
     if (!profile) {
-      throw new NotFoundException('Farmer profile not found. Please create one first.');
+      profile = await this.findByUserId(userId);
     }
 
-    // Only update fields that are provided
+    // Update profile fields
     if (updateDto.district !== undefined) profile.district = updateDto.district;
     if (updateDto.state !== undefined) profile.state = updateDto.state;
     if (updateDto.village !== undefined) profile.village = updateDto.village;
@@ -71,6 +89,25 @@ export class FarmerProfilesService {
     if (updateDto.primarySoilType !== undefined) profile.primarySoilType = updateDto.primarySoilType;
     if (updateDto.primaryIrrigationType !== undefined) profile.primaryIrrigationType = updateDto.primaryIrrigationType;
 
-    return this.farmerProfilesRepository.save(profile);
+    const savedProfile = await this.farmerProfilesRepository.save(profile);
+
+    // Update corresponding user record if user attributes provided
+    const phone = updateDto.phoneNumber || updateDto.phone;
+    const lang = updateDto.preferredLanguage || updateDto.language;
+
+    const userUpdates: Partial<User> = {};
+    if (updateDto.name !== undefined) userUpdates.name = updateDto.name;
+    if (phone !== undefined) userUpdates.phoneNumber = phone;
+    if (lang !== undefined) userUpdates.preferredLanguage = lang;
+
+    if (Object.keys(userUpdates).length > 0) {
+      await this.usersRepository.update(userId, userUpdates);
+      const updatedUser = await this.usersRepository.findOne({ where: { id: userId } });
+      if (updatedUser) {
+        savedProfile.user = updatedUser;
+      }
+    }
+
+    return savedProfile;
   }
 }

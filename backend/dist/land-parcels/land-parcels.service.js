@@ -28,11 +28,16 @@ let LandParcelsService = class LandParcelsService {
         this.dataSource = dataSource;
     }
     async getFarmerProfileId(userId) {
-        const profile = await this.farmerProfilesRepository.findOne({
+        let profile = await this.farmerProfilesRepository.findOne({
             where: { userId },
         });
         if (!profile) {
-            throw new common_1.NotFoundException('Farmer profile not found. Create a farmer profile before managing land parcels.');
+            profile = this.farmerProfilesRepository.create({
+                userId,
+                district: 'Default',
+                state: 'Default',
+            });
+            profile = await this.farmerProfilesRepository.save(profile);
         }
         return profile.id;
     }

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { User, Settings, Bell, HelpCircle, Moon, LogOut, ChevronDown, MapPin, Phone, Mail, FileText, Info } from 'lucide-react';
+import { User as UserIcon, Settings, Bell, HelpCircle, Moon, LogOut, ChevronDown, MapPin, Phone, Mail, FileText, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
 import { useModal } from '@/components/providers/ModalProvider';
+import { apiClient } from '@/lib/axios';
 
 export function UserProfileDropdown() {
   const { user, logout } = useAuth();
@@ -12,9 +13,76 @@ export function UserProfileDropdown() {
   const navigate = useNavigate();
   const { openModal } = useModal();
 
-  const userName = user?.name || "Naveen";
+  const [profileStats, setProfileStats] = useState({
+    phone: '',
+    location: '',
+    totalFarms: 0,
+    totalArea: 0,
+    farmerId: ''
+  });
+
+  const fetchProfileStats = async () => {
+    try {
+      const [profileRes, parcelsRes] = await Promise.allSettled([
+        apiClient.get('/farmer-profile/me'),
+        apiClient.get('/land-parcels')
+      ]);
+
+      let prof: any = null;
+      if (profileRes.status === 'fulfilled' && profileRes.value.data?.data) {
+        prof = profileRes.value.data.data;
+      }
+
+      let parcels: any[] = [];
+      if (parcelsRes.status === 'fulfilled' && parcelsRes.value.data?.data) {
+        parcels = parcelsRes.value.data.data;
+      }
+
+      const calcArea = parcels.reduce((sum: number, p: any) => sum + (Number(p.areaAcres) || 0), 0);
+      const farmsCount = parcels.length;
+      const areaCount = farmsCount > 0 ? calcArea : Number(prof?.totalLandArea || 0);
+
+      const phoneNum = prof?.user?.phoneNumber || (user as any)?.phoneNumber || (user as any)?.phone || '';
+      
+      let loc = '';
+      if (prof?.district) {
+        loc = prof.district + (prof.state ? `, ${prof.state}` : '');
+      } else if (prof?.state) {
+        loc = prof.state;
+      }
+
+      const fId = prof?.id 
+        ? `AGRI-${String(prof.id).padStart(4, '0')}`
+        : (user?.id ? `AGRI-${String(user.id).padStart(4, '0')}` : '');
+
+      setProfileStats({
+        phone: phoneNum,
+        location: loc,
+        totalFarms: farmsCount,
+        totalArea: areaCount,
+        farmerId: fId
+      });
+    } catch (error) {
+      console.error('Error fetching dropdown stats', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchProfileStats();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const handleUpdate = () => fetchProfileStats();
+    window.addEventListener('profile-updated', handleUpdate);
+    return () => window.removeEventListener('profile-updated', handleUpdate);
+  }, []);
+
+  const userName = user?.name || (user?.email ? user.email.split('@')[0] : "Farmer");
   const userInitials = userName.substring(0, 2).toUpperCase();
-  const userEmail = user?.email || "naveen@example.com";
+  const userEmail = user?.email || "";
+  const displayFarmerId = profileStats.farmerId || (user?.id ? `AGRI-${String(user.id).padStart(4, '0')}` : 'AGRI-0001');
 
   const handleComingSoon = (feature: string) => {
     setIsOpen(false);
@@ -70,22 +138,22 @@ export function UserProfileDropdown() {
               <div>
                 <h3 className="font-bold text-text-primary text-lg leading-tight">{userName}</h3>
                 <p className="text-xs font-medium text-success mb-1">PRO Subscriber</p>
-                <p className="text-[10px] text-text-secondary font-mono tracking-wider">ID: AGR-{user?.id?.substring(0,4) || '8472'}-X</p>
+                <p className="text-[10px] text-text-secondary font-mono tracking-wider">ID: {displayFarmerId}</p>
               </div>
             </div>
             
             <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
               <div className="flex items-center gap-2 text-text-secondary">
-                <MapPin className="w-3.5 h-3.5" />
-                <span>Karnataka, India</span>
+                <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{profileStats.location || "Location not set"}</span>
               </div>
               <div className="flex items-center gap-2 text-text-secondary">
-                <Phone className="w-3.5 h-3.5" />
-                <span>+91 98765 43210</span>
+                <Phone className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{profileStats.phone || "Not provided"}</span>
               </div>
               <div className="flex items-center gap-2 text-text-secondary col-span-2">
-                <Mail className="w-3.5 h-3.5" />
-                <span className="truncate">{userEmail}</span>
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{userEmail || "No email"}</span>
               </div>
             </div>
           </div>
@@ -94,18 +162,18 @@ export function UserProfileDropdown() {
           <div className="grid grid-cols-2 divide-x divide-border border-b border-border bg-background">
             <div className="p-3 text-center">
               <p className="text-xs text-text-secondary font-medium mb-0.5">Total Farms</p>
-              <p className="text-lg font-bold text-text-primary">3</p>
+              <p className="text-lg font-bold text-text-primary">{profileStats.totalFarms}</p>
             </div>
             <div className="p-3 text-center">
               <p className="text-xs text-text-secondary font-medium mb-0.5">Total Area</p>
-              <p className="text-lg font-bold text-primary">12.5 Ac</p>
+              <p className="text-lg font-bold text-primary">{profileStats.totalArea} Ac</p>
             </div>
           </div>
 
           {/* Action Links */}
           <div className="p-2 space-y-1 bg-surface/30">
             <button onClick={() => handleNav(ROUTES.PROFILE)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <User className="w-4 h-4 text-primary" /> My Profile
+              <UserIcon className="w-4 h-4 text-primary" /> My Profile
             </button>
             <button onClick={() => handleNav(ROUTES.SETTINGS)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
               <Settings className="w-4 h-4 text-secondary" /> Account Settings

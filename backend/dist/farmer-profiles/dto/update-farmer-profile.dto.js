@@ -13,6 +13,11 @@ exports.UpdateFarmerProfileDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class UpdateFarmerProfileDto {
+    name;
+    phone;
+    phoneNumber;
+    language;
+    preferredLanguage;
     district;
     state;
     village;
@@ -21,6 +26,31 @@ class UpdateFarmerProfileDto {
     primaryIrrigationType;
 }
 exports.UpdateFarmerProfileDto = UpdateFarmerProfileDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateFarmerProfileDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateFarmerProfileDto.prototype, "phone", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateFarmerProfileDto.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateFarmerProfileDto.prototype, "language", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateFarmerProfileDto.prototype, "preferredLanguage", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),

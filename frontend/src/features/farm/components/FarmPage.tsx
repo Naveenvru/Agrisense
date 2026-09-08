@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { FarmDashboardSummary } from './FarmDashboardSummary';
 import { FarmListControls } from './FarmListControls';
 import { FarmList } from './FarmList';
 import { FarmDetailsDrawer } from './FarmDetailsDrawer';
+import { AddFarmModal } from './AddFarmModal';
 
 export function FarmPage() {
   const { user } = useAuth();
@@ -26,6 +27,9 @@ export function FarmPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  // Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   // Drawer State
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -34,25 +38,26 @@ export function FarmPage() {
   const [selectedFarmCrops, setSelectedFarmCrops] = useState<CropSummary[]>([]);
   const [isDrawerLoading, setIsDrawerLoading] = useState(false);
 
-  // Fetch initial data
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setIsLoading(true);
-        const [stats, farmsData] = await Promise.all([
-          FarmService.getFarmDashboard(),
-          FarmService.getFarms()
-        ]);
-        setDashboardStats(stats);
-        setFarms(farmsData);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch farm data'));
-      } finally {
-        setIsLoading(false);
-      }
+  // Fetch data
+  const loadData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [stats, farmsData] = await Promise.all([
+        FarmService.getFarmDashboard(),
+        FarmService.getFarms()
+      ]);
+      setDashboardStats(stats);
+      setFarms(farmsData);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch farm data'));
+    } finally {
+      setIsLoading(false);
     }
-    loadData();
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Handle drawer open
   useEffect(() => {
@@ -64,13 +69,12 @@ export function FarmPage() {
         const [farmData, parcelsData, allCrops] = await Promise.all([
           FarmService.getFarmById(selectedFarmId),
           FarmService.getParcels(selectedFarmId),
-          FarmService.getCropSummaries() // In a real app, this would be getCropsByFarmId
+          FarmService.getCropSummaries()
         ]);
         
         setSelectedFarmDetails(farmData || null);
         setSelectedFarmParcels(parcelsData);
         
-        // Mock filtering crops for this farm based on area to make it look realistic
         const farmCrops = allCrops.slice(0, parcelsData.length || 1); 
         setSelectedFarmCrops(farmCrops);
         
@@ -122,7 +126,7 @@ export function FarmPage() {
       setSelectedFarmDetails(null);
       setSelectedFarmParcels([]);
       setSelectedFarmCrops([]);
-    }, 300); // Wait for animation
+    }, 300);
   };
 
   return (
@@ -136,7 +140,6 @@ export function FarmPage() {
 
       {/* Hero Section */}
       <div className="bg-primary/5 rounded-2xl border border-primary/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
-        {/* Subtle background decoration */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
         
@@ -151,6 +154,7 @@ export function FarmPage() {
         
         <div className="relative z-10 w-full md:w-auto">
           <Button 
+            onClick={() => setIsAddModalOpen(true)}
             className="w-full md:w-auto gap-2 rounded-xl h-14 px-8 text-lg font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
           >
             <Plus className="w-5 h-5" />
@@ -182,6 +186,7 @@ export function FarmPage() {
           viewMode={viewMode}
           selectedFarmId={selectedFarmId}
           onFarmClick={handleFarmClick}
+          onAddFarm={() => setIsAddModalOpen(true)}
         />
       </div>
 
@@ -194,6 +199,14 @@ export function FarmPage() {
         crops={selectedFarmCrops}
         isLoading={isDrawerLoading}
       />
+
+      {/* Add Farm Modal */}
+      <AddFarmModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={loadData}
+      />
     </div>
   );
 }
+

@@ -1,8 +1,8 @@
-# 🌾 AgriSense: Intelligent Agricultural Management Platform
+#  AgriSense: Intelligent Agricultural Management Platform
 
 AgriSense is a comprehensive, AI-powered agricultural intelligence and farm management platform. It bridges the gap between traditional farming and modern data science by providing farmers and agricultural enterprises with actionable insights into crop yield, market demand, harvest intelligence, and weather forecasting.
 
-## 🌟 Key Features
+##  Key Features
 
 - **Decision Intelligence**: AI-driven pipelines for yield prediction, harvest planning, and supply/demand forecasting.
 - **Farm & Land Management**: Manage land parcels, track crop growth cycles, and monitor geoboundaries.
@@ -12,7 +12,7 @@ AgriSense is a comprehensive, AI-powered agricultural intelligence and farm mana
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 AgriSense employs a robust, highly scalable microservices-oriented architecture:
 
@@ -29,7 +29,7 @@ A dedicated **Python** microservice handling heavy computational tasks like imag
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 Before you begin, ensure you have the following installed on your machine:
@@ -67,7 +67,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 Agrisense2/

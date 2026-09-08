@@ -1,7 +1,8 @@
 import { Farm } from '../types';
 import { FarmCard } from './FarmCard';
 import { EmptyState } from './ui/EmptyState';
-import { Map, AlertCircle } from 'lucide-react';
+import { Map, AlertCircle, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface FarmListProps {
   farms: Farm[];
@@ -10,9 +11,10 @@ interface FarmListProps {
   viewMode: 'grid' | 'list';
   selectedFarmId?: string | null;
   onFarmClick: (id: string) => void;
+  onAddFarm?: () => void;
 }
 
-export function FarmList({ farms, isLoading, error, viewMode, selectedFarmId, onFarmClick }: FarmListProps) {
+export function FarmList({ farms, isLoading, error, viewMode, selectedFarmId, onFarmClick, onAddFarm }: FarmListProps) {
   if (error) {
     return (
       <div className="py-12">
@@ -41,7 +43,12 @@ export function FarmList({ farms, isLoading, error, viewMode, selectedFarmId, on
         <EmptyState 
           icon={Map} 
           title="No Farms Found" 
-          description="You don't have any farms matching your criteria. Add a new farm to get started." 
+          description="You don't have any farms in your account yet. Add your first farm parcel with location details to get started." 
+          action={onAddFarm ? (
+            <Button onClick={onAddFarm} className="gap-2 rounded-xl">
+              <Plus className="w-4 h-4" /> Add Farm Parcel
+            </Button>
+          ) : undefined}
         />
       </div>
     );

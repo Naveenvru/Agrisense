@@ -23,6 +23,9 @@ let User = class User {
     name;
     email;
     passwordHash;
+    googleId;
+    authProvider;
+    isEmailVerified;
     phoneNumber;
     role;
     preferredLanguage;
@@ -46,9 +49,21 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'password_hash', type: 'varchar', length: 255 }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ name: 'password_hash', type: 'varchar', length: 255, nullable: true }),
+    __metadata("design:type", Object)
 ], User.prototype, "passwordHash", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'google_id', type: 'varchar', length: 255, nullable: true, unique: true }),
+    __metadata("design:type", Object)
+], User.prototype, "googleId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'auth_provider', type: 'varchar', length: 50, default: 'local' }),
+    __metadata("design:type", String)
+], User.prototype, "authProvider", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'is_email_verified', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isEmailVerified", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'phone_number', type: 'varchar', length: 20, nullable: true }),
     __metadata("design:type", Object)

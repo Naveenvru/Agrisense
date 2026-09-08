@@ -8,7 +8,10 @@ export declare class User {
     id: string;
     name: string;
     email: string;
-    passwordHash: string;
+    passwordHash: string | null;
+    googleId: string | null;
+    authProvider: string;
+    isEmailVerified: boolean;
     phoneNumber: string | null;
     role: UserRole;
     preferredLanguage: string;

@@ -36,8 +36,8 @@ export function CalendarPage() {
           CalendarService.getStats(),
           CalendarService.getTodayTasks(),
           CalendarService.getUpcomingTasks(),
-          CalendarService.getCalendarEvents('2026-05-01', '2026-07-31'), // Mock range
-          CalendarService.getCropTimeline('Tomato') // Mock crop
+          CalendarService.getCalendarEvents(),
+          CalendarService.getCropTimeline()
         ]);
 
         setStats(statsData);
@@ -169,15 +169,22 @@ export function CalendarPage() {
                 <h3 className="font-heading font-semibold text-text-primary">Upcoming Alerts</h3>
               </div>
               <div className="space-y-3">
-                <div className="text-sm p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning-foreground font-medium">
-                  Tomato Harvest expected in 5 days
-                </div>
-                <div className="text-sm p-3 rounded-lg bg-info/10 border border-info/20 text-info-foreground font-medium">
-                  Rain forecast: 12mm tomorrow
-                </div>
-                <div className="text-sm p-3 rounded-lg bg-error/10 border border-error/20 text-error-foreground font-medium">
-                  Onion Market Price dropped by 5%
-                </div>
+                {todayTasks.length > 0 || upcomingTasks.length > 0 ? (
+                  <>
+                    <div className="text-sm p-3 rounded-lg bg-info/10 border border-info/20 text-info-foreground font-medium">
+                      {todayTasks.length} task(s) scheduled for today
+                    </div>
+                    {upcomingTasks.length > 0 && (
+                      <div className="text-sm p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning-foreground font-medium">
+                        Next task: {upcomingTasks[0].title} on {upcomingTasks[0].date}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-sm p-3 rounded-lg bg-muted/20 border border-border text-text-secondary">
+                    No active tasks or alerts. Add a farm parcel to automatically schedule smart agricultural activities.
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -25,8 +25,17 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ name: 'password_hash', type: 'varchar', length: 255 })
-  passwordHash: string;
+  @Column({ name: 'password_hash', type: 'varchar', length: 255, nullable: true })
+  passwordHash: string | null;
+
+  @Column({ name: 'google_id', type: 'varchar', length: 255, nullable: true, unique: true })
+  googleId: string | null;
+
+  @Column({ name: 'auth_provider', type: 'varchar', length: 50, default: 'local' })
+  authProvider: string;
+
+  @Column({ name: 'is_email_verified', type: 'boolean', default: false })
+  isEmailVerified: boolean;
 
   @Column({ name: 'phone_number', type: 'varchar', length: 20, nullable: true })
   phoneNumber: string | null;

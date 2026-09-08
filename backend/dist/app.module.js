@@ -35,6 +35,7 @@ const harvest_intelligence_module_1 = require("./harvest-intelligence/harvest-in
 const yield_intelligence_module_1 = require("./yield-intelligence/yield-intelligence.module");
 const supply_intelligence_module_1 = require("./supply-intelligence/supply-intelligence.module");
 const demand_intelligence_module_1 = require("./demand-intelligence/demand-intelligence.module");
+const gemini_module_1 = require("./gemini/gemini.module");
 const user_entity_1 = require("./users/user.entity");
 const farmer_profile_entity_1 = require("./farmer-profiles/farmer-profile.entity");
 const land_parcel_entity_1 = require("./land-parcels/land-parcel.entity");
@@ -100,6 +101,7 @@ exports.AppModule = AppModule = __decorate([
             yield_intelligence_module_1.YieldIntelligenceModule,
             supply_intelligence_module_1.SupplyIntelligenceModule,
             demand_intelligence_module_1.DemandIntelligenceModule,
+            gemini_module_1.GeminiModule,
         ],
     })
 ], AppModule);

@@ -20,6 +20,9 @@ export declare class AuthController {
             id: string;
             name: string;
             email: string;
+            googleId: string | null;
+            authProvider: string;
+            isEmailVerified: boolean;
             phoneNumber: string | null;
             role: import("../users/user.entity").UserRole;
             preferredLanguage: string;
@@ -34,6 +37,9 @@ export declare class AuthController {
         id: string;
         name: string;
         email: string;
+        googleId: string | null;
+        authProvider: string;
+        isEmailVerified: boolean;
         phoneNumber: string | null;
         role: import("../users/user.entity").UserRole;
         preferredLanguage: string;

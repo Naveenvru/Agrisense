@@ -28,9 +28,20 @@ let UsersService = class UsersService {
     async findOneById(id) {
         return this.usersRepository.findOne({ where: { id } });
     }
+    async findOneByGoogleId(googleId) {
+        return this.usersRepository.findOne({ where: { googleId } });
+    }
     async create(userData) {
         const newUser = this.usersRepository.create(userData);
         return this.usersRepository.save(newUser);
+    }
+    async update(id, updateData) {
+        await this.usersRepository.update(id, updateData);
+        const updated = await this.findOneById(id);
+        if (!updated) {
+            throw new Error('User not found after update');
+        }
+        return updated;
     }
     async updateLastLogin(id) {
         await this.usersRepository.update(id, { lastLogin: new Date() });

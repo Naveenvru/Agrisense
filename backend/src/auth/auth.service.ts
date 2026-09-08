@@ -32,6 +32,8 @@ export class AuthService {
       phoneNumber: registerDto.phoneNumber || null,
       role: registerDto.role,
       preferredLanguage: registerDto.preferredLanguage || 'en',
+      authProvider: 'local',
+      isEmailVerified: false,
       isActive: true,
     });
 
@@ -43,6 +45,10 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(loginDto.email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('This account was created using Google Sign-In. Please click "Continue with Google".');
     }
 
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.passwordHash);
@@ -65,17 +71,32 @@ export class AuthService {
     };
   }
 
-  async validateOAuthUser(email: string, name: string): Promise<User> {
-    let user = await this.usersService.findOneByEmail(email);
-    
+  async validateOAuthUser(email: string, name: string, googleId?: string): Promise<User> {
+    let user: User | null = null;
+
+    if (googleId) {
+      user = await this.usersService.findOneByGoogleId(googleId);
+    }
+
+    if (!user && email) {
+      user = await this.usersService.findOneByEmail(email);
+      if (user) {
+        // Link Google ID to existing user account
+        user = await this.usersService.update(user.id, {
+          googleId: googleId || user.googleId,
+          isEmailVerified: true,
+        });
+      }
+    }
+
     if (!user) {
-      const randomPassword = Math.random().toString(36).slice(-8);
-      const passwordHash = await bcrypt.hash(randomPassword, 10);
-      
       user = await this.usersService.create({
-        name,
+        name: name || email.split('@')[0],
         email,
-        passwordHash,
+        passwordHash: null,
+        googleId: googleId || null,
+        authProvider: 'google',
+        isEmailVerified: true,
         role: UserRole.FARMER,
         isActive: true,
       });

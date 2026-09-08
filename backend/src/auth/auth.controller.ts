@@ -52,9 +52,11 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const oauthUser = req.user;
+    const name = oauthUser.displayName || `${oauthUser.firstName || ''} ${oauthUser.lastName || ''}`.trim();
     const user = await this.authService.validateOAuthUser(
       oauthUser.email,
-      `${oauthUser.firstName} ${oauthUser.lastName}`,
+      name,
+      oauthUser.googleId,
     );
     const { accessToken } = this.authService.generateToken(user);
     

@@ -1,12 +1,15 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
-
+import { apiClient } from '@/lib/axios';
 
 interface User {
   id: string;
   email: string;
   name?: string;
+  role?: string;
+  authProvider?: string;
+  isEmailVerified?: boolean;
   preferences?: {
     theme: 'system' | 'light' | 'dark';
     language: string;
@@ -30,19 +33,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Basic initialization
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        localStorage.removeItem('token');
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+
+      if (token) {
+        try {
+          // Verify token against backend profile endpoint
+          const response = await apiClient.get('/auth/profile');
+          setUser(response.data);
+          localStorage.setItem('user', JSON.stringify(response.data));
+        } catch (error) {
+          // If token is invalid or expired, clear storage
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+      } else if (storedUser) {
         localStorage.removeItem('user');
       }
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (token: string, user: User) => {

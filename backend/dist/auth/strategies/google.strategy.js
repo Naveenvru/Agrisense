@@ -26,12 +26,14 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         this.configService = configService;
     }
     async validate(accessToken, refreshToken, profile, done) {
-        const { name, emails, photos } = profile;
+        const { id, name, emails, photos } = profile;
         const user = {
-            email: emails ? emails[0].value : '',
-            firstName: name ? name.givenName : '',
-            lastName: name ? name.familyName : '',
-            picture: photos ? photos[0].value : '',
+            googleId: id,
+            email: emails && emails[0] ? emails[0].value : '',
+            firstName: name ? name.givenName || '' : '',
+            lastName: name ? name.familyName || '' : '',
+            displayName: profile.displayName || `${name?.givenName || ''} ${name?.familyName || ''}`.trim(),
+            picture: photos && photos[0] ? photos[0].value : '',
             accessToken,
         };
         done(null, user);
