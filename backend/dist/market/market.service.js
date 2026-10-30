@@ -18,19 +18,25 @@ const market_quality_service_1 = require("./quality/market-quality.service");
 const market_repository_1 = require("./repository/market.repository");
 const market_aggregation_service_1 = require("./aggregation/market-aggregation.service");
 const collector_constants_1 = require("../collectors/common/collector.constants");
+const farmer_profiles_service_1 = require("../farmer-profiles/farmer-profiles.service");
+const typeorm_1 = require("typeorm");
 let MarketService = MarketService_1 = class MarketService {
     collector;
     normalization;
     quality;
     repository;
     aggregation;
+    farmerProfiles;
+    dataSource;
     logger = new common_1.Logger(MarketService_1.name);
-    constructor(collector, normalization, quality, repository, aggregation) {
+    constructor(collector, normalization, quality, repository, aggregation, farmerProfiles, dataSource) {
         this.collector = collector;
         this.normalization = normalization;
         this.quality = quality;
         this.repository = repository;
         this.aggregation = aggregation;
+        this.farmerProfiles = farmerProfiles;
+        this.dataSource = dataSource;
     }
     async collect(params = {}) {
         this.logger.log(`Collection started | params=${JSON.stringify(params)}`);
@@ -92,8 +98,24 @@ let MarketService = MarketService_1 = class MarketService {
             dataLake: { stored: dataLakeStored },
         };
     }
-    async getPrices(commodity, market, startDate, endDate, limit = 100) {
-        return this.repository.findPrices(commodity, market, startDate, endDate, limit);
+    async getPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
+        return this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+    }
+    async getPricesForUser(userId, query) {
+        let { district, state } = query;
+        if ((!district || !state) && !query.market) {
+            const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
+            district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
+            state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+        }
+        if ((!district || !state) && !query.market) {
+            const profile = await this.farmerProfiles.findByUserId(userId);
+            const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
+            const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
+            district = district || profileDistrict || 'Bengaluru Urban';
+            state = state || profileState || 'Karnataka';
+        }
+        return this.getPrices(query.commodity, query.market, query.startDate, query.endDate, query.limit, district, state);
     }
     async getLatestPrice(commodity, market) {
         return this.repository.findLatestPrice(commodity, market);
@@ -122,6 +144,8 @@ exports.MarketService = MarketService = MarketService_1 = __decorate([
         market_normalization_service_1.MarketNormalizationService,
         market_quality_service_1.MarketQualityService,
         market_repository_1.MarketRepository,
-        market_aggregation_service_1.MarketAggregationService])
+        market_aggregation_service_1.MarketAggregationService,
+        farmer_profiles_service_1.FarmerProfilesService,
+        typeorm_1.DataSource])
 ], MarketService);
 //# sourceMappingURL=market.service.js.map

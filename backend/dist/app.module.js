@@ -17,6 +17,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const database_config_1 = __importDefault(require("./config/database.config"));
 const auth_config_1 = __importDefault(require("./config/auth.config"));
 const mongodb_config_1 = __importDefault(require("./mongodb/config/mongodb.config"));
+const notifications_config_1 = __importDefault(require("./config/notifications.config"));
 const mongodb_module_1 = require("./mongodb/mongodb.module");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
@@ -43,6 +44,15 @@ const crop_entity_1 = require("./crops/crop.entity");
 const farmer_crop_entity_1 = require("./farmer-crops/farmer-crop.entity");
 const calendar_event_entity_1 = require("./calendar/calendar-event.entity");
 const crop_calendar_template_entity_1 = require("./calendar/crop-calendar-template.entity");
+const notification_preferences_entity_1 = require("./notifications/notification-preferences.entity");
+const notification_consent_entity_1 = require("./notifications/notification-consent.entity");
+const notification_job_entity_1 = require("./notifications/notification-job.entity");
+const notification_attempt_entity_1 = require("./notifications/notification-attempt.entity");
+const notifications_module_1 = require("./notifications/notifications.module");
+const decision_trace_entity_1 = require("./decision-center/decision-trace.entity");
+const decision_center_module_1 = require("./decision-center/decision-center.module");
+const report_entity_1 = require("./reports/report.entity");
+const reports_module_1 = require("./reports/reports.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -51,7 +61,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [database_config_1.default, auth_config_1.default, mongodb_config_1.default],
+                load: [database_config_1.default, auth_config_1.default, mongodb_config_1.default, notifications_config_1.default],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
@@ -71,6 +81,12 @@ exports.AppModule = AppModule = __decorate([
                         farmer_crop_entity_1.FarmerCrop,
                         calendar_event_entity_1.CalendarEvent,
                         crop_calendar_template_entity_1.CropCalendarTemplate,
+                        notification_preferences_entity_1.NotificationPreferences,
+                        notification_consent_entity_1.NotificationConsent,
+                        notification_job_entity_1.NotificationJob,
+                        notification_attempt_entity_1.NotificationAttempt,
+                        decision_trace_entity_1.DecisionTrace,
+                        report_entity_1.GeneratedReport,
                     ],
                     synchronize: false,
                 }),
@@ -102,6 +118,9 @@ exports.AppModule = AppModule = __decorate([
             supply_intelligence_module_1.SupplyIntelligenceModule,
             demand_intelligence_module_1.DemandIntelligenceModule,
             gemini_module_1.GeminiModule,
+            notifications_module_1.NotificationsModule,
+            decision_center_module_1.DecisionCenterModule,
+            reports_module_1.ReportsModule,
         ],
     })
 ], AppModule);

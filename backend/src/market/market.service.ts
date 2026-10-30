@@ -4,8 +4,9 @@ import { MarketNormalizationService } from './normalization/market-normalization
 import { MarketQualityService } from './quality/market-quality.service';
 import { MarketRepository } from './repository/market.repository';
 import { MarketAggregationService } from './aggregation/market-aggregation.service';
-import { CollectorModule } from '../collectors/common/collector.module';
 import { COLLECTOR_CONSTANTS } from '../collectors/common/collector.constants';
+import { FarmerProfilesService } from '../farmer-profiles/farmer-profiles.service';
+import { DataSource } from 'typeorm';
 import {
   MarketCollectParams,
   IMarketRawRecord,
@@ -47,6 +48,8 @@ export class MarketService {
     private readonly quality: MarketQualityService,
     private readonly repository: MarketRepository,
     private readonly aggregation: MarketAggregationService,
+    private readonly farmerProfiles: FarmerProfilesService,
+    private readonly dataSource: DataSource,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -161,8 +164,27 @@ export class MarketService {
     startDate?: Date,
     endDate?: Date,
     limit = 100,
+    district?: string,
+    state?: string,
   ) {
-    return this.repository.findPrices(commodity, market, startDate, endDate, limit);
+    return this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+  }
+
+  async getPricesForUser(userId: string, query: { commodity?: string; market?: string; district?: string; state?: string; startDate?: Date; endDate?: Date; limit?: number }) {
+    let { district, state } = query;
+    if ((!district || !state) && !query.market) {
+      const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
+      district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
+      state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+    }
+    if ((!district || !state) && !query.market) {
+      const profile = await this.farmerProfiles.findByUserId(userId);
+      const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
+      const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
+      district = district || profileDistrict || 'Bengaluru Urban';
+      state = state || profileState || 'Karnataka';
+    }
+    return this.getPrices(query.commodity, query.market, query.startDate, query.endDate, query.limit, district, state);
   }
 
   async getLatestPrice(commodity: string, market: string) {

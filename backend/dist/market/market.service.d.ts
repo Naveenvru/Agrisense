@@ -3,6 +3,8 @@ import { MarketNormalizationService } from './normalization/market-normalization
 import { MarketQualityService } from './quality/market-quality.service';
 import { MarketRepository } from './repository/market.repository';
 import { MarketAggregationService } from './aggregation/market-aggregation.service';
+import { FarmerProfilesService } from '../farmer-profiles/farmer-profiles.service';
+import { DataSource } from 'typeorm';
 import { MarketCollectParams, MarketValidationResult, MarketPriceStats, MarketArrivalStats } from './interfaces/market.interface';
 export declare class MarketService {
     private readonly collector;
@@ -10,8 +12,10 @@ export declare class MarketService {
     private readonly quality;
     private readonly repository;
     private readonly aggregation;
+    private readonly farmerProfiles;
+    private readonly dataSource;
     private readonly logger;
-    constructor(collector: MarketCollector, normalization: MarketNormalizationService, quality: MarketQualityService, repository: MarketRepository, aggregation: MarketAggregationService);
+    constructor(collector: MarketCollector, normalization: MarketNormalizationService, quality: MarketQualityService, repository: MarketRepository, aggregation: MarketAggregationService, farmerProfiles: FarmerProfilesService, dataSource: DataSource);
     collect(params?: MarketCollectParams): Promise<{
         collectionResult: {
             status: string;
@@ -28,7 +32,16 @@ export declare class MarketService {
             filename?: string;
         };
     }>;
-    getPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    getPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    getPricesForUser(userId: string, query: {
+        commodity?: string;
+        market?: string;
+        district?: string;
+        state?: string;
+        startDate?: Date;
+        endDate?: Date;
+        limit?: number;
+    }): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
     getLatestPrice(commodity: string, market: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2 | null>;
     getArrivals(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<import("../mongodb/market/market-arrival.schema").MarketArrival[]>;
     getTrends(commodity?: string, market?: string, period?: string, limit?: number): Promise<import("../mongodb/market/market-trend.schema").MarketTrend[]>;

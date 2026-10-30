@@ -1,4 +1,4 @@
-export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical';
+export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical' | 'Not recorded';
 export type TaskStatus = 'Pending' | 'In Progress' | 'Completed' | 'Overdue' | 'Cancelled';
 export type TaskType = 'Irrigation' | 'Fertilizer Application' | 'Pest Inspection' | 'Disease Monitoring' | 'Harvest' | 'Soil Testing' | 'Other';
 export type CropType = 'Tomato' | 'Paddy' | 'Onion' | 'Wheat' | 'Other';
@@ -41,7 +41,7 @@ export type TimelineStage = 'Planting' | 'Vegetative' | 'Flowering' | 'Fruiting'
 export interface CropTimelineEvent {
   id: string;
   crop: CropType;
-  stage: TimelineStage;
+  stage: TimelineStage | null;
   expectedDate: string;
   isCurrent: boolean;
   isCompleted: boolean;
@@ -53,7 +53,7 @@ export interface CalendarStats {
   highPriority: number;
   upcomingHarvests: number;
   weatherRisk: string;
-  aiPlanningStatus: 'Optimal' | 'Requires Attention' | 'Critical';
+  aiPlanningStatus: 'Optimal' | 'Requires Attention' | 'Critical' | 'Not available';
 }
 
 export interface CalendarFilterState {

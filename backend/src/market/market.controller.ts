@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -63,7 +64,7 @@ export class MarketController {
       'Runs the full market intelligence pipeline: ' +
       'collect raw data → store in Data Lake (storage/raw/market/) → ' +
       'validate quality → normalize → persist to MongoDB. ' +
-      'Currently uses a realistic mock data source; AGMARKNET plugs in without architecture changes.',
+      'Live collection is unavailable until an authorized AGMARKNET source is configured. Development mock collection requires MARKET_DATA_SOURCE=mock.',
   })
   @ApiResponse({
     status: 200,
@@ -123,14 +124,16 @@ export class MarketController {
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  async getPrices(@Query() query: QueryMarketDto) {
-    return this.marketService.getPrices(
-      query.commodity,
-      query.market,
-      query.startDate ? new Date(query.startDate) : undefined,
-      query.endDate ? new Date(query.endDate) : undefined,
-      query.limit,
-    );
+  async getPrices(@Query() query: QueryMarketDto, @Req() req: any) {
+    return this.marketService.getPricesForUser(req.user.id, {
+      commodity: query.commodity,
+      market: query.market,
+      district: query.district,
+      state: query.state,
+      startDate: query.startDate ? new Date(query.startDate) : undefined,
+      endDate: query.endDate ? new Date(query.endDate) : undefined,
+      limit: query.limit,
+    });
   }
 
   // -------------------------------------------------------------------------

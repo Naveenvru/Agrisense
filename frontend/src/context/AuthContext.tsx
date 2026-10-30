@@ -8,6 +8,9 @@ interface User {
   email: string;
   name?: string;
   role?: string;
+  phone?: string;
+  phoneNumber?: string;
+  googleId?: string | null;
   authProvider?: string;
   isEmailVerified?: boolean;
   preferences?: {

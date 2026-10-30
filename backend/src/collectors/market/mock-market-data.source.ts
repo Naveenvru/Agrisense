@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IMarketDataSource } from './market-data-source.interface';
 import { IMarketRawRecord, MarketFetchParams } from '../../market/interfaces/market.interface';
-import { INTEGRATION_CONSTANTS } from '../../integrations/common/integration.constants';
 
 /**
  * MockMarketDataSource
@@ -17,7 +16,7 @@ import { INTEGRATION_CONSTANTS } from '../../integrations/common/integration.con
  */
 @Injectable()
 export class MockMarketDataSource implements IMarketDataSource {
-  readonly sourceName = INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET;
+  readonly sourceName = 'development_mock';
 
   /** Realistic crop prices representative of Indian APMC markets (₹/Quintal) */
   private static readonly SAMPLE_DATA: Array<{

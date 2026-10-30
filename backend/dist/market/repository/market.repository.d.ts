@@ -18,7 +18,8 @@ export declare class MarketRepository {
     findRaw(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<MarketRaw[]>;
     savePrice(data: IMarketPrice): Promise<MarketPriceV2>;
     savePriceBatch(records: IMarketPrice[]): Promise<MarketPriceV2[]>;
-    findPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<MarketPriceV2[]>;
+    findPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): Promise<MarketPriceV2[]>;
+    private escapeRegex;
     findLatestPrice(commodity: string, market: string): Promise<MarketPriceV2 | null>;
     saveArrival(data: IMarketArrival): Promise<MarketArrival>;
     saveArrivalBatch(records: IMarketArrival[]): Promise<MarketArrival[]>;

@@ -25,7 +25,7 @@ export declare class MarketController {
             filename?: string;
         };
     }>;
-    getPrices(query: QueryMarketDto): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    getPrices(query: QueryMarketDto, req: any): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
     getLatestPrice(commodity: string, market: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2 | null>;
     getArrivals(query: QueryMarketDto): Promise<import("../mongodb/market/market-arrival.schema").MarketArrival[]>;
     getTrends(query: QueryTrendsDto): Promise<import("../mongodb/market/market-trend.schema").MarketTrend[]>;

@@ -43,7 +43,7 @@ __decorate([
     __metadata("design:type", String)
 ], MarketTrend.prototype, "district", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, enum: ['daily', 'weekly', 'monthly'] }),
+    (0, mongoose_1.Prop)({ required: true, type: String, enum: ['daily', 'weekly', 'monthly'] }),
     __metadata("design:type", String)
 ], MarketTrend.prototype, "period", void 0);
 __decorate([
@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:type", Number)
 ], MarketTrend.prototype, "totalArrival", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, enum: ['rising', 'falling', 'stable'] }),
+    (0, mongoose_1.Prop)({ required: true, type: String, enum: ['rising', 'falling', 'stable'] }),
     __metadata("design:type", String)
 ], MarketTrend.prototype, "trend", void 0);
 exports.MarketTrend = MarketTrend = __decorate([

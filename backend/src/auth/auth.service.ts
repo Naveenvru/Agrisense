@@ -9,12 +9,14 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { User, UserRole } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<Omit<User, 'passwordHash'>> {
@@ -36,6 +38,7 @@ export class AuthService {
       isEmailVerified: false,
       isActive: true,
     });
+    await this.notificationsService.getPreferences(user.id);
 
     const { passwordHash: _, ...result } = user;
     return result;
@@ -100,6 +103,7 @@ export class AuthService {
         role: UserRole.FARMER,
         isActive: true,
       });
+      await this.notificationsService.getPreferences(user.id);
     }
 
     if (!user.isActive) {

@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import databaseConfig from './config/database.config';
 import authConfig from './config/auth.config';
 import mongodbConfig from './mongodb/config/mongodb.config';
+import notificationsConfig from './config/notifications.config';
 import { MongodbModule } from './mongodb/mongodb.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -31,12 +32,21 @@ import { Crop } from './crops/crop.entity';
 import { FarmerCrop } from './farmer-crops/farmer-crop.entity';
 import { CalendarEvent } from './calendar/calendar-event.entity';
 import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
+import { NotificationPreferences } from './notifications/notification-preferences.entity';
+import { NotificationConsent } from './notifications/notification-consent.entity';
+import { NotificationJob } from './notifications/notification-job.entity';
+import { NotificationAttempt } from './notifications/notification-attempt.entity';
+import { NotificationsModule } from './notifications/notifications.module';
+import { DecisionTrace } from './decision-center/decision-trace.entity';
+import { DecisionCenterModule } from './decision-center/decision-center.module';
+import { GeneratedReport } from './reports/report.entity';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, authConfig, mongodbConfig],
+      load: [databaseConfig, authConfig, mongodbConfig, notificationsConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -56,6 +66,12 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
           FarmerCrop,
           CalendarEvent,
           CropCalendarTemplate,
+          NotificationPreferences,
+          NotificationConsent,
+          NotificationJob,
+          NotificationAttempt,
+          DecisionTrace,
+          GeneratedReport,
         ],
         synchronize: false, // Schema is frozen
       }),
@@ -87,6 +103,9 @@ import { CropCalendarTemplate } from './calendar/crop-calendar-template.entity';
     SupplyIntelligenceModule,    // Phase 13 – Supply Intelligence
     DemandIntelligenceModule,    // Phase 14 – Demand Intelligence
     GeminiModule,
+    NotificationsModule,
+    DecisionCenterModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

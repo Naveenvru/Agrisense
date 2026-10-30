@@ -13,6 +13,16 @@ export class QueryMarketDto {
   @IsString()
   market?: string;
 
+  @ApiPropertyOptional({ description: 'District filter', example: 'Bengaluru Urban' })
+  @IsOptional()
+  @IsString()
+  district?: string;
+
+  @ApiPropertyOptional({ description: 'State filter', example: 'Karnataka' })
+  @IsOptional()
+  @IsString()
+  state?: string;
+
   @ApiPropertyOptional({ description: 'Start date (ISO 8601)', example: '2026-06-01' })
   @IsOptional()
   @IsDateString()

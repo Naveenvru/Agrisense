@@ -17,24 +17,24 @@ export function CropSummaryCard({ crop }: CropSummaryCardProps) {
               <Sprout className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-semibold text-text-primary leading-tight">{crop.name}</h4>
-              <p className="text-sm text-text-secondary">{crop.variety}</p>
+              <h4 className="font-semibold text-text-primary leading-tight">{crop.name || 'Crop name not recorded'}</h4>
+              {crop.variety && <p className="text-sm text-text-secondary">{crop.variety}</p>}
             </div>
           </div>
-          <AreaBadge area={crop.area} />
+          {crop.area !== null && crop.area !== undefined && <AreaBadge area={crop.area} />}
         </div>
         
         <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-          <GrowthStageBadge stage={crop.currentStage} />
+          {crop.currentStage && <GrowthStageBadge stage={crop.currentStage} />}
           <HealthBadge status={crop.healthStatus} />
         </div>
         
         <div className="flex flex-col gap-2 pt-2">
-          <HarvestCountdown dateString={crop.expectedHarvestDate} />
-          <div className="flex items-center gap-2 text-sm text-text-secondary bg-background/50 p-2 rounded border border-border">
+          {crop.expectedHarvestDate && <HarvestCountdown dateString={crop.expectedHarvestDate} />}
+          {crop.estimatedYield !== null && crop.estimatedYield !== undefined && <div className="flex items-center gap-2 text-sm text-text-secondary bg-background/50 p-2 rounded border border-border">
             <Scale className="w-4 h-4 text-warning" />
             <span>Est. Yield: <span className="font-semibold text-text-primary">{crop.estimatedYield} {crop.yieldUnit}</span></span>
-          </div>
+          </div>}
         </div>
       </CardContent>
     </Card>

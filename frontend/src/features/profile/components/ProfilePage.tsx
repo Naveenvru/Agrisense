@@ -7,7 +7,7 @@ import { apiClient } from '@/lib/axios';
 import { SkeletonCard } from '@/components/ui/skeleton-card';
 
 export function ProfilePage() {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   
   const userName = user?.name || "Farmer";
   const userInitials = userName.substring(0, 2).toUpperCase();

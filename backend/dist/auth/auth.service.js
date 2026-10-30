@@ -48,12 +48,15 @@ const jwt_1 = require("@nestjs/jwt");
 const users_service_1 = require("../users/users.service");
 const user_entity_1 = require("../users/user.entity");
 const bcrypt = __importStar(require("bcrypt"));
+const notifications_service_1 = require("../notifications/notifications.service");
 let AuthService = class AuthService {
     usersService;
     jwtService;
-    constructor(usersService, jwtService) {
+    notificationsService;
+    constructor(usersService, jwtService, notificationsService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
+        this.notificationsService = notificationsService;
     }
     async register(registerDto) {
         const existingUser = await this.usersService.findOneByEmail(registerDto.email);
@@ -72,6 +75,7 @@ let AuthService = class AuthService {
             isEmailVerified: false,
             isActive: true,
         });
+        await this.notificationsService.getPreferences(user.id);
         const { passwordHash: _, ...result } = user;
         return result;
     }
@@ -123,6 +127,7 @@ let AuthService = class AuthService {
                 role: user_entity_1.UserRole.FARMER,
                 isActive: true,
             });
+            await this.notificationsService.getPreferences(user.id);
         }
         if (!user.isActive) {
             throw new common_1.UnauthorizedException('User account is deactivated');
@@ -141,6 +146,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        notifications_service_1.NotificationsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

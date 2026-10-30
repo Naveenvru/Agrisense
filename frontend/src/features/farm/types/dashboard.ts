@@ -3,6 +3,6 @@ export interface FarmDashboardSummaryStats {
   totalLandArea: number; // in hectares
   totalActiveParcels: number;
   activeCrops: number;
-  harvestsThisMonth: number;
-  healthyFarmsPercentage: number;
+  harvestsThisMonth: number | null;
+  healthyFarmsPercentage: number | null;
 }

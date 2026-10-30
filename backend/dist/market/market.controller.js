@@ -39,8 +39,16 @@ let MarketController = MarketController_1 = class MarketController {
             date: dto.date ? new Date(dto.date) : undefined,
         });
     }
-    async getPrices(query) {
-        return this.marketService.getPrices(query.commodity, query.market, query.startDate ? new Date(query.startDate) : undefined, query.endDate ? new Date(query.endDate) : undefined, query.limit);
+    async getPrices(query, req) {
+        return this.marketService.getPricesForUser(req.user.id, {
+            commodity: query.commodity,
+            market: query.market,
+            district: query.district,
+            state: query.state,
+            startDate: query.startDate ? new Date(query.startDate) : undefined,
+            endDate: query.endDate ? new Date(query.endDate) : undefined,
+            limit: query.limit,
+        });
     }
     async getLatestPrice(commodity, market) {
         return this.marketService.getLatestPrice(commodity, market);
@@ -81,7 +89,7 @@ __decorate([
         description: 'Runs the full market intelligence pipeline: ' +
             'collect raw data → store in Data Lake (storage/raw/market/) → ' +
             'validate quality → normalize → persist to MongoDB. ' +
-            'Currently uses a realistic mock data source; AGMARKNET plugs in without architecture changes.',
+            'Live collection is unavailable until an authorized AGMARKNET source is configured. Development mock collection requires MARKET_DATA_SOURCE=mock.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
@@ -132,8 +140,9 @@ __decorate([
     }),
     (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized.' }),
     __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [query_market_dto_1.QueryMarketDto]),
+    __metadata("design:paramtypes", [query_market_dto_1.QueryMarketDto, Object]),
     __metadata("design:returntype", Promise)
 ], MarketController.prototype, "getPrices", null);
 __decorate([

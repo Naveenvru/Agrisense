@@ -1,21 +1,19 @@
-import { Task, CropTimelineEvent, CalendarStats, TaskPriority, TaskType, CropType, TimelineStage } from '../types';
+import { Task, CropTimelineEvent, CalendarStats, TaskPriority, TaskType, CropType } from '../types';
 import { apiClient } from '@/lib/axios';
 
 export class CalendarService {
   static async getCalendarEvents(start?: string, end?: string): Promise<Task[]> {
-    try {
-      const response = await apiClient.get('/calendar');
+    const response = await apiClient.get('/calendar');
       const events = response.data?.data || response.data || [];
       if (!Array.isArray(events)) return [];
 
-      const todayStr = new Date().toISOString().split('T')[0];
-
       const tasks: Task[] = events.map((e: any) => {
-        const eventDateStr = e.eventDate ? new Date(e.eventDate).toISOString().split('T')[0] : todayStr;
+        const eventDateStr = e.eventDate ? new Date(e.eventDate).toISOString().split('T')[0] : '';
+        const todayStr = new Date().toISOString().split('T')[0];
         let status: 'Pending' | 'Completed' | 'Overdue' = 'Pending';
         if (e.isCompleted) {
           status = 'Completed';
-        } else if (eventDateStr < todayStr) {
+        } else if (eventDateStr && eventDateStr < todayStr) {
           status = 'Overdue';
         }
 
@@ -23,18 +21,18 @@ export class CalendarService {
 
         return {
           id: String(e.id),
-          title: e.taskName || 'Farm Task',
+          title: e.taskName || 'Untitled registered activity',
           type: (e.type || 'Other') as TaskType,
           date: eventDateStr,
-          time: '08:00 AM',
-          priority: 'Medium' as TaskPriority,
+          time: e.time || 'Time not recorded',
+          priority: (e.priority || 'Not recorded') as TaskPriority,
           status,
-          farmId: String(e.farmerCrop?.parcel?.id || '1'),
-          farmName: e.farmerCrop?.parcel?.parcelName || 'My Farm',
-          parcelId: String(e.farmerCrop?.parcel?.id || '1'),
-          parcelName: e.farmerCrop?.parcel?.parcelName || 'My Parcel',
+          farmId: String(e.farmerCrop?.parcel?.id || ''),
+          farmName: e.farmerCrop?.parcel?.parcelName || 'Farm name not recorded',
+          parcelId: String(e.farmerCrop?.parcel?.id || ''),
+          parcelName: e.farmerCrop?.parcel?.parcelName || 'Parcel name not recorded',
           crop: (['Tomato', 'Paddy', 'Onion', 'Wheat'].includes(cropName) ? cropName : 'Other') as CropType,
-          estimatedDuration: '1 hour',
+          estimatedDuration: e.estimatedDuration || 'Not recorded',
           requiredEquipment: [],
           notes: e.taskDescription || ''
         };
@@ -43,10 +41,7 @@ export class CalendarService {
       if (start && end) {
         return tasks.filter(t => t.date >= start && t.date <= end);
       }
-      return tasks;
-    } catch (error) {
-      return [];
-    }
+    return tasks;
   }
 
   static async getStats(): Promise<CalendarStats> {
@@ -60,8 +55,8 @@ export class CalendarService {
       dueToday,
       highPriority,
       upcomingHarvests,
-      weatherRisk: events.length > 0 ? 'Low' : 'None',
-      aiPlanningStatus: 'Optimal',
+      weatherRisk: 'Not available',
+      aiPlanningStatus: 'Not available',
     };
   }
 
@@ -91,12 +86,12 @@ export class CalendarService {
       filtered = events.filter(e => e.crop.toLowerCase() === crop.toLowerCase());
     }
 
-    return filtered.map((e, idx) => ({
+    return filtered.map((e) => ({
       id: e.id,
       crop: e.crop,
-      stage: ('Vegetative') as TimelineStage,
+      stage: null,
       expectedDate: e.date,
-      isCurrent: idx === 0,
+      isCurrent: e.date === new Date().toISOString().split('T')[0],
       isCompleted: e.status === 'Completed',
       description: e.notes || e.title
     }));

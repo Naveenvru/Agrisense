@@ -75,7 +75,7 @@ export function FarmPage() {
         setSelectedFarmDetails(farmData || null);
         setSelectedFarmParcels(parcelsData);
         
-        const farmCrops = allCrops.slice(0, parcelsData.length || 1); 
+        const farmCrops = allCrops.filter((crop) => crop.parcelId === selectedFarmId);
         setSelectedFarmCrops(farmCrops);
         
       } catch (err) {

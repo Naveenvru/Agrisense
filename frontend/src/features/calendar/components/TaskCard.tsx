@@ -1,4 +1,4 @@
-import { Task } from '../types';
+import { Task, TaskPriority } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, MapPin, AlertCircle, AlertTriangle, ShieldAlert, CheckCircle2, Sprout } from 'lucide-react';
 import { PriorityBadge, StatusBadge, getCropColor } from './ui/badges';
@@ -15,29 +15,33 @@ export function TaskCard({ task, onClick, isSelected }: TaskCardProps) {
     Critical: 'border-l-error',
     High: 'border-l-warning',
     Medium: 'border-l-info',
-    Low: 'border-l-secondary'
-  }[task.priority];
+    Low: 'border-l-secondary',
+    'Not recorded': 'border-l-border'
+  } satisfies Record<TaskPriority, string>;
 
   // Priority Icon
-  const PriorityIcon = {
+  const priorityIconByLevel = {
     Critical: ShieldAlert,
     High: AlertTriangle,
     Medium: AlertCircle,
-    Low: CheckCircle2
-  }[task.priority];
+    Low: CheckCircle2,
+    'Not recorded': Clock
+  } satisfies Record<TaskPriority, typeof Clock>;
+  const PriorityIcon = priorityIconByLevel[task.priority];
 
   const priorityIconColor = {
     Critical: 'text-error',
     High: 'text-warning',
     Medium: 'text-info',
-    Low: 'text-secondary'
-  }[task.priority];
+    Low: 'text-secondary',
+    'Not recorded': 'text-text-secondary'
+  } satisfies Record<TaskPriority, string>;
 
   const cropColor = getCropColor(task.crop);
 
   return (
     <Card 
-      className={`glass cursor-pointer transition-all border-l-4 ${priorityColor} ${
+      className={`glass cursor-pointer transition-all border-l-4 ${priorityColor[task.priority]} ${
         isSelected ? 'bg-primary/5 shadow-md border-y-primary/30 border-r-primary/30' : 'hover:bg-background/80 hover:shadow-md'
       }`}
       onClick={() => onClick(task)}
@@ -46,7 +50,7 @@ export function TaskCard({ task, onClick, isSelected }: TaskCardProps) {
         {/* Header */}
         <div className="flex justify-between items-start">
           <div className="flex gap-2 items-start">
-            <PriorityIcon className={`w-4 h-4 mt-0.5 ${priorityIconColor}`} />
+            <PriorityIcon className={`w-4 h-4 mt-0.5 ${priorityIconColor[task.priority]}`} />
             <div>
               <h4 className="font-heading font-semibold text-text-primary leading-tight">{task.title}</h4>
               <div className="flex items-center gap-2 mt-1">

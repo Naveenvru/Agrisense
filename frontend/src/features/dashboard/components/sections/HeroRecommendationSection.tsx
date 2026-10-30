@@ -5,6 +5,7 @@ import { HeroRecommendationCard } from '@/components/cards/HeroRecommendationCar
 import { HeroRecommendationSkeleton } from '@/components/cards/skeletons/HeroRecommendationSkeleton';
 import { ErrorState } from '@/components/common/ErrorState';
 import { useAuth } from '@/context/AuthContext';
+import { MapPin } from 'lucide-react';
 
 export function HeroRecommendationSection() {
   const { user } = useAuth();
@@ -51,7 +52,13 @@ export function HeroRecommendationSection() {
 
   return (
     <section>
-      <HeroRecommendationCard greeting={greeting} recommendation={recommendation} />
+      {recommendation ? <HeroRecommendationCard greeting={greeting} recommendation={recommendation} /> : (
+        <div className="glass rounded-xl border border-border p-6">
+          <h1 className="text-2xl font-bold text-text-primary">Good day, {greeting.userName}</h1>
+          <div className="mt-2 flex items-center gap-2 text-sm text-text-secondary"><MapPin className="h-4 w-4" />{greeting.location}</div>
+          <p className="mt-4 text-sm text-text-secondary">No evidence-backed recommendation is available yet. Add farm and crop information, then run an analysis to receive a recommendation supported by recorded data.</p>
+        </div>
+      )}
     </section>
   );
 }

@@ -18,7 +18,7 @@ export interface Farm {
   totalArea: number; // in hectares
   gpsCoordinates?: GpsCoordinates;
   status: FarmStatus;
-  healthScore: number; // 0-100
+  healthScore?: number; // populated only when supported by a recorded assessment
   overallHealthStatus: HealthStatus;
   
   // Aggregate data for the Farm Card

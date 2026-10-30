@@ -7,6 +7,7 @@ import { MarketQualityService } from './quality/market-quality.service';
 import { MarketAggregationService } from './aggregation/market-aggregation.service';
 import { MarketMongoModule } from '../mongodb/market/market-mongo.module';
 import { CollectorModule } from '../collectors/common/collector.module';
+import { FarmerProfilesModule } from '../farmer-profiles/farmer-profiles.module';
 
 /**
  * MarketModule — Phase 9 (Market Intelligence)
@@ -35,6 +36,7 @@ import { CollectorModule } from '../collectors/common/collector.module';
   imports: [
     MarketMongoModule,
     CollectorModule,
+    FarmerProfilesModule,
   ],
   controllers: [MarketController],
   providers: [

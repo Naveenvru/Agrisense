@@ -63,11 +63,11 @@ export function TimelineCard({ events }: TimelineCardProps) {
                 {/* Content */}
                 <div className={`flex flex-col gap-1 ${event.isCompleted || event.isCurrent ? 'opacity-100' : 'opacity-60'}`}>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg" role="img" aria-label={event.stage}>
-                      {getStageIcon(event.stage)}
+                    <span className="text-lg" role="img" aria-label={event.stage || 'Activity stage not recorded'}>
+                      {getStageIcon(event.stage || '')}
                     </span>
                     <h4 className={`font-medium ${event.isCurrent ? 'text-primary font-bold' : 'text-text-primary'}`}>
-                      {event.stage}
+                      {event.stage || 'Registered activity'}
                     </h4>
                   </div>
                   <p className="text-xs text-text-secondary font-medium">

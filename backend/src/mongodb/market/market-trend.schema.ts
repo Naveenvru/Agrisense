@@ -21,7 +21,7 @@ export class MarketTrend implements IMarketTrend {
   @Prop({ required: true })
   district: string;
 
-  @Prop({ required: true, enum: ['daily', 'weekly', 'monthly'] })
+  @Prop({ required: true, type: String, enum: ['daily', 'weekly', 'monthly'] })
   period: TrendPeriod;
 
   @Prop({ required: true })
@@ -42,7 +42,7 @@ export class MarketTrend implements IMarketTrend {
   @Prop({ default: 0 })
   totalArrival: number;
 
-  @Prop({ required: true, enum: ['rising', 'falling', 'stable'] })
+  @Prop({ required: true, type: String, enum: ['rising', 'falling', 'stable'] })
   trend: TrendDirection;
 }
 

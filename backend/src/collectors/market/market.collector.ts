@@ -62,11 +62,15 @@ export class MarketCollector implements ICollector {
     const requestedAt = new Date();
     const operation = params.operation ?? COLLECTOR_CONSTANTS.OPERATIONS.MARKET_PRICES;
 
-    this.collectorLogger.logStart(INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET, operation);
+    const source = process.env.MARKET_DATA_SOURCE === 'mock' ? 'development_mock' : INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET;
+    this.collectorLogger.logStart(source, operation);
     this.logger.log(`Collection started | operation=${operation}`);
     this.totalCollections++;
 
     try {
+      if (process.env.NODE_ENV === 'production' || process.env.MARKET_DATA_SOURCE !== 'mock') {
+        throw new Error('No live AGMARKNET data source is configured. Mock collection is available only when MARKET_DATA_SOURCE=mock is explicitly set for development.');
+      }
       const fetchParams: MarketFetchParams = {
         commodity: params.payload['commodity'] as string | undefined,
         market: params.payload['market'] as string | undefined,
@@ -85,7 +89,7 @@ export class MarketCollector implements ICollector {
       const result: CollectionResult = {
         domain: COLLECTOR_CONSTANTS.DOMAINS.MARKET as CollectorDomain,
         operation,
-        provider: INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
+        provider: source,
         rawData: rawRecords,
         status: COLLECTOR_CONSTANTS.STATUS.SUCCESS,
         collectedAt: requestedAt,
@@ -94,7 +98,7 @@ export class MarketCollector implements ICollector {
       };
 
       this.collectorLogger.logCollection({
-        provider: INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
+        provider: source,
         operation,
         requestedAt,
         respondedAt: new Date(),
@@ -116,7 +120,7 @@ export class MarketCollector implements ICollector {
       const result: CollectionResult = {
         domain: COLLECTOR_CONSTANTS.DOMAINS.MARKET as CollectorDomain,
         operation,
-        provider: INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
+        provider: source,
         rawData: null,
         status: COLLECTOR_CONSTANTS.STATUS.FAILED,
         collectedAt: requestedAt,
@@ -126,7 +130,7 @@ export class MarketCollector implements ICollector {
       };
 
       this.collectorLogger.logCollection({
-        provider: INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
+        provider: source,
         operation,
         requestedAt,
         respondedAt: new Date(),

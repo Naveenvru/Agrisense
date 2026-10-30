@@ -16,6 +16,7 @@ const market_quality_service_1 = require("./quality/market-quality.service");
 const market_aggregation_service_1 = require("./aggregation/market-aggregation.service");
 const market_mongo_module_1 = require("../mongodb/market/market-mongo.module");
 const collector_module_1 = require("../collectors/common/collector.module");
+const farmer_profiles_module_1 = require("../farmer-profiles/farmer-profiles.module");
 let MarketModule = class MarketModule {
 };
 exports.MarketModule = MarketModule;
@@ -24,6 +25,7 @@ exports.MarketModule = MarketModule = __decorate([
         imports: [
             market_mongo_module_1.MarketMongoModule,
             collector_module_1.CollectorModule,
+            farmer_profiles_module_1.FarmerProfilesModule,
         ],
         controllers: [market_controller_1.MarketController],
         providers: [

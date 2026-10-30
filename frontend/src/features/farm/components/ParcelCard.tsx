@@ -1,6 +1,6 @@
 import { LandParcel } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
-import { AreaBadge, GpsStatusBadge, GrowthStageBadge, HealthBadge } from './ui/badges';
+import { AreaBadge, GpsStatusBadge, HealthBadge } from './ui/badges';
 import { Droplets, Mountain } from 'lucide-react';
 
 interface ParcelCardProps {
@@ -13,18 +13,17 @@ export function ParcelCard({ parcel }: ParcelCardProps) {
       <CardContent className="p-4 space-y-3">
         <div className="flex justify-between items-start">
           <h4 className="font-semibold text-text-primary">{parcel.name}</h4>
-          <AreaBadge area={parcel.area} />
+          {parcel.area !== null && parcel.area !== undefined && <AreaBadge area={parcel.area} />}
         </div>
         
         <div className="flex flex-wrap gap-2">
           {parcel.currentCrop ? (
             <div className="flex items-center gap-1 text-sm text-primary font-medium bg-primary/10 px-2 py-0.5 rounded">
-              {parcel.currentCrop} ({parcel.cropVariety})
+              {parcel.currentCrop}{parcel.cropVariety ? ` (${parcel.cropVariety})` : ''}
             </div>
           ) : (
             <div className="text-sm text-text-secondary italic">Fallow</div>
           )}
-          {parcel.growthStage && <GrowthStageBadge stage={parcel.growthStage} />}
           <HealthBadge status={parcel.healthStatus} />
         </div>
 

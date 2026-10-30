@@ -1,154 +1,101 @@
-import { useState, useEffect } from 'react';
-import { MarketService } from '../services/MarketService';
-import { 
-  MarketOpportunity, MarketDecision, AiMarketRecommendation,
-  PersonalizedCropInsight, HarvestIntelligence, RegionalProfit,
-  DemandSupplyMetrics, MarketTrendAnalysis, MarketPerformanceMetrics,
-  PricePredictionData, RecommendationHistoryItem, MarketAlert,
-  CommodityDetail
-} from '../types';
+import { FormEvent, useEffect, useState } from 'react';
+import { apiClient } from '@/lib/axios';
+import { PageHeader } from '@/components/common/PageHeader';
+import { MarketPriceRecord, MarketQuery, MarketService } from '../services/MarketService';
+import { Search, RefreshCw } from 'lucide-react';
 
-import { MarketHero } from './MarketHero';
-import { MarketDecisionDashboard } from './MarketDecisionDashboard';
-import { AiRecommendationHero } from './AiRecommendationHero';
-import { PricePredictionPipeline } from './PricePredictionPipeline';
-import { PersonalizedCropInsights } from './PersonalizedCropInsights';
-import { CommodityCards } from './CommodityCards';
-import { PriceChart } from './PriceChart';
-import { HarvestIntelligenceCard } from './HarvestIntelligenceCard';
-import { DemandSupplyVisualizer } from './DemandSupplyVisualizer';
-import { MarketTrendCard } from './MarketTrendCard';
-import { RegionalProfitComparison } from './RegionalProfitComparison';
-import { CommodityPerformanceDashboard } from './CommodityPerformanceDashboard';
-import { AlertBanner } from './AlertBanner';
-import { AiRecommendationHistory } from './AiRecommendationHistory';
-import { FutureMarketplacePlaceholders } from './FutureMarketplacePlaceholders';
-import { MarketDrawer } from './MarketDrawer';
-import { WeatherSkeleton } from '../../weather/components/ui/WeatherSkeleton'; // Reuse for now or create custom
+const dateString = (date: Date) => date.toISOString().slice(0, 10);
 
 export function MarketPage() {
-  const [opportunity, setOpportunity] = useState<MarketOpportunity | null>(null);
-  const [decision, setDecision] = useState<MarketDecision | null>(null);
-  const [aiRec, setAiRec] = useState<AiMarketRecommendation | null>(null);
-  const [insights, setInsights] = useState<PersonalizedCropInsight[]>([]);
-  const [harvest, setHarvest] = useState<HarvestIntelligence | null>(null);
-  const [regional, setRegional] = useState<RegionalProfit[]>([]);
-  const [demandSupply, setDemandSupply] = useState<DemandSupplyMetrics | null>(null);
-  const [trends, setTrends] = useState<MarketTrendAnalysis[]>([]);
-  const [performance, setPerformance] = useState<MarketPerformanceMetrics | null>(null);
-  const [commodities, setCommodities] = useState<CommodityDetail[]>([]);
-  const [alerts, setAlerts] = useState<MarketAlert[]>([]);
-  const [history, setHistory] = useState<RecommendationHistoryItem[]>([]);
-  const [chart, setChart] = useState<PricePredictionData[]>([]);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedCommodity, setSelectedCommodity] = useState<CommodityDetail | null>(null);
+  const today = new Date();
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const [form, setForm] = useState<MarketQuery>({
+    commodity: '', district: 'Bengaluru Urban', state: 'Karnataka',
+    startDate: dateString(thirtyDaysAgo), endDate: dateString(today), limit: 200,
+  });
+  const [records, setRecords] = useState<MarketPriceRecord[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searched, setSearched] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      setIsLoading(true);
-      try {
-        const [
-          opp, dec, ai, ins, harv, reg, ds, tr, perf, com, alts, hist, ch
-        ] = await Promise.all([
-          MarketService.getOpportunityScore(),
-          MarketService.getMarketDecision(),
-          MarketService.getAiRecommendation(),
-          MarketService.getPersonalizedInsights(),
-          MarketService.getHarvestIntelligence(),
-          MarketService.getRegionalProfits(),
-          MarketService.getDemandSupply(),
-          MarketService.getMarketTrends(),
-          MarketService.getPerformanceMetrics(),
-          MarketService.getCommodities(),
-          MarketService.getAlerts(),
-          MarketService.getTimeline(),
-          MarketService.getPriceChart()
-        ]);
-
-        setOpportunity(opp);
-        setDecision(dec);
-        setAiRec(ai);
-        setInsights(ins);
-        setHarvest(harv);
-        setRegional(reg);
-        setDemandSupply(ds);
-        setTrends(tr);
-        setPerformance(perf);
-        setCommodities(com);
-        setAlerts(alts);
-        setHistory(hist);
-        setChart(ch);
-      } catch (e) {
-        console.error("Failed to load market data", e);
-      } finally {
-        setIsLoading(false);
+    apiClient.get('/farmer-profile/me').then(({ data }) => {
+      const profile = data?.data;
+      if ((profile?.district && profile.district !== 'Default') || (profile?.state && profile.state !== 'Default')) {
+        setForm((current) => ({ ...current, district: profile.district && profile.district !== 'Default' ? profile.district : current.district, state: profile.state && profile.state !== 'Default' ? profile.state : current.state }));
       }
-    }
-    loadData();
+    }).catch(() => { /* Bengaluru defaults remain available when no profile location is saved. */ });
   }, []);
 
-  if (isLoading || !opportunity || !decision || !aiRec || !harvest || !demandSupply || !performance) {
-    return <WeatherSkeleton />; // Reusing skeleton structure
-  }
+  const runQuery = async (event?: FormEvent) => {
+    event?.preventDefault();
+    setLoading(true);
+    setError('');
+    setSearched(true);
+    try {
+      const result = await MarketService.getPrices(form);
+      setRecords(result);
+    } catch (err: any) {
+      setRecords([]);
+      setError(err.response?.data?.message || 'Market records could not be loaded. Check the connection and try again.');
+    } finally { setLoading(false); }
+  };
 
-  return (
-    <div className="space-y-8 pb-20 md:pb-6">
-      
-      {/* Alerts */}
-      <AlertBanner alerts={alerts} />
-      
-      {/* Top Level Hero */}
-      <MarketHero opportunity={opportunity} />
-      
-      {/* Quick Decisions */}
-      <MarketDecisionDashboard decision={decision} />
-      
-      {/* Primary AI Recommendation */}
-      <AiRecommendationHero recommendation={aiRec} />
+  const setField = (key: keyof MarketQuery, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
-        {/* Main Content (Left / Span 2) */}
-        <div className="lg:col-span-2 space-y-10">
-          
-          <PersonalizedCropInsights insights={insights} />
-          
-          <CommodityCards commodities={commodities} onSelect={setSelectedCommodity} />
-          
-          <PriceChart data={chart} />
-          
-          <PricePredictionPipeline />
-          
-          <HarvestIntelligenceCard data={harvest} />
-          
-          <DemandSupplyVisualizer metrics={demandSupply} />
-          
-          <CommodityPerformanceDashboard metrics={performance} />
-
-        </div>
-        
-        {/* Sidebar (Right / Span 1) */}
-        <div className="space-y-8 lg:sticky lg:top-6">
-          
-          <RegionalProfitComparison markets={regional} />
-          
-          <MarketTrendCard trends={trends} />
-          
-          <AiRecommendationHistory history={history} />
-          
-          <FutureMarketplacePlaceholders />
-
-        </div>
+  return <div className="space-y-6 pb-16">
+    <PageHeader title="Market Intelligence" description="Browse recorded market prices by commodity, market and region. Results show source observations only." />
+    <form onSubmit={runQuery} className="glass rounded-xl border border-border p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <label className="text-xs text-text-secondary">Commodity
+        <input value={form.commodity || ''} onChange={(e) => setField('commodity', e.target.value)} placeholder="e.g. Tomato" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <label className="text-xs text-text-secondary">District
+        <input value={form.district || ''} onChange={(e) => setField('district', e.target.value)} placeholder="Bengaluru Urban" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <label className="text-xs text-text-secondary">State
+        <input value={form.state || ''} onChange={(e) => setField('state', e.target.value)} placeholder="Karnataka" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <label className="text-xs text-text-secondary">Market / APMC (optional)
+        <input value={form.market || ''} onChange={(e) => setField('market', e.target.value)} placeholder="Market name" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <label className="text-xs text-text-secondary">From
+        <input type="date" value={form.startDate || ''} onChange={(e) => setField('startDate', e.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <label className="text-xs text-text-secondary">To
+        <input type="date" value={form.endDate || ''} onChange={(e) => setField('endDate', e.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+      </label>
+      <div className="lg:col-span-2 flex items-end">
+        <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-60">
+          {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+          {loading ? 'Loading observations…' : 'Search recorded prices'}
+        </button>
       </div>
+    </form>
 
-      <MarketDrawer 
-        commodity={selectedCommodity} 
-        isOpen={!!selectedCommodity} 
-        onClose={() => setSelectedCommodity(null)} 
-      />
-
-    </div>
-  );
+    {error && <div role="alert" className="rounded-xl border border-error/30 bg-error/5 p-4 text-sm text-error">{error}</div>}
+    {searched && !loading && !error && records.length === 0 && <div className="glass rounded-xl border border-border p-8 text-center">
+      <h2 className="font-bold text-text-primary">No recorded prices found</h2>
+      <p className="mt-2 text-sm text-text-secondary">Try a wider date range or another market. No substitute prices are shown when records are missing.</p>
+    </div>}
+    {records.length > 0 && <section className="glass overflow-hidden rounded-xl border border-border">
+      <div className="border-b border-border p-4">
+        <h2 className="font-bold text-text-primary">Recorded observations</h2>
+        <p className="mt-1 text-xs text-text-secondary">{records.length} records · values are market observations, not forecasts. Search location applies to this query only.</p>
+      </div>
+      <div className="overflow-x-auto"><table className="w-full text-left text-sm">
+        <thead className="bg-surface/70 text-xs text-text-secondary"><tr>
+          {['Date', 'Commodity', 'Market', 'District / State', 'Min', 'Modal', 'Max', 'Source', 'Updated'].map((head) => <th key={head} className="whitespace-nowrap px-4 py-3 font-semibold">{head}</th>)}
+        </tr></thead>
+        <tbody>{records.map((record) => <tr key={record._id} className="border-t border-border/70 text-text-primary">
+          <td className="whitespace-nowrap px-4 py-3">{new Date(record.date).toLocaleDateString()}</td>
+          <td className="px-4 py-3">{record.commodity}</td><td className="px-4 py-3">{record.market}</td>
+          <td className="whitespace-nowrap px-4 py-3">{[record.district, record.state].filter(Boolean).join(', ')}</td>
+          {[record.minPrice, record.modalPrice, record.maxPrice].map((price, i) => <td key={i} className="whitespace-nowrap px-4 py-3">₹{Number(price).toLocaleString('en-IN')} / {record.unit}</td>)}
+          <td className="px-4 py-3">{record.source || 'Unspecified'}</td>
+          <td className="whitespace-nowrap px-4 py-3">{record.normalizedAt || record.updatedAt ? new Date(record.normalizedAt || record.updatedAt!).toLocaleString() : 'Not recorded'}</td>
+        </tr>)}</tbody>
+      </table></div>
+    </section>}
+  </div>;
 }

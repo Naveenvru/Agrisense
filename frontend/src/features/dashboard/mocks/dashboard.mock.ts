@@ -1,7 +1,6 @@
 import { GreetingData, RecommendationData } from '@/types/dashboard/Recommendation';
 import { FarmData } from '@/types/dashboard/Farm';
 import { WeatherData } from '@/types/dashboard/Weather';
-import { MarketData } from '@/types/dashboard/Market';
 import { TaskData } from '@/types/dashboard/Task';
 import { ActivityData } from '@/types/dashboard/Activity';
 
@@ -38,13 +37,6 @@ export const MOCK_WEATHER_DATA: WeatherData = {
   impactSummary: "Low disease pressure today. Favorable for spraying.",
   isAlert: false
 };
-
-export const MOCK_MARKET_DATA: MarketData[] = [
-  { commodity: "Wheat (SRW)", currentPrice: 582.50, predictedPrice: 590.25, trend: "up", trendPercentage: 1.3, confidenceScore: 85 },
-  { commodity: "Soybeans", currentPrice: 1145.00, predictedPrice: 1130.50, trend: "down", trendPercentage: 1.2, confidenceScore: 78 },
-  { commodity: "Corn", currentPrice: 435.75, predictedPrice: 436.00, trend: "stable", trendPercentage: 0.1, confidenceScore: 92 },
-  { commodity: "Oats", currentPrice: 340.20, predictedPrice: 355.00, trend: "up", trendPercentage: 4.3, confidenceScore: 64 }
-];
 
 export const MOCK_TASKS_DATA: TaskData[] = [
   { id: "t1", title: "Apply Nitrogen Fertilizer", location: "Field Alpha", date: "Today, 14:00", priority: "High", status: "Pending" },

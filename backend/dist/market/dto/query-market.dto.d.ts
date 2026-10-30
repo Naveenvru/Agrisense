@@ -1,6 +1,8 @@
 export declare class QueryMarketDto {
     commodity?: string;
     market?: string;
+    district?: string;
+    state?: string;
     startDate?: string;
     endDate?: string;
     limit?: number;

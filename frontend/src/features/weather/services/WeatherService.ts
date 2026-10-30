@@ -1,72 +1,32 @@
-import { 
-  WeatherData, AiWeatherRecommendation, HourlyForecast, DailyForecast, 
-  WeatherRisk, FarmWeatherImpact, WeatherAlert, HistoricalWeatherPoint,
-  AgriculturalDecision, CropWeatherImpact, WeatherImpactMatrixItem 
-} from '../types';
+import { apiClient } from '@/lib/axios';
 
-import {
-  MOCK_CURRENT_WEATHER, MOCK_AI_RECOMMENDATION, MOCK_HOURLY_FORECAST,
-  MOCK_WEEKLY_FORECAST, MOCK_WEATHER_RISKS, MOCK_FARM_IMPACTS,
-  MOCK_WEATHER_ALERTS, MOCK_HISTORICAL_DATA, MOCK_AGRICULTURAL_DECISIONS,
-  MOCK_CROP_IMPACTS, MOCK_IMPACT_MATRIX
-} from '../mocks/weather.mock';
-
-// Simulate network delay
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+export interface WeatherParcel { id: string; parcelName: string; latitude: number | null; longitude: number | null }
+export interface CurrentObservation {
+  parcelId: string; district?: string; state?: string; timestamp: string; temperature: number; feelsLike: number;
+  humidity: number; rainfall: number; windSpeed: number; pressure: number; weatherCondition: string;
+  weatherDescription: string; source: string;
+}
+export interface ForecastObservation {
+  forecastDate: string; temperature: number; feelsLike: number; humidity: number; rainProbability: number;
+  windSpeed: number; weatherCondition: string; weatherDescription: string;
+}
+export interface HistoricalObservation {
+  timestamp: string; temperature: number; humidity: number; rainfall: number; windSpeed: number;
+  pressure: number; weatherCondition: string;
+}
 
 export class WeatherService {
-  static async getCurrentWeather(): Promise<WeatherData> {
-    await delay(500);
-    return MOCK_CURRENT_WEATHER;
+  static async getParcels(): Promise<WeatherParcel[]> {
+    const { data } = await apiClient.get('/land-parcels');
+    return (data?.data || []).map((parcel: any) => ({ ...parcel, id: String(parcel.id) }));
   }
-
-  static async getAiRecommendation(): Promise<AiWeatherRecommendation> {
-    await delay(600);
-    return MOCK_AI_RECOMMENDATION;
+  static async getCurrentWeather(parcelId: string): Promise<CurrentObservation> {
+    const { data } = await apiClient.get(`/weather/current/${parcelId}`); return data;
   }
-
-  static async getAgriculturalDecisions(): Promise<AgriculturalDecision[]> {
-    await delay(400);
-    return MOCK_AGRICULTURAL_DECISIONS;
+  static async getForecast(parcelId: string): Promise<ForecastObservation[]> {
+    const { data } = await apiClient.get(`/weather/forecast/${parcelId}`); return data.forecasts || [];
   }
-
-  static async getHourlyForecast(): Promise<HourlyForecast[]> {
-    await delay(700);
-    return MOCK_HOURLY_FORECAST;
-  }
-
-  static async getWeeklyForecast(): Promise<DailyForecast[]> {
-    await delay(600);
-    return MOCK_WEEKLY_FORECAST;
-  }
-
-  static async getWeatherRisks(): Promise<WeatherRisk[]> {
-    await delay(500);
-    return MOCK_WEATHER_RISKS;
-  }
-
-  static async getFarmImpacts(): Promise<FarmWeatherImpact[]> {
-    await delay(800);
-    return MOCK_FARM_IMPACTS;
-  }
-
-  static async getCropImpacts(): Promise<CropWeatherImpact[]> {
-    await delay(600);
-    return MOCK_CROP_IMPACTS;
-  }
-
-  static async getImpactMatrix(): Promise<WeatherImpactMatrixItem[]> {
-    await delay(500);
-    return MOCK_IMPACT_MATRIX;
-  }
-
-  static async getWeatherAlerts(): Promise<WeatherAlert[]> {
-    await delay(400);
-    return MOCK_WEATHER_ALERTS;
-  }
-
-  static async getHistoricalWeather(): Promise<HistoricalWeatherPoint[]> {
-    await delay(900);
-    return MOCK_HISTORICAL_DATA;
+  static async getHistory(parcelId: string): Promise<HistoricalObservation[]> {
+    const { data } = await apiClient.get(`/weather/history/${parcelId}`); return data.history || [];
   }
 }

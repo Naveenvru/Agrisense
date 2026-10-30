@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { dashboardService } from '../../services/dashboard.service';
+import { WeatherData } from '@/types/dashboard/Weather';
+import { MarketData } from '@/types/dashboard/Market';
 import { QuickStatCard } from '@/components/cards/QuickStatCard';
 import { QuickStatSkeleton } from '@/components/cards/skeletons/QuickStatSkeleton';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -11,17 +13,23 @@ export function QuickStatsSection() {
   const [error, setError] = useState<Error | null>(null);
   const [farmsCount, setFarmsCount] = useState(0);
   const [tasksCount, setTasksCount] = useState(0);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [market, setMarket] = useState<MarketData[]>([]);
 
   const loadData = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const [farms, tasks] = await Promise.all([
+      const [farms, tasks, weatherData, marketData] = await Promise.all([
         dashboardService.getFarms(),
-        dashboardService.getTasks()
+        dashboardService.getTasks(),
+        dashboardService.getWeather(),
+        dashboardService.getMarket(),
       ]);
       setFarmsCount(farms.length);
       setTasksCount(tasks.filter(t => t.status !== 'Completed').length);
+      setWeather(weatherData);
+      setMarket(marketData);
     } catch (err: any) {
       setError(err);
     } finally {
@@ -55,15 +63,15 @@ export function QuickStatsSection() {
   return (
     <section>
       <DashboardGrid>
-        <QuickStatCard title="Current Weather" value="24°C" status="Partly Cloudy" icon={<CloudRain className="w-6 h-6" />} trend="neutral" />
+        <QuickStatCard title="Current Weather" value={weather ? `${weather.temperature}°C` : 'Unavailable'} status={weather?.condition || 'Add a geolocated parcel'} icon={<CloudRain className="w-6 h-6" />} trend="neutral" />
         <QuickStatCard 
           title="Active Farms" 
           value={`${farmsCount} ${farmsCount === 1 ? 'Field' : 'Fields'}`} 
-          status={farmsCount === 0 ? 'No fields connected' : 'All systems healthy'} 
+          status={farmsCount === 0 ? 'No parcels registered' : 'Registered parcels'}
           icon={<Map className="w-6 h-6" />} 
           trend="neutral" 
         />
-        <QuickStatCard title="Market Index" value="₹582.50" status="+1.3% vs yesterday" icon={<TrendingUp className="w-6 h-6" />} trend="up" />
+        <QuickStatCard title="Latest Market Record" value={market[0] ? `₹${market[0].currentPrice.toLocaleString('en-IN')}` : 'No records'} status={market[0] ? `${market[0].commodity} · ${market[0].market} · ${new Date(market[0].date).toLocaleDateString()}` : 'No prices available for this region'} icon={<TrendingUp className="w-6 h-6" />} trend="neutral" />
         <QuickStatCard 
           title="Today's Tasks" 
           value={`${tasksCount} Pending`} 

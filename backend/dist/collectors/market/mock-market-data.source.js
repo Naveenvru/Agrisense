@@ -9,10 +9,9 @@ var MockMarketDataSource_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MockMarketDataSource = void 0;
 const common_1 = require("@nestjs/common");
-const integration_constants_1 = require("../../integrations/common/integration.constants");
 let MockMarketDataSource = class MockMarketDataSource {
     static { MockMarketDataSource_1 = this; }
-    sourceName = integration_constants_1.INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET;
+    sourceName = 'development_mock';
     static SAMPLE_DATA = [
         { commodity: 'Rice', variety: 'Sona Masuri', market: 'Bengaluru APMC', district: 'Bengaluru Urban', state: 'Karnataka', unit: 'Quintal', minPrice: 2200, maxPrice: 2600, modalPrice: 2400, arrivalQty: 1200 },
         { commodity: 'Wheat', variety: 'Lokwan', market: 'Delhi Azadpur', district: 'North Delhi', state: 'Delhi', unit: 'Quintal', minPrice: 2100, maxPrice: 2400, modalPrice: 2250, arrivalQty: 850 },

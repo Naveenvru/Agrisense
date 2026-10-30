@@ -77,12 +77,16 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
         this.logger.log(`Saved ${docs.length} price records to market_prices_v2`);
         return docs;
     }
-    async findPrices(commodity, market, startDate, endDate, limit = 100) {
+    async findPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
         const filter = {};
         if (commodity)
-            filter.commodity = new RegExp(commodity, 'i');
+            filter.commodity = new RegExp(this.escapeRegex(commodity), 'i');
         if (market)
-            filter.market = new RegExp(market, 'i');
+            filter.market = new RegExp(this.escapeRegex(market), 'i');
+        if (district)
+            filter.district = new RegExp(this.escapeRegex(district), 'i');
+        if (state)
+            filter.state = new RegExp(this.escapeRegex(state), 'i');
         if (startDate || endDate) {
             filter.date = {};
             if (startDate)
@@ -96,6 +100,7 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
             .limit(limit)
             .exec();
     }
+    escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
     async findLatestPrice(commodity, market) {
         return this.priceModel
             .findOne({ commodity: new RegExp(commodity, 'i'), market: new RegExp(market, 'i') })

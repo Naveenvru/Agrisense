@@ -1,154 +1,56 @@
-import { useState, useEffect } from 'react';
-import { WeatherService } from '../services/WeatherService';
-import { 
-  WeatherData, AiWeatherRecommendation, HourlyForecast, DailyForecast, 
-  WeatherRisk, FarmWeatherImpact, WeatherAlert, HistoricalWeatherPoint,
-  AgriculturalDecision, CropWeatherImpact, WeatherImpactMatrixItem 
-} from '../types';
-
-import { WeatherHero } from './WeatherHero';
-import { AgriculturalDecisionDashboard } from './AgriculturalDecisionDashboard';
-import { AiRecommendationHero } from './AiRecommendationHero';
-import { CurrentWeatherGrid } from './CurrentWeatherGrid';
-import { ForecastTimeline } from './ForecastTimeline';
-import { FarmImpactsSection } from './FarmImpactsSection';
-import { WeatherImpactMatrix } from './WeatherImpactMatrix';
-import { WeeklyForecastCard } from './WeeklyForecastCard';
-import { RiskCard } from './RiskCard';
-import { AlertBanner } from './AlertBanner';
-import { WeatherChart } from './WeatherChart';
-import { WeatherMapCard } from './WeatherMapCard';
-import { IntegrationIndicators } from './IntegrationIndicators';
-import { WeatherDrawer } from './WeatherDrawer';
-import { WeatherSkeleton } from './ui/WeatherSkeleton';
+import { useEffect, useState } from 'react';
+import { PageHeader } from '@/components/common/PageHeader';
+import { EmptyState } from '@/components/common/EmptyState';
+import { CloudOff, RefreshCw, Thermometer, Droplets, Wind, Gauge } from 'lucide-react';
+import { CurrentObservation, ForecastObservation, HistoricalObservation, WeatherParcel, WeatherService } from '../services/WeatherService';
 
 export function WeatherPage() {
-  const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
-  const [aiRec, setAiRec] = useState<AiWeatherRecommendation | null>(null);
-  const [decisions, setDecisions] = useState<AgriculturalDecision[]>([]);
-  const [hourly, setHourly] = useState<HourlyForecast[]>([]);
-  const [weekly, setWeekly] = useState<DailyForecast[]>([]);
-  const [risks, setRisks] = useState<WeatherRisk[]>([]);
-  const [farmImpacts, setFarmImpacts] = useState<FarmWeatherImpact[]>([]);
-  const [cropImpacts, setCropImpacts] = useState<CropWeatherImpact[]>([]);
-  const [matrix, setMatrix] = useState<WeatherImpactMatrixItem[]>([]);
-  const [alerts, setAlerts] = useState<WeatherAlert[]>([]);
-  const [historical, setHistorical] = useState<HistoricalWeatherPoint[]>([]);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDay, setSelectedDay] = useState<DailyForecast | null>(null);
+  const [parcels, setParcels] = useState<WeatherParcel[]>([]);
+  const [parcelId, setParcelId] = useState('');
+  const [current, setCurrent] = useState<CurrentObservation | null>(null);
+  const [forecast, setForecast] = useState<ForecastObservation[]>([]);
+  const [history, setHistory] = useState<HistoricalObservation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true);
-      try {
-        const [
-          weather, ai, dec, hrly, wkly, rsk, farmImp, cropImp, mat, alrts, hist
-        ] = await Promise.all([
-          WeatherService.getCurrentWeather(),
-          WeatherService.getAiRecommendation(),
-          WeatherService.getAgriculturalDecisions(),
-          WeatherService.getHourlyForecast(),
-          WeatherService.getWeeklyForecast(),
-          WeatherService.getWeatherRisks(),
-          WeatherService.getFarmImpacts(),
-          WeatherService.getCropImpacts(),
-          WeatherService.getImpactMatrix(),
-          WeatherService.getWeatherAlerts(),
-          WeatherService.getHistoricalWeather()
-        ]);
+  const load = async (selectedId?: string) => {
+    setLoading(true); setError('');
+    try {
+      const knownParcels = parcels.length ? parcels : await WeatherService.getParcels();
+      setParcels(knownParcels);
+      const withCoordinates = knownParcels.filter((parcel) => parcel.latitude != null && parcel.longitude != null && Number.isFinite(Number(parcel.latitude)) && Number.isFinite(Number(parcel.longitude)));
+      const target = selectedId || parcelId || withCoordinates[0]?.id;
+      if (!target) { setCurrent(null); setForecast([]); setHistory([]); setParcelId(''); return; }
+      setParcelId(target);
+      const [observation, forecastRows, historyRows] = await Promise.all([
+        WeatherService.getCurrentWeather(target), WeatherService.getForecast(target), WeatherService.getHistory(target),
+      ]);
+      setCurrent(observation); setForecast(forecastRows); setHistory(historyRows);
+    } catch (err: any) {
+      setCurrent(null); setForecast([]); setHistory([]);
+      setError(err.response?.data?.message || 'Weather service is unavailable. Try again later.');
+    } finally { setLoading(false); }
+  };
 
-        setCurrentWeather(weather);
-        setAiRec(ai);
-        setDecisions(dec);
-        setHourly(hrly);
-        setWeekly(wkly);
-        setRisks(rsk);
-        setFarmImpacts(farmImp);
-        setCropImpacts(cropImp);
-        setMatrix(mat);
-        setAlerts(alrts);
-        setHistorical(hist);
-      } catch (e) {
-        console.error("Failed to load weather data", e);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+  useEffect(() => { void load(); }, []);
+  const selectedParcel = parcels.find((parcel) => parcel.id === parcelId);
 
-  if (isLoading || !currentWeather || !aiRec) {
-    return <WeatherSkeleton />;
-  }
-
-  return (
-    <div className="space-y-6 pb-20 md:pb-6">
-      
-      {/* 1. Alerts */}
-      <AlertBanner alerts={alerts} />
-      
-      {/* 2. Hero Section */}
-      <WeatherHero 
-        weather={currentWeather} 
-        aiConfidence={aiRec.confidence} 
-        overallRisk={aiRec.priority} 
-      />
-
-      {/* 3. AI Recommendation */}
-      <AiRecommendationHero recommendation={aiRec} />
-
-      {/* 4. Agricultural Decision Dashboard */}
-      <AgriculturalDecisionDashboard decisions={decisions} />
-
-      {/* Responsive Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-        
-        {/* Main Content (Left / Span 2) */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Current Weather Grid */}
-          <CurrentWeatherGrid weather={currentWeather} />
-          
-          {/* Hourly Forecast Timeline */}
-          <ForecastTimeline forecast={hourly} />
-
-          {/* Weekly Forecast (Moved from sidebar to support horizontal layout) */}
-          <WeeklyForecastCard forecast={weekly} onDayClick={setSelectedDay} />
-
-          {/* Farm and Crop Impacts */}
-          <FarmImpactsSection farmImpacts={farmImpacts} cropImpacts={cropImpacts} />
-
-          {/* Impact Matrix */}
-          <WeatherImpactMatrix matrix={matrix} />
-
-          {/* Risk Dashboard */}
-          <RiskCard risks={risks} />
-
-          {/* Historical Charts */}
-          <WeatherChart data={historical} />
-
-          {/* Map Placeholder */}
-          <WeatherMapCard />
-
+  return <div className="space-y-6 pb-16">
+    <PageHeader title="Weather Intelligence" description="Live and stored weather observations for your geolocated farm parcels. Agricultural recommendations and risk scores are not shown without verified evidence." action={<button type="button" onClick={() => void load()} className="flex items-center gap-2 text-sm font-bold text-primary"><RefreshCw className="h-4 w-4" />Refresh</button>} />
+    {parcels.filter((parcel) => parcel.latitude != null && parcel.longitude != null && Number.isFinite(Number(parcel.latitude)) && Number.isFinite(Number(parcel.longitude))).length > 1 && <label className="block max-w-md text-xs text-text-secondary">Farm parcel<select value={parcelId} onChange={(event) => void load(event.target.value)} className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary">{parcels.filter((parcel) => parcel.latitude != null && parcel.longitude != null && Number.isFinite(Number(parcel.latitude)) && Number.isFinite(Number(parcel.longitude))).map((parcel) => <option key={parcel.id} value={parcel.id}>{parcel.parcelName || `Parcel ${parcel.id}`}</option>)}</select></label>}
+    {loading && <div className="glass rounded-xl border border-border p-8 text-center text-sm text-text-secondary">Loading weather observations…</div>}
+    {error && <div role="alert" className="rounded-xl border border-error/30 bg-error/5 p-4 text-sm text-error">{error}</div>}
+    {!loading && !error && !current && <EmptyState icon={<CloudOff className="h-10 w-10" />} title="No geolocated farm parcel" description="Add a parcel with GPS coordinates to request weather data for its location." />}
+    {!loading && current && <>
+      <section className="glass rounded-xl border border-border p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-sm text-text-secondary">{selectedParcel?.parcelName || `Parcel ${current.parcelId}`} · {[current.district, current.state].filter(Boolean).join(', ')}</p><h2 className="mt-1 text-3xl font-bold text-text-primary">{current.temperature}°C · {current.weatherDescription}</h2><p className="mt-2 text-xs text-text-secondary">Observed {new Date(current.timestamp).toLocaleString()} · Source {current.source}</p></div></div>
+        <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[[Thermometer,'Feels like',`${current.feelsLike}°C`],[Droplets,'Humidity',`${current.humidity}%`],[Wind,'Wind',`${current.windSpeed} m/s`],[Gauge,'Pressure',`${current.pressure} hPa`]].map(([Icon,label,value]: any) => <div key={label} className="rounded-lg bg-surface/50 p-4"><Icon className="mb-2 h-4 w-4 text-primary"/><p className="text-xs text-text-secondary">{label}</p><p className="font-semibold text-text-primary">{value}</p></div>)}
         </div>
-
-        {/* Sidebar (Right / Span 1) */}
-        <div className="space-y-6 lg:sticky lg:top-6">
-          
-          {/* Integrations Placeholder */}
-          <IntegrationIndicators />
-          
-        </div>
-      </div>
-
-      {/* Details Drawer */}
-      <WeatherDrawer 
-        day={selectedDay} 
-        isOpen={!!selectedDay} 
-        onClose={() => setSelectedDay(null)} 
-      />
-
-    </div>
-  );
+        <p className="mt-4 text-xs text-text-secondary">Rainfall recorded: {current.rainfall} mm</p>
+      </section>
+      <section className="glass overflow-hidden rounded-xl border border-border"><div className="border-b border-border p-4"><h2 className="font-bold text-text-primary">Available forecast records</h2><p className="mt-1 text-xs text-text-secondary">Forecast values are provider data, not agricultural recommendations.</p></div>{forecast.length ? <div className="overflow-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-text-secondary"><tr>{['Time','Condition','Temp','Feels like','Humidity','Rain probability','Wind'].map((item)=><th key={item} className="px-4 py-3">{item}</th>)}</tr></thead><tbody>{forecast.map((item, i)=><tr key={`${item.forecastDate}-${i}`} className="border-t border-border"><td className="whitespace-nowrap px-4 py-3 text-text-primary">{new Date(item.forecastDate).toLocaleString()}</td><td className="px-4 py-3 text-text-primary">{item.weatherDescription}</td><td className="px-4 py-3 text-text-primary">{item.temperature}°C</td><td className="px-4 py-3 text-text-primary">{item.feelsLike}°C</td><td className="px-4 py-3 text-text-primary">{item.humidity}%</td><td className="px-4 py-3 text-text-primary">{item.rainProbability}%</td><td className="px-4 py-3 text-text-primary">{item.windSpeed} m/s</td></tr>)}</tbody></table></div> : <p className="p-5 text-sm text-text-secondary">No forecast records returned for this parcel.</p>}</section>
+      <section className="glass overflow-hidden rounded-xl border border-border"><div className="border-b border-border p-4"><h2 className="font-bold text-text-primary">Stored weather history</h2></div>{history.length ? <div className="overflow-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-text-secondary"><tr>{['Time','Condition','Temp','Humidity','Rain','Wind','Pressure'].map((item)=><th key={item} className="px-4 py-3">{item}</th>)}</tr></thead><tbody>{history.map((item, i)=><tr key={`${item.timestamp}-${i}`} className="border-t border-border"><td className="whitespace-nowrap px-4 py-3 text-text-primary">{new Date(item.timestamp).toLocaleString()}</td><td className="px-4 py-3 text-text-primary">{item.weatherCondition}</td><td className="px-4 py-3 text-text-primary">{item.temperature}°C</td><td className="px-4 py-3 text-text-primary">{item.humidity}%</td><td className="px-4 py-3 text-text-primary">{item.rainfall} mm</td><td className="px-4 py-3 text-text-primary">{item.windSpeed} m/s</td><td className="px-4 py-3 text-text-primary">{item.pressure} hPa</td></tr>)}</tbody></table></div> : <p className="p-5 text-sm text-text-secondary">No stored history records for the returned period.</p>}</section>
+    </>}
+  </div>;
 }

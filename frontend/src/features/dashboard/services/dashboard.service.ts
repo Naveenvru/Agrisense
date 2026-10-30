@@ -6,10 +6,6 @@ import { TaskData } from '@/types/dashboard/Task';
 import { ActivityData } from '@/types/dashboard/Activity';
 import { apiClient } from '@/lib/axios';
 
-import {
-  MOCK_WEATHER_DATA,
-  MOCK_MARKET_DATA,
-} from '../mocks/dashboard.mock';
 
 class DashboardService {
   async getGreeting(): Promise<GreetingData> {
@@ -22,90 +18,97 @@ class DashboardService {
         else if (u.email) name = u.email.split('@')[0];
       } catch (e) {}
     }
+    let location = 'Location not set';
+    try {
+      const { data } = await apiClient.get('/farmer-profile/me');
+      const profile = data?.data || {};
+      location = [profile.district, profile.state].filter(Boolean).join(', ') || location;
+    } catch { /* keep the explicit unset state */ }
     return {
       userName: name,
-      lastAnalysisTime: 'Just now',
-      location: 'Karnataka, IN',
-      weatherSummary: 'Select or add a location to view live weather.'
+      lastAnalysisTime: 'No saved analysis',
+      location,
+      weatherSummary: 'Live weather is shown when a farm parcel has a GPS location.'
     };
   }
 
-  async getRecommendation(): Promise<RecommendationData> {
-    try {
-      const response = await apiClient.get('/land-parcels');
-      const parcels = response.data?.data || [];
-      if (parcels.length === 0) {
-        return {
-          title: 'Welcome to AgriSense AI Workspace',
-          description: 'Get started by creating your first land parcel and assigning crops to enable intelligent weather, market, and harvest insights.',
-          confidence: 100,
-          expectedProfitImpact: 'Complete Farm Intelligence',
-          primaryActionText: 'Add Land Parcel',
-          secondaryActionText: 'Ask AI Assistant'
-        };
-      }
-    } catch (e) {}
-
-    return {
-      title: 'Optimal Irrigation Window Identified',
-      description: 'Based on moisture sensors and weather models, schedule irrigation for Parcel 1 tomorrow morning.',
-      confidence: 92,
-      expectedProfitImpact: '+12% Yield Protection',
-      primaryActionText: 'Apply Irrigation',
-      secondaryActionText: 'View Weather Details'
-    };
+  async getRecommendation(): Promise<RecommendationData | null> {
+    return null;
   }
 
   async getFarms(): Promise<FarmData[]> {
-    try {
-      const response = await apiClient.get('/land-parcels');
+      const [response, cropResponse] = await Promise.all([apiClient.get('/land-parcels'), apiClient.get('/farmer-crops')]);
       const parcels = response.data?.data || [];
-      return parcels.map((p: any) => ({
+      const crops = cropResponse.data?.data || [];
+      return parcels.map((p: any) => {
+        const crop = crops.find((item: any) => String(item.parcelId) === String(p.id) && item.status === 'active');
+        return ({
         id: String(p.id),
         name: p.parcelName || `Parcel ${p.id}`,
-        location: p.district ? `${p.district}, ${p.state || ''}` : 'Unmapped Location',
+        location: [p.additionalMetadata?.district, p.additionalMetadata?.state].filter(Boolean).join(', ') || 'Location not recorded',
         sizeAcres: Number(p.areaAcres) || 0,
-        currentCrop: p.additionalMetadata?.crop || 'No Active Crop',
-        status: p.additionalMetadata?.status || 'Active',
-        healthScore: p.additionalMetadata?.healthScore || 100,
-        soilMoisturePercentage: p.additionalMetadata?.soilMoisture || 0,
-        nextHarvestDate: p.additionalMetadata?.harvestDate || 'N/A',
-        yieldEstimateKg: p.additionalMetadata?.yieldEstimate || 0,
-        imageUrl: '/images/farm-placeholder.jpg',
+        currentCrop: crop?.crop?.cropName || crop?.cropVariety || 'Not recorded',
+        status: 'Registered',
+        healthScore: p.additionalMetadata?.healthScore,
+        soilMoisturePercentage: p.additionalMetadata?.soilMoisture,
+        nextHarvestDate: p.additionalMetadata?.harvestDate,
+        yieldEstimateKg: p.additionalMetadata?.yieldEstimate,
+        imageUrl: '',
         riskFactors: []
-      }));
-    } catch (e) {
-      return [];
-    }
+      }); });
   }
 
-  async getWeather(): Promise<WeatherData> {
-    return MOCK_WEATHER_DATA;
+  async getWeather(): Promise<WeatherData | null> {
+    const response = await apiClient.get('/land-parcels');
+    const parcel = (response.data?.data || []).find((item: any) => item.latitude != null && item.longitude != null && Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)));
+    if (!parcel) return null;
+    const { data } = await apiClient.get(`/weather/current/${parcel.id}`);
+    return {
+      temperature: data.temperature,
+      condition: data.weatherDescription || data.weatherCondition,
+      humidity: data.humidity,
+      windSpeed: Math.round(Number(data.windSpeed) * 3.6),
+      rainfallMm: data.rainfall,
+      pressureHpa: data.pressure,
+      impactSummary: `Observation from ${data.source} · ${new Date(data.timestamp).toLocaleString()}`,
+      isAlert: false,
+    };
   }
 
   async getMarket(): Promise<MarketData[]> {
-    return MOCK_MARKET_DATA;
+    const { data: profileResponse } = await apiClient.get('/farmer-profile/me');
+    const profile = profileResponse?.data || {};
+    const { data } = await apiClient.get('/market/prices', { params: {
+      district: profile.district && profile.district !== 'Default' ? profile.district : undefined,
+      state: profile.state && profile.state !== 'Default' ? profile.state : undefined,
+      limit: 12,
+    } });
+    return data.map((record: any) => ({
+      commodity: record.commodity,
+      currentPrice: Number(record.modalPrice),
+      market: record.market,
+      district: record.district,
+      state: record.state,
+      unit: record.unit,
+      date: record.date,
+      source: record.source,
+    }));
   }
 
   async getTasks(): Promise<TaskData[]> {
-    try {
       const response = await apiClient.get('/calendar');
       const events = response.data?.data || [];
       return events.map((e: any) => ({
         id: String(e.id),
-        title: e.taskName,
-        location: 'Farm Field',
+        title: e.taskName || 'Untitled registered activity',
+        location: e.farmerCrop?.parcel?.parcelName || 'Location not recorded',
         date: e.eventDate,
-        priority: (e.priority === 'high' ? 'High' : e.priority === 'low' ? 'Low' : 'Medium'),
+        priority: e.priority ? (e.priority[0].toUpperCase() + e.priority.slice(1)) : 'Not recorded',
         status: e.isCompleted ? 'Completed' : 'Pending'
       }));
-    } catch (e) {
-      return [];
-    }
   }
 
   async getActivity(): Promise<ActivityData[]> {
-    try {
       const response = await apiClient.get('/calendar');
       const events = response.data?.data || [];
       const completed = events.filter((e: any) => e.isCompleted);
@@ -116,9 +119,6 @@ class DashboardService {
         user: 'You',
         type: 'task'
       }));
-    } catch (e) {
-      return [];
-    }
   }
 }
 

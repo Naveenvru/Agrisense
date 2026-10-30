@@ -16,6 +16,8 @@ const class_transformer_1 = require("class-transformer");
 class QueryMarketDto {
     commodity;
     market;
+    district;
+    state;
     startDate;
     endDate;
     limit;
@@ -33,6 +35,18 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], QueryMarketDto.prototype, "market", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'District filter', example: 'Bengaluru Urban' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], QueryMarketDto.prototype, "district", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'State filter', example: 'Karnataka' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], QueryMarketDto.prototype, "state", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Start date (ISO 8601)', example: '2026-06-01' }),
     (0, class_validator_1.IsOptional)(),

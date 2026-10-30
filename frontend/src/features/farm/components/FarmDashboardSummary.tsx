@@ -12,8 +12,8 @@ export function FarmDashboardSummary({ stats }: FarmDashboardSummaryProps) {
     { label: 'Total Area', value: `${stats.totalLandArea} ha`, icon: Target, color: 'text-secondary' },
     { label: 'Active Parcels', value: stats.totalActiveParcels, icon: Map, color: 'text-info' },
     { label: 'Active Crops', value: stats.activeCrops, icon: Sprout, color: 'text-success' },
-    { label: 'Harvests This Month', value: stats.harvestsThisMonth, icon: Sun, color: 'text-warning' },
-    { label: 'Healthy Farms', value: `${stats.healthyFarmsPercentage}%`, icon: CheckCircle, color: 'text-primary' },
+    { label: 'Harvests This Month', value: stats.harvestsThisMonth ?? '—', icon: Sun, color: 'text-warning' },
+    { label: 'Healthy Farms', value: stats.healthyFarmsPercentage === null ? '—' : `${stats.healthyFarmsPercentage}%`, icon: CheckCircle, color: 'text-primary' },
   ];
 
   return (

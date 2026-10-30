@@ -41,8 +41,8 @@ export function WeatherSection() {
         ) : !weather ? (
           <EmptyState 
             icon={<CloudOff className="w-10 h-10" />}
-            title="No Weather Data"
-            description="Weather station data is currently offline."
+            title="No Farm Location"
+            description="Add a land parcel with GPS coordinates to load live weather observations."
           />
         ) : (
           <WeatherCard weather={weather} />

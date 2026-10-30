@@ -1,6 +1,6 @@
 import { Farm } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
-import { CloudSun, MapPin, Sprout, Home, ChevronRight, Droplets, Thermometer } from 'lucide-react';
+import { MapPin, Sprout, Home, ChevronRight } from 'lucide-react';
 import { HealthBadge, GrowthStageBadge, AreaBadge, HarvestCountdown } from './ui/badges';
 import { ActionMenu } from './ui/ActionMenu';
 
@@ -68,23 +68,8 @@ export function FarmCard({ farm, viewMode, isSelected, onClick }: FarmCardProps)
         {/* Footer (Grid only for spacing reasons, or small in list) */}
         {viewMode === 'grid' && (
           <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs text-text-secondary">
-              <div className="flex items-center gap-1" title="Temperature">
-                <Thermometer className="w-3.5 h-3.5 text-warning" />
-                24°C
-              </div>
-              <div className="flex items-center gap-1" title="Humidity">
-                <Droplets className="w-3.5 h-3.5 text-info" />
-                65%
-              </div>
-              <div className="flex items-center gap-1" title="Weather">
-                <CloudSun className="w-3.5 h-3.5 text-text-secondary" />
-                Sunny
-              </div>
-            </div>
-            
             <div className="flex items-center gap-3 text-xs">
-              <span className="text-text-secondary/60">Updated 2h ago</span>
+              <span className="text-text-secondary/60">{farm.lastUpdated ? `Updated ${new Date(farm.lastUpdated).toLocaleDateString()}` : 'Update time unavailable'}</span>
               <div className="flex items-center gap-1 text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                 View <ChevronRight className="w-3 h-3" />
               </div>

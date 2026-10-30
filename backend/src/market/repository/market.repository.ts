@@ -115,10 +115,14 @@ export class MarketRepository {
     startDate?: Date,
     endDate?: Date,
     limit = 100,
+    district?: string,
+    state?: string,
   ): Promise<MarketPriceV2[]> {
     const filter: Record<string, any> = {};
-    if (commodity) filter.commodity = new RegExp(commodity, 'i');
-    if (market) filter.market = new RegExp(market, 'i');
+    if (commodity) filter.commodity = new RegExp(this.escapeRegex(commodity), 'i');
+    if (market) filter.market = new RegExp(this.escapeRegex(market), 'i');
+    if (district) filter.district = new RegExp(this.escapeRegex(district), 'i');
+    if (state) filter.state = new RegExp(this.escapeRegex(state), 'i');
     if (startDate || endDate) {
       filter.date = {};
       if (startDate) filter.date.$gte = startDate;
@@ -130,6 +134,8 @@ export class MarketRepository {
       .limit(limit)
       .exec();
   }
+
+  private escapeRegex(value: string) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
   async findLatestPrice(commodity: string, market: string): Promise<MarketPriceV2 | null> {
     return this.priceModel
