@@ -9,7 +9,7 @@ export function ApplicationShell({ children }: { children: ReactNode }) {
   useAnalytics();
 
   return (
-    <div className="flex h-screen bg-background bg-gradient-to-br from-background via-background to-[#0f172a] text-text-primary overflow-hidden relative">
+    <div className="flex h-screen bg-background bg-gradient-to-br from-background via-background to-surface text-text-primary overflow-hidden relative">
       
       {/* --- Universal Branded Background --- */}
       <div className="fixed inset-0 pointer-events-none z-[-50] agrisense-bg overflow-hidden">

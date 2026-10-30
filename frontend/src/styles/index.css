@@ -4,26 +4,86 @@
 
 @layer base {
   :root {
-    --background: #0B1220;
-    --foreground: #F8FAFC;
-    --card: #111827;
-    --card-foreground: #F8FAFC;
-    --popover: #111827;
-    --popover-foreground: #F8FAFC;
-    --primary: #22C55E;
-    --primary-foreground: #0B1220;
-    --secondary: #06B6D4;
-    --secondary-foreground: #F8FAFC;
-    --muted: #1E293B;
-    --muted-foreground: #94A3B8;
-    --accent: #8B5CF6;
-    --accent-foreground: #F8FAFC;
-    --destructive: #EF4444;
-    --destructive-foreground: #F8FAFC;
-    --border: #1E293B;
-    --input: #1E293B;
-    --ring: #22C55E;
+    color-scheme: dark;
+    --background: 11 18 32;
+    --foreground: 248 250 252;
+    --card: 17 24 39;
+    --card-foreground: 248 250 252;
+    --popover: 17 24 39;
+    --popover-foreground: 248 250 252;
+    --surface: 15 23 42;
+    --hover: 30 41 59;
+    --text-primary: 248 250 252;
+    --text-secondary: 148 163 184;
+    --primary: 34 197 94;
+    --primary-foreground: 11 18 32;
+    --secondary: 6 182 212;
+    --secondary-foreground: 248 250 252;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
+    --accent: 139 92 246;
+    --accent-foreground: 248 250 252;
+    --destructive: 239 68 68;
+    --destructive-foreground: 248 250 252;
+    --warning: 245 158 11;
+    --warning-foreground: 11 18 32;
+    --info: 6 182 212;
+    --success: 34 197 94;
+    --border: 30 41 59;
+    --input: 30 41 59;
+    --ring: 34 197 94;
     --radius: 0.5rem;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --background: 246 248 251;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+    --surface: 255 255 255;
+    --hover: 241 245 249;
+    --text-primary: 15 23 42;
+    --text-secondary: 71 85 105;
+    --primary-foreground: 255 255 255;
+    --secondary-foreground: 255 255 255;
+    --accent-foreground: 255 255 255;
+    --destructive-foreground: 255 255 255;
+    --warning-foreground: 15 23 42;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --muted: 241 245 249;
+    --muted-foreground: 71 85 105;
+  }
+
+  :root[data-accent='ocean'] { --primary: 14 165 233; --ring: 14 165 233; --success: 16 185 129; }
+  :root[data-accent='sunrise'] { --primary: 234 132 44; --ring: 234 132 44; --success: 34 197 94; }
+
+  @media (prefers-color-scheme: light) {
+    :root[data-theme='system'] {
+      color-scheme: light;
+      --background: 246 248 251;
+      --foreground: 15 23 42;
+      --card: 255 255 255;
+      --card-foreground: 15 23 42;
+      --popover: 255 255 255;
+      --popover-foreground: 15 23 42;
+      --surface: 255 255 255;
+      --hover: 241 245 249;
+      --text-primary: 15 23 42;
+      --text-secondary: 71 85 105;
+      --primary-foreground: 255 255 255;
+      --secondary-foreground: 255 255 255;
+      --accent-foreground: 255 255 255;
+      --destructive-foreground: 255 255 255;
+      --warning-foreground: 15 23 42;
+      --border: 226 232 240;
+      --input: 226 232 240;
+      --muted: 241 245 249;
+      --muted-foreground: 71 85 105;
+    }
   }
 }
 
@@ -153,7 +213,16 @@
 /* Premium universal branded background */
 .agrisense-bg {
   background: 
-    radial-gradient(circle at top left, rgba(34,197,94,0.08), transparent 40%),
-    radial-gradient(circle at bottom right, rgba(6,182,212,0.06), transparent 40%),
-    linear-gradient(180deg, #08111F, #0B1220, #08111F);
+    radial-gradient(circle at top left, rgb(var(--primary) / 0.08), transparent 40%),
+    radial-gradient(circle at bottom right, rgb(var(--secondary) / 0.06), transparent 40%),
+    linear-gradient(180deg, rgb(var(--background)), rgb(var(--surface)), rgb(var(--background)));
 }
+
+.farm-boundary-vertex { background: transparent; border: 0; }
+.farm-boundary-vertex span {
+  display: grid; width: 26px; height: 26px; place-items: center; border: 2px solid white;
+  border-radius: 9999px; background: rgb(245 158 11); color: #111827; font-size: 11px; font-weight: 800;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 35%);
+}
+.farm-map-shell:fullscreen { width: 100vw; height: 100vh; padding: 0; background: #111827; border-radius: 0; }
+.farm-map-shell:fullscreen .leaflet-container { width: 100%; height: 100vh; min-height: 100vh; }

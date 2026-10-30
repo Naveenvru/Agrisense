@@ -81,6 +81,7 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: CropStatus,
+        enumName: 'crop_status',
         default: CropStatus.ACTIVE,
     }),
     __metadata("design:type", String)

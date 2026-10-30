@@ -61,6 +61,19 @@ CREATE TABLE farmer_land_parcels (
     land_type VARCHAR(100),
     irrigation_type VARCHAR(100),
     location GEOGRAPHY(POINT, 4326),
+      boundary_geom geometry(Polygon, 4326),
+      centroid geography(Point, 4326),
+      calculated_area_sqm NUMERIC(16, 2),
+      calculated_area_acres NUMERIC(14, 4),
+      calculated_area_hectares NUMERIC(14, 4),
+      location_accuracy VARCHAR(24) NOT NULL DEFAULT 'approximate',
+      village VARCHAR(160),
+      taluk VARCHAR(160),
+      district VARCHAR(160),
+      state VARCHAR(100),
+      pin_code VARCHAR(12),
+      description TEXT,
+      land_profile JSONB,
     additional_metadata JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -114,9 +127,31 @@ CREATE TABLE calendar_events (
     is_completed BOOLEAN DEFAULT FALSE,
     completed_at TIMESTAMP,
     generated_by_weather BOOLEAN DEFAULT FALSE,
+    generated_by_ai BOOLEAN NOT NULL DEFAULT FALSE,
+    source_condition_id VARCHAR(24),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX idx_calendar_events_condition_source
+    ON calendar_events (farmer_crop_id, source_condition_id)
+    WHERE source_condition_id IS NOT NULL;
+
+CREATE TABLE farmer_crop_conditions (
+    id BIGSERIAL PRIMARY KEY,
+    farmer_crop_id BIGINT NOT NULL REFERENCES farmer_crops(id) ON DELETE CASCADE,
+    observed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    condition_label VARCHAR(120) NOT NULL,
+    growth_stage VARCHAR(100),
+    soil_moisture_percent NUMERIC(5,2) CHECK (soil_moisture_percent BETWEEN 0 AND 100),
+    air_temperature_c NUMERIC(5,2) CHECK (air_temperature_c BETWEEN -30 AND 70),
+    rainfall_mm NUMERIC(8,2) CHECK (rainfall_mm BETWEEN 0 AND 1000),
+    irrigation_status VARCHAR(120),
+    symptoms_and_signs TEXT,
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_farmer_crop_conditions_recent ON farmer_crop_conditions (farmer_crop_id, observed_at DESC);
 
 CREATE TABLE files (
     id BIGSERIAL PRIMARY KEY,
@@ -316,6 +351,8 @@ CREATE UNIQUE INDEX idx_crops_name_unique ON crops(crop_name);
 CREATE UNIQUE INDEX idx_farmer_profiles_user_unique ON farmer_profiles(user_id);
 
 CREATE INDEX idx_farmer_parcels_location_gist ON farmer_land_parcels USING GIST (location);
+CREATE INDEX farmer_land_parcels_boundary_gix ON farmer_land_parcels USING GIST (boundary_geom);
+CREATE INDEX farmer_land_parcels_centroid_gix ON farmer_land_parcels USING GIST (centroid);
 CREATE INDEX idx_weather_locations_gist ON weather_locations USING GIST (location);
 
 CREATE INDEX idx_farmer_parcels_metadata_gin ON farmer_land_parcels USING GIN (additional_metadata);
@@ -350,6 +387,22 @@ INSERT INTO crops (crop_name, scientific_name, crop_category, season, duration_d
 ('Tomato', 'Solanum lycopersicum', 'Vegetable', 'Kharif', 90, 'Medium', 15.00, 30.00),
 ('Wheat', 'Triticum', 'Cereal', 'Rabi', 120, 'Low', 10.00, 25.00);
 
+INSERT INTO crop_calendar_templates (crop_id, day_offset, task_name, task_description, priority)
+SELECT c.id, t.day_offset, t.task_name, t.task_description, t.priority
+FROM crops c
+JOIN (VALUES
+  ('Tomato', 0, 'Sowing', 'Sow tomato seeds in a nursery using the locally recommended seed rate.', 'High'),
+  ('Tomato', 21, 'Transplanting', 'Transplant healthy seedlings to the prepared field when they are ready.', 'High'),
+  ('Tomato', 35, 'Crop nutrition check', 'Review crop growth and follow locally recommended nutrient guidance.', 'Medium'),
+  ('Tomato', 60, 'Weeding and plant support', 'Check weeds and plant support; record any crop stress observed.', 'Medium'),
+  ('Tomato', 90, 'Harvest readiness check', 'Check fruit maturity and harvest according to local market and crop guidance.', 'High'),
+  ('Wheat', 0, 'Sowing', 'Sow wheat using locally recommended seed and spacing guidance.', 'High'),
+  ('Wheat', 21, 'Early crop and irrigation check', 'Inspect crop establishment and review irrigation needs for the field.', 'High'),
+  ('Wheat', 45, 'Tillering stage check', 'Inspect tillering and crop condition; use local agronomy guidance for any inputs.', 'Medium'),
+  ('Wheat', 120, 'Harvest readiness check', 'Check grain maturity and harvest timing with local crop guidance.', 'High')
+) AS t(crop_name, day_offset, task_name, task_description, priority)
+  ON lower(c.crop_name) = lower(t.crop_name);
+
 INSERT INTO weather_locations (location_name, district, state, country, location) VALUES 
 ('Pune Central Station', 'Pune', 'Maharashtra', 'India', ST_SetSRID(ST_MakePoint(73.8567, 18.5204), 4326));
 
@@ -360,6 +413,12 @@ ST_SetSRID(ST_MakePoint(73.9856, 18.5808), 4326),
 
 INSERT INTO farmer_crops (parcel_id, crop_id, crop_variety, estimated_yield_kg, actual_yield_kg, sowing_date, expected_harvest_date, status) VALUES 
 (1, 1, 'Pusa Ruby', 1200.00, NULL, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'active');
+
+INSERT INTO calendar_events (farmer_crop_id, event_date, task_name, task_description, generated_by_ai)
+SELECT fc.id, fc.sowing_date + template.day_offset, template.task_name, template.task_description, FALSE
+FROM farmer_crops fc
+JOIN crop_calendar_templates template ON template.crop_id = fc.crop_id
+WHERE NOT EXISTS (SELECT 1 FROM calendar_events existing WHERE existing.farmer_crop_id = fc.id);
 
 -- Notification preferences are initialized with outbound channels off until consent.
 CREATE TABLE IF NOT EXISTS notification_preferences (
@@ -413,3 +472,52 @@ CREATE TABLE IF NOT EXISTS generated_reports (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), CHECK (period_start <= period_end)
 );
 CREATE INDEX IF NOT EXISTS idx_generated_reports_user_created ON generated_reports(user_id, created_at DESC);
+
+-- Persisted appearance, accessibility, locale, and AI consent settings.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS token_version INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS user_settings (
+  user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  theme VARCHAR(16) NOT NULL DEFAULT 'system' CHECK (theme IN ('system', 'light', 'dark')),
+  accent_theme VARCHAR(16) NOT NULL DEFAULT 'farm' CHECK (accent_theme IN ('farm', 'ocean', 'sunrise')),
+  units VARCHAR(16) NOT NULL DEFAULT 'metric' CHECK (units IN ('metric', 'imperial')),
+  ai_assistance_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  personalized_recommendations_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  google_link_ticket_hash VARCHAR(64), google_link_ticket_expires_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+INSERT INTO user_settings(user_id) SELECT id FROM users ON CONFLICT (user_id) DO NOTHING;
+
+-- Satellite-derived measurements only; no mock observations are seeded.
+CREATE TABLE IF NOT EXISTS satellite_processing_jobs (
+  id BIGSERIAL PRIMARY KEY,
+  parcel_id BIGINT NOT NULL REFERENCES farmer_land_parcels(id) ON DELETE CASCADE,
+  requested_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  provider VARCHAR(40) NOT NULL DEFAULT 'sentinel_hub',
+  status VARCHAR(32) NOT NULL DEFAULT 'queued',
+  idempotency_key VARCHAR(64) NOT NULL UNIQUE,
+  date_from DATE NOT NULL, date_to DATE NOT NULL,
+  max_cloud_coverage SMALLINT NOT NULL DEFAULT 30 CHECK (max_cloud_coverage BETWEEN 0 AND 100),
+  attempt_count SMALLINT NOT NULL DEFAULT 0,
+  error_code VARCHAR(60), error_message TEXT, provider_response JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), started_at TIMESTAMPTZ, completed_at TIMESTAMPTZ,
+  CHECK (date_from <= date_to),
+  CHECK (status IN ('queued','processing','complete','no_data','quality_insufficient','blocked_configuration','failed'))
+);
+CREATE INDEX IF NOT EXISTS satellite_jobs_parcel_created_idx ON satellite_processing_jobs(parcel_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS satellite_jobs_queue_idx ON satellite_processing_jobs(status, created_at) WHERE status = 'queued';
+CREATE TABLE IF NOT EXISTS satellite_vegetation_observations (
+  id BIGSERIAL PRIMARY KEY,
+  parcel_id BIGINT NOT NULL REFERENCES farmer_land_parcels(id) ON DELETE CASCADE,
+  job_id BIGINT NOT NULL UNIQUE REFERENCES satellite_processing_jobs(id) ON DELETE CASCADE,
+  provider VARCHAR(40) NOT NULL, satellite VARCHAR(40) NOT NULL DEFAULT 'Sentinel-2 L2A',
+  acquisition_date DATE NOT NULL, period_start TIMESTAMPTZ NOT NULL, period_end TIMESTAMPTZ NOT NULL,
+  mean_ndvi NUMERIC(8,6) NOT NULL CHECK (mean_ndvi BETWEEN -1 AND 1),
+  min_ndvi NUMERIC(8,6) NOT NULL CHECK (min_ndvi BETWEEN -1 AND 1),
+  max_ndvi NUMERIC(8,6) NOT NULL CHECK (max_ndvi BETWEEN -1 AND 1),
+  cloud_coverage_percent NUMERIC(5,2) CHECK (cloud_coverage_percent BETWEEN 0 AND 100),
+  valid_pixel_count BIGINT, source_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (min_ndvi <= mean_ndvi AND mean_ndvi <= max_ndvi)
+);
+CREATE INDEX IF NOT EXISTS satellite_observations_parcel_date_idx ON satellite_vegetation_observations(parcel_id, acquisition_date DESC);

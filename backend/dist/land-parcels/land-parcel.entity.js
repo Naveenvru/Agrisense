@@ -22,6 +22,19 @@ let LandParcel = class LandParcel {
     soilType;
     landType;
     irrigationType;
+    boundary;
+    centroid;
+    calculatedAreaSqm;
+    calculatedAreaAcres;
+    calculatedAreaHectares;
+    locationAccuracy;
+    village;
+    taluk;
+    district;
+    state;
+    pinCode;
+    description;
+    landProfile;
     location;
     additionalMetadata;
     createdAt;
@@ -62,6 +75,58 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'irrigation_type', type: 'varchar', length: 100, nullable: true }),
     __metadata("design:type", Object)
 ], LandParcel.prototype, "irrigationType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'boundary_geom', type: 'geometry', spatialFeatureType: 'Polygon', srid: 4326, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "boundary", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'centroid', type: 'geography', spatialFeatureType: 'Point', srid: 4326, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "centroid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'calculated_area_sqm', type: 'numeric', precision: 16, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "calculatedAreaSqm", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'calculated_area_acres', type: 'numeric', precision: 14, scale: 4, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "calculatedAreaAcres", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'calculated_area_hectares', type: 'numeric', precision: 14, scale: 4, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "calculatedAreaHectares", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'location_accuracy', type: 'varchar', length: 24, default: 'approximate' }),
+    __metadata("design:type", String)
+], LandParcel.prototype, "locationAccuracy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'village', type: 'varchar', length: 160, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "village", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'taluk', type: 'varchar', length: 160, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "taluk", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'district', type: 'varchar', length: 160, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "district", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'state', type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "state", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'pin_code', type: 'varchar', length: 12, nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "pinCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'description', type: 'text', nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'land_profile', type: 'jsonb', nullable: true }),
+    __metadata("design:type", Object)
+], LandParcel.prototype, "landProfile", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'geography',

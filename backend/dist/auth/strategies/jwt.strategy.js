@@ -32,6 +32,9 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!user || !user.isActive) {
             throw new common_1.UnauthorizedException('User is not active or authorized');
         }
+        if ((payload.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)) {
+            throw new common_1.UnauthorizedException('Session has expired. Please sign in again.');
+        }
         return { id: user.id, email: user.email, role: user.role };
     }
 };

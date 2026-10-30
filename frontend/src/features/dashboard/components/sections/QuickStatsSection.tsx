@@ -7,6 +7,7 @@ import { QuickStatSkeleton } from '@/components/cards/skeletons/QuickStatSkeleto
 import { ErrorState } from '@/components/common/ErrorState';
 import { DashboardGrid } from '@/components/layout/DashboardGrid';
 import { CloudRain, Map, TrendingUp, CheckSquare } from 'lucide-react';
+import { formatTemperature, getCurrentLocale } from '@/features/settings/services/account-preferences';
 
 export function QuickStatsSection() {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,16 +21,17 @@ export function QuickStatsSection() {
     setIsLoading(true);
     setError(null);
     try {
-      const [farms, tasks, weatherData, marketData] = await Promise.all([
+      const [farmsResult, tasksResult, weatherResult, marketResult] = await Promise.allSettled([
         dashboardService.getFarms(),
         dashboardService.getTasks(),
         dashboardService.getWeather(),
         dashboardService.getMarket(),
       ]);
-      setFarmsCount(farms.length);
-      setTasksCount(tasks.filter(t => t.status !== 'Completed').length);
-      setWeather(weatherData);
-      setMarket(marketData);
+      if (farmsResult.status === 'rejected') throw farmsResult.reason;
+      setFarmsCount(farmsResult.value.length);
+      setTasksCount(tasksResult.status === 'fulfilled' ? tasksResult.value.filter(t => t.status !== 'Completed').length : 0);
+      setWeather(weatherResult.status === 'fulfilled' ? weatherResult.value : null);
+      setMarket(marketResult.status === 'fulfilled' ? marketResult.value : []);
     } catch (err: any) {
       setError(err);
     } finally {
@@ -63,7 +65,7 @@ export function QuickStatsSection() {
   return (
     <section>
       <DashboardGrid>
-        <QuickStatCard title="Current Weather" value={weather ? `${weather.temperature}°C` : 'Unavailable'} status={weather?.condition || 'Add a geolocated parcel'} icon={<CloudRain className="w-6 h-6" />} trend="neutral" />
+        <QuickStatCard title="Current Weather" value={weather ? formatTemperature(weather.temperature) : 'Unavailable'} status={weather?.condition || 'Add a geolocated parcel'} icon={<CloudRain className="w-6 h-6" />} trend="neutral" />
         <QuickStatCard 
           title="Active Farms" 
           value={`${farmsCount} ${farmsCount === 1 ? 'Field' : 'Fields'}`} 
@@ -71,7 +73,7 @@ export function QuickStatsSection() {
           icon={<Map className="w-6 h-6" />} 
           trend="neutral" 
         />
-        <QuickStatCard title="Latest Market Record" value={market[0] ? `₹${market[0].currentPrice.toLocaleString('en-IN')}` : 'No records'} status={market[0] ? `${market[0].commodity} · ${market[0].market} · ${new Date(market[0].date).toLocaleDateString()}` : 'No prices available for this region'} icon={<TrendingUp className="w-6 h-6" />} trend="neutral" />
+        <QuickStatCard title="Latest Market Record" value={market[0] ? `₹${market[0].currentPrice.toLocaleString(getCurrentLocale())}` : 'No records'} status={market[0] ? `${market[0].commodity} · ${market[0].market} · ${new Date(market[0].date).toLocaleDateString(getCurrentLocale())}` : 'No prices available for this region'} icon={<TrendingUp className="w-6 h-6" />} trend="neutral" />
         <QuickStatCard 
           title="Today's Tasks" 
           value={`${tasksCount} Pending`} 

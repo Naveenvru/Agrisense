@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FarmerCropsService } from './farmer-crops.service';
 import { CreateFarmerCropDto } from './dto/create-farmer-crop.dto';
 import { UpdateFarmerCropDto } from './dto/update-farmer-crop.dto';
+import { CreateCropConditionDto } from './dto/create-crop-condition.dto';
 
 @ApiTags('Farmer Crops')
 @ApiBearerAuth()
@@ -27,10 +28,11 @@ export class FarmerCropsController {
   @ApiOperation({ summary: 'Assign crop to land parcel' })
   @Post()
   async create(@Req() req: any, @Body() createDto: CreateFarmerCropDto) {
-    const farmerCrop = await this.farmerCropsService.create(req.user.id, createDto);
+    const result = await this.farmerCropsService.create(req.user.id, createDto);
     return {
       message: 'Farmer crop assigned successfully',
-      data: farmerCrop,
+      data: result.crop,
+      calendar: { eventsGenerated: result.calendarCount, warning: result.calendarError },
     };
   }
 
@@ -52,6 +54,31 @@ export class FarmerCropsController {
     return {
       data: farmerCrop,
     };
+  }
+
+  @ApiOperation({ summary: 'List manual field condition observations for a crop cycle' })
+  @Get(':id/conditions')
+  async findConditions(@Param('id') id: string, @Req() req: any) {
+    const observations = await this.farmerCropsService.findConditions(id, req.user.id);
+    return { data: observations, count: observations.length };
+  }
+
+  @ApiOperation({ summary: 'Record a manual field condition observation for a crop cycle' })
+  @Post(':id/conditions')
+  async createCondition(@Param('id') id: string, @Req() req: any, @Body() dto: CreateCropConditionDto) {
+    const result = await this.farmerCropsService.createCondition(id, req.user.id, dto);
+    return {
+      message: 'Field condition recorded',
+      data: result.observation,
+      calendar: { updated: result.calendarUpdated, warning: result.calendarWarning },
+    };
+  }
+
+  @ApiOperation({ summary: 'Regenerate upcoming crop calendar tasks with Gemini using saved field conditions' })
+  @Post(':id/calendar/regenerate')
+  async regenerateCalendar(@Param('id') id: string, @Req() req: any) {
+    const result = await this.farmerCropsService.regenerateCalendar(id, req.user.id);
+    return { message: result.updated ? 'Crop calendar updated with Gemini' : 'Crop calendar was not updated', data: result };
   }
 
   @ApiOperation({ summary: 'Update specific farmer crop' })

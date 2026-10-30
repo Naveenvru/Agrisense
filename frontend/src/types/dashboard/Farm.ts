@@ -3,8 +3,9 @@ export interface FarmData {
   name: string;
   crop: string;
   area: number;
-  growthStage: string;
-  healthScore: number; // 0-100
-  status: 'Healthy' | 'Attention Required' | 'Critical';
-  harvestCountdownDays: number;
+  growthStage?: string;
+  healthScore?: number | null; // only populated when a recorded assessment exists
+  status: 'Healthy' | 'Attention Required' | 'Critical' | 'Registered';
+  harvestCountdownDays?: number | null;
+  location?: string;
 }

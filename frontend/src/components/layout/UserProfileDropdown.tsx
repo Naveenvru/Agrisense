@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
 import { useModal } from '@/components/providers/ModalProvider';
 import { apiClient } from '@/lib/axios';
+import { useTranslation } from 'react-i18next';
 
 export function UserProfileDropdown() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -79,7 +81,7 @@ export function UserProfileDropdown() {
     return () => window.removeEventListener('profile-updated', handleUpdate);
   }, []);
 
-  const userName = user?.name || (user?.email ? user.email.split('@')[0] : "Farmer");
+  const userName = user?.name || (user?.email ? user.email.split('@')[0] : t('Farmer'));
   const userInitials = userName.substring(0, 2).toUpperCase();
   const userEmail = user?.email || "";
   const displayFarmerId = profileStats.farmerId || (user?.id ? `AGRI-${String(user.id).padStart(4, '0')}` : 'AGRI-0001');
@@ -137,7 +139,7 @@ export function UserProfileDropdown() {
               </div>
               <div>
                 <h3 className="font-bold text-text-primary text-lg leading-tight">{userName}</h3>
-                <p className="text-xs font-medium text-success mb-1">PRO Subscriber</p>
+            <p className="text-xs font-medium text-success mb-1">{t('PRO Subscriber')}</p>
                 <p className="text-[10px] text-text-secondary font-mono tracking-wider">ID: {displayFarmerId}</p>
               </div>
             </div>
@@ -145,15 +147,15 @@ export function UserProfileDropdown() {
             <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
               <div className="flex items-center gap-2 text-text-secondary">
                 <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">{profileStats.location || "Location not set"}</span>
+                <span className="truncate">{profileStats.location || t('Location not set')}</span>
               </div>
               <div className="flex items-center gap-2 text-text-secondary">
                 <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">{profileStats.phone || "Not provided"}</span>
+                <span className="truncate">{profileStats.phone || t('Not provided')}</span>
               </div>
               <div className="flex items-center gap-2 text-text-secondary col-span-2">
                 <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">{userEmail || "No email"}</span>
+                <span className="truncate">{userEmail || t('No email')}</span>
               </div>
             </div>
           </div>
@@ -161,11 +163,11 @@ export function UserProfileDropdown() {
           {/* Stats section */}
           <div className="grid grid-cols-2 divide-x divide-border border-b border-border bg-background">
             <div className="p-3 text-center">
-              <p className="text-xs text-text-secondary font-medium mb-0.5">Total Farms</p>
+              <p className="text-xs text-text-secondary font-medium mb-0.5">{t('Total Farms')}</p>
               <p className="text-lg font-bold text-text-primary">{profileStats.totalFarms}</p>
             </div>
             <div className="p-3 text-center">
-              <p className="text-xs text-text-secondary font-medium mb-0.5">Total Area</p>
+              <p className="text-xs text-text-secondary font-medium mb-0.5">{t('Total Area')}</p>
               <p className="text-lg font-bold text-primary">{profileStats.totalArea} Ac</p>
             </div>
           </div>
@@ -173,27 +175,27 @@ export function UserProfileDropdown() {
           {/* Action Links */}
           <div className="p-2 space-y-1 bg-surface/30">
             <button onClick={() => handleNav(ROUTES.PROFILE)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <UserIcon className="w-4 h-4 text-primary" /> My Profile
+              <UserIcon className="w-4 h-4 text-primary" /> {t('My Profile')}
             </button>
             <button onClick={() => handleNav(ROUTES.SETTINGS)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <Settings className="w-4 h-4 text-secondary" /> Account Settings
+              <Settings className="w-4 h-4 text-secondary" /> {t('Account Settings')}
             </button>
             <button onClick={() => handleNav(ROUTES.NOTIFICATIONS)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
               <Bell className="w-4 h-4 text-warning" /> Notifications
             </button>
             <button onClick={() => handleNav(ROUTES.HELP)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <HelpCircle className="w-4 h-4 text-info" /> Help & Support
+              <HelpCircle className="w-4 h-4 text-info" /> {t('Help & Support')}
             </button>
             <div className="h-px bg-border my-1 mx-2"></div>
             <button onClick={() => handleComingSoon('Privacy Policy')} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <FileText className="w-4 h-4" /> Privacy
+              <FileText className="w-4 h-4" /> {t('Privacy')}
             </button>
             <button onClick={() => handleComingSoon('About AgriSense')} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
-              <Info className="w-4 h-4" /> About
+              <Info className="w-4 h-4" /> {t('About')}
             </button>
             <button onClick={() => handleComingSoon('Dark Mode Toggle')} className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors text-left">
               <div className="flex items-center gap-3">
-                <Moon className="w-4 h-4" /> Dark Mode
+                <Moon className="w-4 h-4" /> {t('Dark Mode')}
               </div>
               <div className="w-7 h-4 bg-primary/20 rounded-full relative flex items-center">
                 <div className="w-3 h-3 bg-primary rounded-full absolute right-0.5 shadow-sm"></div>
@@ -207,7 +209,7 @@ export function UserProfileDropdown() {
               onClick={logout}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-error/80 hover:text-error hover:bg-error/10 transition-colors text-left"
             >
-              <LogOut className="w-4 h-4" /> Logout
+              <LogOut className="w-4 h-4" /> {t('Logout')}
             </button>
           </div>
 

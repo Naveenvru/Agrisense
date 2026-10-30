@@ -37,24 +37,30 @@ class DashboardService {
   }
 
   async getFarms(): Promise<FarmData[]> {
-      const [response, cropResponse] = await Promise.all([apiClient.get('/land-parcels'), apiClient.get('/farmer-crops')]);
+      const response = await apiClient.get('/land-parcels');
+      let cropResponseData: any[] = [];
+      try {
+        const cropResponse = await apiClient.get('/farmer-crops');
+        cropResponseData = cropResponse.data?.data || [];
+      } catch { /* show registered farms even when crop summaries are unavailable */ }
       const parcels = response.data?.data || [];
-      const crops = cropResponse.data?.data || [];
+      const crops = cropResponseData;
       return parcels.map((p: any) => {
         const crop = crops.find((item: any) => String(item.parcelId) === String(p.id) && item.status === 'active');
+        const harvestDate = crop?.expectedHarvestDate ? new Date(crop.expectedHarvestDate) : null;
+        const harvestCountdownDays = harvestDate && Number.isFinite(harvestDate.getTime())
+          ? Math.ceil((harvestDate.getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000)
+          : null;
         return ({
         id: String(p.id),
         name: p.parcelName || `Parcel ${p.id}`,
         location: [p.additionalMetadata?.district, p.additionalMetadata?.state].filter(Boolean).join(', ') || 'Location not recorded',
-        sizeAcres: Number(p.areaAcres) || 0,
-        currentCrop: crop?.crop?.cropName || crop?.cropVariety || 'Not recorded',
-        status: 'Registered',
-        healthScore: p.additionalMetadata?.healthScore,
-        soilMoisturePercentage: p.additionalMetadata?.soilMoisture,
-        nextHarvestDate: p.additionalMetadata?.harvestDate,
-        yieldEstimateKg: p.additionalMetadata?.yieldEstimate,
-        imageUrl: '',
-        riskFactors: []
+        area: p.calculatedAreaHectares != null ? Number(p.calculatedAreaHectares) : Number(p.areaAcres || 0) * 0.404685642,
+        crop: crop?.crop?.cropName || crop?.cropVariety || 'No crop assigned',
+        growthStage: crop?.growthStage || 'Not recorded',
+        status: 'Registered' as const,
+        healthScore: p.additionalMetadata?.healthScore == null ? null : Number(p.additionalMetadata.healthScore),
+        harvestCountdownDays,
       }); });
   }
 

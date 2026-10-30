@@ -1,0 +1,2 @@
+ALTER TABLE calendar_events
+  ADD COLUMN IF NOT EXISTS generated_by_ai BOOLEAN NOT NULL DEFAULT FALSE;

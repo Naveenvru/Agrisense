@@ -170,8 +170,8 @@ let WeatherService = WeatherService_1 = class WeatherService {
         const parcelRows = await this.dataSource.query(`SELECT
          id,
          farmer_profile_id AS "farmerProfileId",
-         ST_Y(location::geometry) AS "latitude",
-         ST_X(location::geometry) AS "longitude"
+         ST_Y(COALESCE(location, centroid)::geometry) AS "latitude",
+         ST_X(COALESCE(location, centroid)::geometry) AS "longitude"
        FROM farmer_land_parcels
        WHERE id = $1`, [parcelId]);
         if (!parcelRows.length) {
@@ -182,7 +182,7 @@ let WeatherService = WeatherService_1 = class WeatherService {
             throw new common_1.ForbiddenException('You do not have permission to access this land parcel.');
         }
         if (parcel.latitude === null || parcel.longitude === null) {
-            throw new common_1.NotFoundException('This land parcel does not have GPS coordinates. Please update the parcel with latitude and longitude.');
+            throw new common_1.NotFoundException('This land parcel has no registered coordinate or boundary centroid. Add a map location or farm boundary first.');
         }
         return {
             latitude: parseFloat(parcel.latitude),

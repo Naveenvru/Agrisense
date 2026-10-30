@@ -53,6 +53,7 @@ export class FarmerCrop {
   @Column({
     type: 'enum',
     enum: CropStatus,
+    enumName: 'crop_status',
     default: CropStatus.ACTIVE,
   })
   status: CropStatus;

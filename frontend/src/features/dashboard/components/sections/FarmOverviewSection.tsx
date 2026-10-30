@@ -58,7 +58,7 @@ export function FarmOverviewSection() {
         />
       ) : (
         <DashboardGrid>
-          {farms.map(farm => <FarmCard key={farm.id} farm={farm} />)}
+          {farms.map(farm => <FarmCard key={farm.id} farm={farm} onViewDetails={(farmId) => navigate(ROUTES.FARM, { state: { openFarmId: farmId } })} />)}
         </DashboardGrid>
       )}
     </section>

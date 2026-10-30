@@ -3,10 +3,12 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from '../users/users.service';
 import type { Response } from 'express';
+import { SettingsService } from '../settings/settings.service';
 export declare class AuthController {
     private authService;
     private usersService;
-    constructor(authService: AuthService, usersService: UsersService);
+    private settingsService;
+    constructor(authService: AuthService, usersService: UsersService, settingsService: SettingsService);
     register(registerDto: RegisterDto): Promise<Omit<import("../users/user.entity").User, "passwordHash">>;
     login(loginDto: LoginDto): Promise<{
         accessToken: string;
@@ -14,6 +16,7 @@ export declare class AuthController {
     }>;
     googleAuth(): Promise<void>;
     googleAuthRedirect(req: any, res: Response): Promise<void>;
+    googleLink(): Promise<void>;
     googleTokenAuth(email: string, name: string): Promise<{
         accessToken: string;
         user: {
@@ -27,6 +30,7 @@ export declare class AuthController {
             role: import("../users/user.entity").UserRole;
             preferredLanguage: string;
             isActive: boolean;
+            tokenVersion: number;
             lastLogin: Date | null;
             createdAt: Date;
             updatedAt: Date;
@@ -44,6 +48,7 @@ export declare class AuthController {
         role: import("../users/user.entity").UserRole;
         preferredLanguage: string;
         isActive: boolean;
+        tokenVersion: number;
         lastLogin: Date | null;
         createdAt: Date;
         updatedAt: Date;

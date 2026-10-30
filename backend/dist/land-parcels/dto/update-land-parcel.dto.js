@@ -21,6 +21,15 @@ class UpdateLandParcelDto {
     latitude;
     longitude;
     additionalMetadata;
+    boundaryGeoJson;
+    village;
+    taluk;
+    district;
+    state;
+    pinCode;
+    description;
+    landProfile;
+    locationAccuracy;
 }
 exports.UpdateLandParcelDto = UpdateLandParcelDto;
 __decorate([
@@ -66,4 +75,49 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], UpdateLandParcelDto.prototype, "additionalMetadata", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateLandParcelDto.prototype, "boundaryGeoJson", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "village", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "taluk", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "district", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "state", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "pinCode", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateLandParcelDto.prototype, "landProfile", void 0);
+__decorate([
+    (0, class_validator_1.IsIn)(['boundary', 'gps', 'approximate']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLandParcelDto.prototype, "locationAccuracy", void 0);
 //# sourceMappingURL=update-land-parcel.dto.js.map

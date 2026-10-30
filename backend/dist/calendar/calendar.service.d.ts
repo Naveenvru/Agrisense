@@ -16,6 +16,7 @@ export declare class CalendarService {
         count: number;
     }>;
     findAll(userId: string): Promise<CalendarEvent[]>;
+    findForCropCycle(farmerCropId: string, userId: string): Promise<CalendarEvent[]>;
     findOne(id: string, userId: string): Promise<CalendarEvent>;
     complete(id: string, userId: string): Promise<CalendarEvent>;
 }

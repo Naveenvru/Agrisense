@@ -5,6 +5,7 @@ import {
   IsObject,
   IsLatitude,
   IsLongitude,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -43,4 +44,40 @@ export class UpdateLandParcelDto {
   @IsObject()
   @IsOptional()
   additionalMetadata?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  boundaryGeoJson?: { type: string; coordinates: unknown[] };
+
+  @IsString()
+  @IsOptional()
+  village?: string;
+
+  @IsString()
+  @IsOptional()
+  taluk?: string;
+
+  @IsString()
+  @IsOptional()
+  district?: string;
+
+  @IsString()
+  @IsOptional()
+  state?: string;
+
+  @IsString()
+  @IsOptional()
+  pinCode?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsObject()
+  @IsOptional()
+  landProfile?: Record<string, any>;
+
+  @IsIn(['boundary', 'gps', 'approximate'])
+  @IsOptional()
+  locationAccuracy?: 'boundary' | 'gps' | 'approximate';
 }

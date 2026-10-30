@@ -6,7 +6,7 @@ import { SearchDropdown } from './SearchDropdown';
 
 export function TopNavigation() {
   return (
-    <header className="h-16 border-b border-border bg-[rgba(10,15,25,0.75)] backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 lg:px-8">
+    <header className="h-16 border-b border-border bg-surface/90 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 lg:px-8">
       <div className="flex items-center gap-4 flex-1">
         <Button variant="ghost" size="icon" className="md:hidden shrink-0">
           <Menu className="w-5 h-5 text-text-secondary" />

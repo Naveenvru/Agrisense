@@ -65,7 +65,7 @@ export class AuthService {
 
     await this.usersService.updateLastLogin(user.id);
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion ?? 0 };
     const { passwordHash: _, ...result } = user;
 
     return {
@@ -115,7 +115,7 @@ export class AuthService {
   }
 
   generateToken(user: User): { accessToken: string } {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion ?? 0 };
     return {
       accessToken: this.jwtService.sign(payload),
     };

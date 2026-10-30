@@ -9,7 +9,7 @@ interface FarmDashboardSummaryProps {
 export function FarmDashboardSummary({ stats }: FarmDashboardSummaryProps) {
   const items = [
     { label: 'Total Farms', value: stats.totalFarms, icon: Map, color: 'text-primary' },
-    { label: 'Total Area', value: `${stats.totalLandArea} ha`, icon: Target, color: 'text-secondary' },
+    { label: 'Total Area', value: `${stats.totalLandArea} ${stats.areaUnit || 'ha'}`, icon: Target, color: 'text-secondary' },
     { label: 'Active Parcels', value: stats.totalActiveParcels, icon: Map, color: 'text-info' },
     { label: 'Active Crops', value: stats.activeCrops, icon: Sprout, color: 'text-success' },
     { label: 'Harvests This Month', value: stats.harvestsThisMonth ?? '—', icon: Sun, color: 'text-warning' },

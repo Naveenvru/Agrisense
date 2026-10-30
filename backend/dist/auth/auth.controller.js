@@ -21,12 +21,16 @@ const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 const users_service_1 = require("../users/users.service");
+const google_link_guard_1 = require("./guards/google-link.guard");
+const settings_service_1 = require("../settings/settings.service");
 let AuthController = class AuthController {
     authService;
     usersService;
-    constructor(authService, usersService) {
+    settingsService;
+    constructor(authService, usersService, settingsService) {
         this.authService = authService;
         this.usersService = usersService;
+        this.settingsService = settingsService;
     }
     async register(registerDto) {
         return this.authService.register(registerDto);
@@ -38,12 +42,19 @@ let AuthController = class AuthController {
     }
     async googleAuthRedirect(req, res) {
         const oauthUser = req.user;
+        const state = req.query?.state;
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        if (state) {
+            await this.settingsService.completeGoogleLink(String(state), oauthUser.googleId);
+            res.redirect(`${frontendUrl}/settings?google=connected`);
+            return;
+        }
         const name = oauthUser.displayName || `${oauthUser.firstName || ''} ${oauthUser.lastName || ''}`.trim();
         const user = await this.authService.validateOAuthUser(oauthUser.email, name, oauthUser.googleId);
         const { accessToken } = this.authService.generateToken(user);
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         res.redirect(`${frontendUrl}/oauth-callback?token=${accessToken}`);
     }
+    async googleLink() { }
     async googleTokenAuth(email, name) {
         const user = await this.authService.validateOAuthUser(email, name);
         const { accessToken } = this.authService.generateToken(user);
@@ -99,6 +110,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirect", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Begin Google linking using a short-lived account settings ticket' }),
+    (0, common_1.Get)('google/link'),
+    (0, common_1.UseGuards)(google_link_guard_1.GoogleLinkGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "googleLink", null);
+__decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get profile using Google access token' }),
     (0, common_1.Post)('google/token'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -122,6 +141,7 @@ exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        settings_service_1.SettingsService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

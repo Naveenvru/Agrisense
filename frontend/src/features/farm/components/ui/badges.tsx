@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { getAreaUnit } from '@/features/settings/services/account-preferences';
 import { HealthStatus, CropStage } from '../../types';
 import { Leaf, MapPin, Target, Activity, CheckCircle2, AlertTriangle, XCircle, Clock } from 'lucide-react';
 
@@ -63,7 +64,7 @@ export function AreaBadge({ area }: { area: number }) {
   return (
     <Badge variant="outline" className="gap-1.5 bg-background text-text-secondary border-border">
       <Target className="w-3 h-3" />
-      {area} ha
+      {area} {getAreaUnit()}
     </Badge>
   );
 }

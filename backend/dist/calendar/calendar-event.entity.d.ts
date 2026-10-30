@@ -9,6 +9,8 @@ export declare class CalendarEvent {
     isCompleted: boolean;
     completedAt: Date | null;
     generatedByWeather: boolean;
+    generatedByAi: boolean;
+    sourceConditionId: string | null;
     createdAt: Date;
     updatedAt: Date;
 }

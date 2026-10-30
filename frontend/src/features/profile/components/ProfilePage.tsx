@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { APP_LANGUAGES, APP_TRANSLATION_LANGUAGES, formatAreaFromAcres } from '@/features/settings/services/account-preferences';
 import { SectionHeader } from '@/components/common/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { Camera, Mail, Phone, MapPin, Shield, Star, LayoutGrid, Clock, CreditCard, Droplet, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
@@ -7,7 +8,7 @@ import { apiClient } from '@/lib/axios';
 import { SkeletonCard } from '@/components/ui/skeleton-card';
 
 export function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updatePreferences } = useAuth();
   
   const userName = user?.name || "Farmer";
   const userInitials = userName.substring(0, 2).toUpperCase();
@@ -16,7 +17,7 @@ export function ProfilePage() {
   const [formData, setFormData] = useState({
     name: userName,
     phone: '',
-    language: 'English',
+    language: 'en',
     district: '',
     state: '',
     village: ''
@@ -54,7 +55,9 @@ export function ProfilePage() {
       setTotalArea(parcels.length > 0 ? calculatedArea : Number(profData?.totalLandArea || 0));
 
       const uPhone = profData?.user?.phoneNumber || user?.phone || (user as any)?.phoneNumber || '';
-      const uLang = profData?.user?.preferredLanguage || 'English';
+      const storedLanguage = profData?.user?.preferredLanguage || user?.preferences?.language || 'en';
+      const legacyLanguages: Record<string, string> = { English: 'en', Kannada: 'kn', Hindi: 'hi', Telugu: 'te', 'en-kn': 'en' };
+      const uLang = legacyLanguages[storedLanguage] || storedLanguage;
 
       setFormData({
         name: profData?.user?.name || userName,
@@ -99,6 +102,7 @@ export function ProfilePage() {
           localStorage.setItem('user', JSON.stringify(updatedLocalUser));
         }
       }
+      updatePreferences({ language: formData.language });
 
       window.dispatchEvent(new CustomEvent('profile-updated'));
 
@@ -229,7 +233,7 @@ export function ProfilePage() {
             </div>
             <div className="glass hover-card rounded-xl p-4 flex flex-col items-center justify-center text-center">
               <CreditCard className="w-5 h-5 text-secondary mb-2" />
-              <p className="text-lg font-bold text-text-primary">{totalArea} Acres</p>
+              <p className="text-lg font-bold text-text-primary">{formatAreaFromAcres(totalArea)}</p>
               <p className="text-[10px] uppercase tracking-wider text-text-secondary font-bold">Total Land Area</p>
             </div>
             <div className="glass hover-card rounded-xl p-4 flex flex-col items-center justify-center text-center">
@@ -309,10 +313,7 @@ export function ProfilePage() {
                   onChange={(e) => setFormData({...formData, language: e.target.value})}
                   className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-colors appearance-none"
                 >
-                  <option value="English">English</option>
-                  <option value="Kannada">Kannada</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="Telugu">Telugu</option>
+                  {APP_LANGUAGES.map((language) => { const translated = APP_TRANSLATION_LANGUAGES.includes(language.code as typeof APP_TRANSLATION_LANGUAGES[number]); return <option value={language.code} key={language.code} disabled={!translated}>{language.nativeName} · {language.name}{translated ? '' : ' (UI translation pending)'}</option>; })}
                 </select>
               </div>
               

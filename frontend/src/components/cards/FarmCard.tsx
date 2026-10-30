@@ -6,9 +6,10 @@ import { Leaf, Droplets, Calendar, ChevronRight } from 'lucide-react';
 
 interface FarmCardProps {
   farm: FarmData;
+  onViewDetails: (farmId: string) => void;
 }
 
-export function FarmCard({ farm }: FarmCardProps) {
+export function FarmCard({ farm, onViewDetails }: FarmCardProps) {
   const getStatusColor = (status: FarmData['status']) => {
     switch (status) {
       case 'Healthy': return 'bg-primary/20 text-primary border-primary/20';
@@ -24,7 +25,7 @@ export function FarmCard({ farm }: FarmCardProps) {
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-lg font-heading font-medium text-text-primary">{farm.name}</h3>
-            <p className="text-sm text-text-secondary">{farm.area} ha</p>
+          <p className="text-sm text-text-secondary">{farm.area.toFixed(2)} ha · {farm.location || 'Location not recorded'}</p>
           </div>
           <Badge variant="outline" className={getStatusColor(farm.status)}>
             {farm.status}
@@ -45,24 +46,24 @@ export function FarmCard({ farm }: FarmCardProps) {
           <div className="flex items-center gap-3 text-sm">
             <Calendar className="w-4 h-4 text-warning" />
             <span className="text-text-secondary w-24">Harvest In:</span>
-            <span className="font-medium text-text-primary">{farm.harvestCountdownDays} days</span>
+            <span className="font-medium text-text-primary">{farm.harvestCountdownDays == null ? 'Not scheduled' : `${farm.harvestCountdownDays} days`}</span>
           </div>
         </div>
 
         <div className="mb-6">
           <div className="flex justify-between text-xs mb-2">
             <span className="text-text-secondary">Health Score</span>
-            <span className="font-medium">{farm.healthScore}/100</span>
+            <span className="font-medium">{farm.healthScore == null ? 'Not assessed' : `${farm.healthScore}/100`}</span>
           </div>
-          <div className="w-full bg-surface rounded-full h-1.5">
+          {farm.healthScore != null && <div className="w-full bg-surface rounded-full h-1.5">
             <div 
               className={`h-1.5 rounded-full ${farm.healthScore > 80 ? 'bg-primary' : farm.healthScore > 50 ? 'bg-warning' : 'bg-error'}`} 
               style={{ width: `${farm.healthScore}%` }}
             />
-          </div>
+          </div>}
         </div>
 
-        <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+        <Button type="button" variant="outline" onClick={() => onViewDetails(farm.id)} className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
           View Details <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </CardContent>

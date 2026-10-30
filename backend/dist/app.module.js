@@ -53,6 +53,9 @@ const decision_trace_entity_1 = require("./decision-center/decision-trace.entity
 const decision_center_module_1 = require("./decision-center/decision-center.module");
 const report_entity_1 = require("./reports/report.entity");
 const reports_module_1 = require("./reports/reports.module");
+const user_settings_entity_1 = require("./settings/user-settings.entity");
+const settings_module_1 = require("./settings/settings.module");
+const vegetation_module_1 = require("./vegetation/vegetation.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -87,6 +90,7 @@ exports.AppModule = AppModule = __decorate([
                         notification_attempt_entity_1.NotificationAttempt,
                         decision_trace_entity_1.DecisionTrace,
                         report_entity_1.GeneratedReport,
+                        user_settings_entity_1.UserSettings,
                     ],
                     synchronize: false,
                 }),
@@ -121,6 +125,8 @@ exports.AppModule = AppModule = __decorate([
             notifications_module_1.NotificationsModule,
             decision_center_module_1.DecisionCenterModule,
             reports_module_1.ReportsModule,
+            settings_module_1.SettingsModule,
+            vegetation_module_1.VegetationModule,
         ],
     })
 ], AppModule);

@@ -1,1 +1,41 @@
-/** @type {import('tailwindcss').Config} */ module.exports = { darkMode: ['class'], content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'], theme: { container: { center: true, padding: '2rem', screens: { '2xl': '1400px' } }, extend: { colors: { background: '#0B1220', surface: 'rgba(15, 23, 42, 0.72)', hover: '#1E293B', primary: { DEFAULT: '#22C55E', foreground: '#0B1220' }, secondary: { DEFAULT: '#06B6D4', foreground: '#F8FAFC' }, ai: { DEFAULT: '#8B5CF6', foreground: '#F8FAFC' }, warning: { DEFAULT: '#F59E0B', foreground: '#0B1220' }, error: { DEFAULT: '#EF4444', foreground: '#F8FAFC' }, text: { primary: '#F8FAFC', secondary: '#94A3B8' }, border: '#1E293B', input: '#1E293B', ring: '#22C55E' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Plus Jakarta Sans', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }, borderRadius: { lg: '0.5rem', md: 'calc(0.5rem - 2px)', sm: 'calc(0.5rem - 4px)' }, keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }, breathe: { '0%, 100%': { transform: 'scale(1)' }, '50%': { transform: 'scale(1.05)' } }, blink: { '0%, 96%, 98%, 100%': { transform: 'scaleY(1)' }, '97%, 99%': { transform: 'scaleY(0.1)' } }, sway: { '0%, 100%': { transform: 'rotate(0deg)' }, '50%': { transform: 'rotate(3deg)' } }, particle: { '0%': { transform: 'translateY(0) scale(1)', opacity: '1' }, '100%': { transform: 'translateY(-20px) scale(0)', opacity: '0' } } }, animation: { float: 'float 6s ease-in-out infinite', breathe: 'breathe 4s ease-in-out infinite', blink: 'blink 5s ease-in-out infinite', sway: 'sway 3s ease-in-out infinite', particle: 'particle 2s ease-in-out infinite' } } }, plugins: [require('tailwindcss-animate')] }
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: ['class'],
+  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
+  theme: {
+    container: { center: true, padding: '2rem', screens: { '2xl': '1400px' } },
+    extend: {
+      colors: {
+        background: 'rgb(var(--background) / <alpha-value>)',
+        surface: 'rgb(var(--surface) / <alpha-value>)',
+        hover: 'rgb(var(--hover) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        card: { DEFAULT: 'rgb(var(--card) / <alpha-value>)', foreground: 'rgb(var(--card-foreground) / <alpha-value>)' },
+        popover: { DEFAULT: 'rgb(var(--popover) / <alpha-value>)', foreground: 'rgb(var(--popover-foreground) / <alpha-value>)' },
+        muted: { DEFAULT: 'rgb(var(--muted) / <alpha-value>)', foreground: 'rgb(var(--muted-foreground) / <alpha-value>)' },
+        primary: { DEFAULT: 'rgb(var(--primary) / <alpha-value>)', foreground: 'rgb(var(--primary-foreground) / <alpha-value>)' },
+        secondary: { DEFAULT: 'rgb(var(--secondary) / <alpha-value>)', foreground: 'rgb(var(--secondary-foreground) / <alpha-value>)' },
+        ai: { DEFAULT: 'rgb(var(--accent) / <alpha-value>)', foreground: 'rgb(var(--accent-foreground) / <alpha-value>)' },
+        warning: { DEFAULT: 'rgb(var(--warning) / <alpha-value>)', foreground: 'rgb(var(--warning-foreground) / <alpha-value>)' },
+        error: { DEFAULT: 'rgb(var(--destructive) / <alpha-value>)', foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)' },
+        info: 'rgb(var(--info) / <alpha-value>)',
+        success: 'rgb(var(--success) / <alpha-value>)',
+        text: { primary: 'rgb(var(--text-primary) / <alpha-value>)', secondary: 'rgb(var(--text-secondary) / <alpha-value>)' },
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
+      },
+      fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Plus Jakarta Sans', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+      borderRadius: { lg: '0.5rem', md: 'calc(0.5rem - 2px)', sm: 'calc(0.5rem - 4px)' },
+      keyframes: {
+        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+        breathe: { '0%, 100%': { transform: 'scale(1)' }, '50%': { transform: 'scale(1.05)' } },
+        blink: { '0%, 96%, 98%, 100%': { transform: 'scaleY(1)' }, '97%, 99%': { transform: 'scaleY(0.1)' } },
+        sway: { '0%, 100%': { transform: 'rotate(0deg)' }, '50%': { transform: 'rotate(3deg)' } },
+        particle: { '0%': { transform: 'translateY(0) scale(1)', opacity: '1' }, '100%': { transform: 'translateY(-20px) scale(0)', opacity: '0' } },
+      },
+      animation: { float: 'float 6s ease-in-out infinite', breathe: 'breathe 4s ease-in-out infinite', blink: 'blink 5s ease-in-out infinite', sway: 'sway 3s ease-in-out infinite', particle: 'particle 2s ease-in-out infinite' },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+};

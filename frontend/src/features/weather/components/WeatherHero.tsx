@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { WeatherData, RiskLevel } from '../types';
 import { MapPin, Droplets, Thermometer, BrainCircuit, Activity } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface WeatherHeroProps {
   weather: WeatherData;
@@ -10,6 +11,7 @@ interface WeatherHeroProps {
 
 export function WeatherHero({ weather, aiConfidence, overallRisk }: WeatherHeroProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const riskColor = {
     'Safe': 'text-success bg-success/10 border-success/30',
@@ -28,14 +30,14 @@ export function WeatherHero({ weather, aiConfidence, overallRisk }: WeatherHeroP
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary">
-              Good Morning, {user?.name || 'Farmer'}
+              {t('Good Morning, {{name}}', { name: user?.name || 'Farmer' })}
             </h1>
             <p className="text-text-secondary text-base md:text-lg flex items-center gap-2">
               <Activity className="w-5 h-5 text-primary" />
-              Weather Intelligence Center
+              {t('Weather Intelligence Center')}
             </p>
             <p className="text-sm text-text-secondary opacity-80 pt-1 italic">
-              Know the weather before your crops do.
+              {t('Know the weather before your crops do.')}
             </p>
           </div>
           

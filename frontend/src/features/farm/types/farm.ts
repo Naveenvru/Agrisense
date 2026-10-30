@@ -17,6 +17,9 @@ export interface Farm {
   location: string;
   totalArea: number; // in hectares
   gpsCoordinates?: GpsCoordinates;
+  boundaryGeoJson?: { type: 'Polygon'; coordinates: number[][][] };
+  locationAccuracy?: 'boundary' | 'gps' | 'approximate';
+  calculatedAreaAcres?: number;
   status: FarmStatus;
   healthScore?: number; // populated only when supported by a recorded assessment
   overallHealthStatus: HealthStatus;

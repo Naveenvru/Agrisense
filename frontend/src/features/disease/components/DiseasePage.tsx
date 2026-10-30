@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { geminiService } from '@/features/ai/services/gemini.service';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 interface ScanHistoryItem {
   id: string;
@@ -63,6 +64,8 @@ const compressImage = (dataUrl: string, maxWidth = 1024, maxHeight = 1024): Prom
 };
 
 export function DiseasePage() {
+  const { user } = useAuth();
+  const aiEnabled = Boolean(user?.preferences?.aiAssistanceEnabled);
   const [inputMode, setInputMode] = useState<'upload' | 'camera'>('upload');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [mimeType, setMimeType] = useState<string>('image/jpeg');
@@ -154,6 +157,10 @@ export function DiseasePage() {
 
   // Submit to Gemini Vision AI
   const handleScan = async () => {
+    if (!aiEnabled) {
+      toast.error('Enable AI assistance in Settings before submitting crop photos for analysis.');
+      return;
+    }
     if (!selectedImage) {
       toast.error('Please upload or capture a crop photo first.');
       return;
@@ -199,8 +206,9 @@ export function DiseasePage() {
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       <PageHeader 
         title="AI Disease Detection & Pathology" 
-        description="Upload photos or use your camera for real-time crop disease diagnosis powered by Google Gemini Vision." 
+        description="AI image assessment for crop health. Uploaded images are processed only after you enable AI assistance in settings; results are not a confirmed diagnosis."
       />
+      {!aiEnabled && <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-text-primary">AI assistance is off. Enable it in <a className="font-semibold text-primary underline" href="/settings">Settings → AI Preferences</a> before starting a scan.</div>}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Image Input & Scanning Controls */}
@@ -358,7 +366,7 @@ export function DiseasePage() {
               <Button
                 type="button"
                 onClick={handleScan}
-                disabled={!selectedImage || isScanning}
+                disabled={!selectedImage || isScanning || !aiEnabled}
                 className="w-full gap-2 py-6 text-base font-medium shadow-md bg-gradient-to-r from-primary to-emerald-600 hover:from-primary-hover hover:to-emerald-700 text-white"
               >
                 {isScanning ? (

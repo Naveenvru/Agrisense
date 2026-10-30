@@ -6,9 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IsNull } from 'typeorm';
 import { CalendarEvent } from './calendar-event.entity';
 import { CropCalendarTemplate } from './crop-calendar-template.entity';
-import { FarmerCrop } from '../farmer-crops/farmer-crop.entity';
+import { CropStatus, FarmerCrop } from '../farmer-crops/farmer-crop.entity';
 import { FarmerProfile } from '../farmer-profiles/farmer-profile.entity';
 
 @Injectable()
@@ -88,14 +89,13 @@ export class CalendarService {
       throw new BadRequestException('Sowing date must be set on the farmer crop to generate a calendar');
     }
 
-    // Check if events already exist to prevent duplicates
+    // Generation is safe to retry: keep an existing timeline instead of creating
+    // duplicate work or failing after the crop itself has already been saved.
     const existingEventsCount = await this.calendarEventsRepository.count({
-      where: { farmerCropId },
+      where: { farmerCropId, sourceConditionId: IsNull() },
     });
 
-    if (existingEventsCount > 0) {
-      throw new BadRequestException('Calendar events have already been generated for this crop');
-    }
+    if (existingEventsCount > 0) return { message: 'Calendar already exists for this crop cycle', count: existingEventsCount };
 
     const templates = await this.templatesRepository.find({
       where: { cropId: farmerCrop.cropId },
@@ -138,6 +138,7 @@ export class CalendarService {
     return this.calendarEventsRepository.find({
       where: {
         farmerCrop: {
+          status: CropStatus.ACTIVE,
           parcel: {
             farmerProfileId: profile.id,
           },
@@ -160,6 +161,7 @@ export class CalendarService {
         isCompleted: true,
         completedAt: true,
         generatedByWeather: true,
+        generatedByAi: true,
         farmerCrop: {
           id: true,
           cropVariety: true,
@@ -171,6 +173,25 @@ export class CalendarService {
             id: true,
             cropName: true,
           },
+        },
+      },
+    });
+  }
+
+  async findForCropCycle(farmerCropId: string, userId: string): Promise<CalendarEvent[]> {
+    await this.getVerifiedFarmerCrop(farmerCropId, userId);
+    return this.calendarEventsRepository.find({
+      where: { farmerCropId },
+      relations: { farmerCrop: { parcel: true, crop: true } },
+      order: { eventDate: 'ASC' },
+      select: {
+        id: true, eventDate: true, taskName: true, taskDescription: true,
+        isCompleted: true, completedAt: true, sourceConditionId: true,
+        generatedByAi: true,
+        farmerCrop: {
+          id: true, cropVariety: true,
+          parcel: { id: true, parcelName: true },
+          crop: { id: true, cropName: true },
         },
       },
     });
@@ -196,6 +217,7 @@ export class CalendarService {
         isCompleted: true,
         completedAt: true,
         generatedByWeather: true,
+        generatedByAi: true,
         farmerCrop: {
           id: true,
           cropVariety: true,

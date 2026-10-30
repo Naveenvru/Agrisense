@@ -16,6 +16,7 @@ exports.CalendarService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const typeorm_3 = require("typeorm");
 const calendar_event_entity_1 = require("./calendar-event.entity");
 const crop_calendar_template_entity_1 = require("./crop-calendar-template.entity");
 const farmer_crop_entity_1 = require("../farmer-crops/farmer-crop.entity");
@@ -77,11 +78,10 @@ let CalendarService = class CalendarService {
             throw new common_1.BadRequestException('Sowing date must be set on the farmer crop to generate a calendar');
         }
         const existingEventsCount = await this.calendarEventsRepository.count({
-            where: { farmerCropId },
+            where: { farmerCropId, sourceConditionId: (0, typeorm_3.IsNull)() },
         });
-        if (existingEventsCount > 0) {
-            throw new common_1.BadRequestException('Calendar events have already been generated for this crop');
-        }
+        if (existingEventsCount > 0)
+            return { message: 'Calendar already exists for this crop cycle', count: existingEventsCount };
         const templates = await this.templatesRepository.find({
             where: { cropId: farmerCrop.cropId },
         });
@@ -115,6 +115,7 @@ let CalendarService = class CalendarService {
         return this.calendarEventsRepository.find({
             where: {
                 farmerCrop: {
+                    status: farmer_crop_entity_1.CropStatus.ACTIVE,
                     parcel: {
                         farmerProfileId: profile.id,
                     },
@@ -137,6 +138,7 @@ let CalendarService = class CalendarService {
                 isCompleted: true,
                 completedAt: true,
                 generatedByWeather: true,
+                generatedByAi: true,
                 farmerCrop: {
                     id: true,
                     cropVariety: true,
@@ -148,6 +150,24 @@ let CalendarService = class CalendarService {
                         id: true,
                         cropName: true,
                     },
+                },
+            },
+        });
+    }
+    async findForCropCycle(farmerCropId, userId) {
+        await this.getVerifiedFarmerCrop(farmerCropId, userId);
+        return this.calendarEventsRepository.find({
+            where: { farmerCropId },
+            relations: { farmerCrop: { parcel: true, crop: true } },
+            order: { eventDate: 'ASC' },
+            select: {
+                id: true, eventDate: true, taskName: true, taskDescription: true,
+                isCompleted: true, completedAt: true, sourceConditionId: true,
+                generatedByAi: true,
+                farmerCrop: {
+                    id: true, cropVariety: true,
+                    parcel: { id: true, parcelName: true },
+                    crop: { id: true, cropName: true },
                 },
             },
         });
@@ -170,6 +190,7 @@ let CalendarService = class CalendarService {
                 isCompleted: true,
                 completedAt: true,
                 generatedByWeather: true,
+                generatedByAi: true,
                 farmerCrop: {
                     id: true,
                     cropVariety: true,

@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Sprout, Home, ChevronRight } from 'lucide-react';
 import { HealthBadge, GrowthStageBadge, AreaBadge, HarvestCountdown } from './ui/badges';
 import { ActionMenu } from './ui/ActionMenu';
+import { getCurrentLocale } from '@/features/settings/services/account-preferences';
 
 interface FarmCardProps {
   farm: Farm;
@@ -69,7 +70,7 @@ export function FarmCard({ farm, viewMode, isSelected, onClick }: FarmCardProps)
         {viewMode === 'grid' && (
           <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
             <div className="flex items-center gap-3 text-xs">
-              <span className="text-text-secondary/60">{farm.lastUpdated ? `Updated ${new Date(farm.lastUpdated).toLocaleDateString()}` : 'Update time unavailable'}</span>
+              <span className="text-text-secondary/60">{farm.lastUpdated ? `Updated ${new Date(farm.lastUpdated).toLocaleDateString(getCurrentLocale())}` : 'Update time unavailable'}</span>
               <div className="flex items-center gap-1 text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                 View <ChevronRight className="w-3 h-3" />
               </div>

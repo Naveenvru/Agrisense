@@ -20,7 +20,7 @@ Audit date: 2026-10-30. This records source-level implementation and local verif
 | Weather | PARTIAL | Weather page requests current, forecast, and stored history for geolocated parcels. Live provider credentials/network and response freshness were not verified. |
 | Crop calendar | PARTIAL | Calendar UI reads registered events and does not invent times, priority, duration, or stages. Risk/planning status remains unavailable without validated data. |
 | Disease/crop health | PARTIAL | Existing AI integration remains. Provider/model behavior, confidence calibration, and clinical/agronomic validation were not verified. |
-| General settings | PARTIAL | Google connection reflects profile data and disconnected controls are labeled. Theme, units, account security/privacy/export and general language settings are not yet persisted. |
+| General settings | PARTIAL, FUNCTIONAL CORE | Theme and accent palettes, Indian locale preference, metric/imperial units, AI consent, password updates, session revocation, account export, and Google account link/unlink now use persisted account APIs. Full translation of all screens, account deletion, and some account-security workflows remain unsupported. |
 | Notification preferences and consent | IMPLEMENTED, NOT LIVE-VERIFIED | Persisted preferences, separate WhatsApp/SMS consent, configurable time/timezone, category settings, and explicit consent controls. Kannada is disabled pending verified templates; bilingual preference currently sends English only. |
 | Notification scheduling/history | PARTIAL | Timezone-aware persistent daily jobs, idempotency, attempts/history API, and consent-aware WhatsApp-first/SMS-fallback policy exist. A worker, digest-data builder, retry dispatcher, and delivery provider are still needed. Queued jobs are not deliveries. |
 | WhatsApp/SMS delivery | BLOCKED BY EXTERNAL DEPENDENCY | No concrete provider, credentials, approved templates/sender registration, DLT configuration, or opt-out webhook is available. No farmer messages were sent. |
@@ -31,10 +31,11 @@ Audit date: 2026-10-30. This records source-level implementation and local verif
 
 ## Added persistence and endpoints
 
-- Migrations: `08_notifications.sql`, `09_decision_traces.sql`, `10_reports.sql`.
+- Migrations: `08_notifications.sql`, `09_decision_traces.sql`, `10_reports.sql`, `11_account_settings.sql`.
 - Notification preferences/consent/history: `/notifications/preferences` and `/notifications/preferences/history` plus consent/revoke operations.
 - Decision Center: `POST /decision-center/query`, `GET /decision-center/history`, `GET /decision-center/history/:traceId`.
 - Reports: `GET /reports`, `POST /reports`, `GET /reports/:id/download`.
+- Account settings: `GET/PATCH /settings`, `POST /settings/password`, `GET /settings/export`, and Google link/disconnect operations under `/settings/connections`.
 - Apply the migrations before deploying these modules. Existing consolidated schema snapshots were also updated.
 
 ## Verification record

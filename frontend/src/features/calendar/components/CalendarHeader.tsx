@@ -1,6 +1,7 @@
 import { CalendarStats } from '../types';
 import { useAuth } from '@/context/AuthContext';
 import { Calendar, AlertTriangle, Target, CloudRain, BrainCircuit } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CalendarHeaderProps {
   stats: CalendarStats;
@@ -8,6 +9,7 @@ interface CalendarHeaderProps {
 
 export function CalendarHeader({ stats }: CalendarHeaderProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="bg-primary/5 rounded-2xl border border-primary/10 p-6 md:p-8 relative overflow-hidden">
@@ -18,10 +20,10 @@ export function CalendarHeader({ stats }: CalendarHeaderProps) {
       <div className="relative z-10 space-y-6">
         <div className="space-y-2">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary">
-            Good Morning, {user?.name || 'Farmer'}
+            {t('Good Morning, {{name}}', { name: user?.name || 'Farmer' })}
           </h1>
           <p className="text-text-secondary text-base md:text-lg max-w-xl">
-            Today's Agricultural Plan
+            {t("Today's Agricultural Plan")}
           </p>
         </div>
 

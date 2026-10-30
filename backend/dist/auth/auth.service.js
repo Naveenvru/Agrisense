@@ -95,7 +95,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('User account is deactivated');
         }
         await this.usersService.updateLastLogin(user.id);
-        const payload = { sub: user.id, email: user.email, role: user.role };
+        const payload = { sub: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion ?? 0 };
         const { passwordHash: _, ...result } = user;
         return {
             accessToken: this.jwtService.sign(payload),
@@ -136,7 +136,7 @@ let AuthService = class AuthService {
         return user;
     }
     generateToken(user) {
-        const payload = { sub: user.id, email: user.email, role: user.role };
+        const payload = { sub: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion ?? 0 };
         return {
             accessToken: this.jwtService.sign(payload),
         };

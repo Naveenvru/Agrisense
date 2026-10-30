@@ -17,10 +17,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string; email: string; role: string }) {
+  async validate(payload: { sub: string; email: string; role: string; tokenVersion?: number }) {
     const user = await this.usersService.findOneById(payload.sub);
     if (!user || !user.isActive) {
       throw new UnauthorizedException('User is not active or authorized');
+    }
+    if ((payload.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)) {
+      throw new UnauthorizedException('Session has expired. Please sign in again.');
     }
     return { id: user.id, email: user.email, role: user.role };
   }

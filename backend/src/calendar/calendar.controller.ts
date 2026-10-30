@@ -31,6 +31,13 @@ export class CalendarController {
     };
   }
 
+  @ApiOperation({ summary: 'List calendar events for the signed-in farmer’s active crop cycles' })
+  @Get()
+  async findAll(@Req() req: any) {
+    const events = await this.calendarService.findAll(req.user.id);
+    return { data: events, count: events.length };
+  }
+
   @ApiOperation({ summary: 'List calendar events' })
   @Get('events')
   async findAllEvents(@Req() req: any) {
@@ -39,6 +46,13 @@ export class CalendarController {
       data: events,
       count: events.length,
     };
+  }
+
+  @ApiOperation({ summary: 'List calendar events for a specific crop cycle, including its history' })
+  @Get('crop-cycles/:farmerCropId/events')
+  async findCropCycleEvents(@Param('farmerCropId') farmerCropId: string, @Req() req: any) {
+    const events = await this.calendarService.findForCropCycle(farmerCropId, req.user.id);
+    return { data: events, count: events.length };
   }
 
   @ApiOperation({ summary: 'Get specific calendar event' })

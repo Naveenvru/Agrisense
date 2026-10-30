@@ -38,6 +38,45 @@ export class LandParcel {
   @Column({ name: 'irrigation_type', type: 'varchar', length: 100, nullable: true })
   irrigationType: string | null;
 
+  @Column({ name: 'boundary_geom', type: 'geometry', spatialFeatureType: 'Polygon', srid: 4326, nullable: true })
+  boundary: any | null;
+
+  @Column({ name: 'centroid', type: 'geography', spatialFeatureType: 'Point', srid: 4326, nullable: true })
+  centroid: any | null;
+
+  @Column({ name: 'calculated_area_sqm', type: 'numeric', precision: 16, scale: 2, nullable: true })
+  calculatedAreaSqm: number | null;
+
+  @Column({ name: 'calculated_area_acres', type: 'numeric', precision: 14, scale: 4, nullable: true })
+  calculatedAreaAcres: number | null;
+
+  @Column({ name: 'calculated_area_hectares', type: 'numeric', precision: 14, scale: 4, nullable: true })
+  calculatedAreaHectares: number | null;
+
+  @Column({ name: 'location_accuracy', type: 'varchar', length: 24, default: 'approximate' })
+  locationAccuracy: 'boundary' | 'gps' | 'approximate';
+
+  @Column({ name: 'village', type: 'varchar', length: 160, nullable: true })
+  village: string | null;
+
+  @Column({ name: 'taluk', type: 'varchar', length: 160, nullable: true })
+  taluk: string | null;
+
+  @Column({ name: 'district', type: 'varchar', length: 160, nullable: true })
+  district: string | null;
+
+  @Column({ name: 'state', type: 'varchar', length: 100, nullable: true })
+  state: string | null;
+
+  @Column({ name: 'pin_code', type: 'varchar', length: 12, nullable: true })
+  pinCode: string | null;
+
+  @Column({ name: 'description', type: 'text', nullable: true })
+  description: string | null;
+
+  @Column({ name: 'land_profile', type: 'jsonb', nullable: true })
+  landProfile: Record<string, any> | null;
+
   // PostGIS GEOGRAPHY(POINT, 4326) — stored as raw geometry, read/write via raw SQL
   @Column({
     type: 'geography',

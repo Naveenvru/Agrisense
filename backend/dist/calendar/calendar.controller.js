@@ -31,12 +31,20 @@ let CalendarController = class CalendarController {
             },
         };
     }
+    async findAll(req) {
+        const events = await this.calendarService.findAll(req.user.id);
+        return { data: events, count: events.length };
+    }
     async findAllEvents(req) {
         const events = await this.calendarService.findAll(req.user.id);
         return {
             data: events,
             count: events.length,
         };
+    }
+    async findCropCycleEvents(farmerCropId, req) {
+        const events = await this.calendarService.findForCropCycle(farmerCropId, req.user.id);
+        return { data: events, count: events.length };
     }
     async findOneEvent(id, req) {
         const event = await this.calendarService.findOne(id, req.user.id);
@@ -64,6 +72,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CalendarController.prototype, "generate", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'List calendar events for the signed-in farmer’s active crop cycles' }),
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CalendarController.prototype, "findAll", null);
+__decorate([
     (0, swagger_1.ApiOperation)({ summary: 'List calendar events' }),
     (0, common_1.Get)('events'),
     __param(0, (0, common_1.Req)()),
@@ -71,6 +87,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], CalendarController.prototype, "findAllEvents", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'List calendar events for a specific crop cycle, including its history' }),
+    (0, common_1.Get)('crop-cycles/:farmerCropId/events'),
+    __param(0, (0, common_1.Param)('farmerCropId')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], CalendarController.prototype, "findCropCycleEvents", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get specific calendar event' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the calendar event', example: '3' }),

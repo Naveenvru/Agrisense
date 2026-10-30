@@ -22,6 +22,8 @@ let CalendarEvent = class CalendarEvent {
     isCompleted;
     completedAt;
     generatedByWeather;
+    generatedByAi;
+    sourceConditionId;
     createdAt;
     updatedAt;
 };
@@ -63,6 +65,14 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'generated_by_weather', type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
 ], CalendarEvent.prototype, "generatedByWeather", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'generated_by_ai', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], CalendarEvent.prototype, "generatedByAi", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'source_condition_id', type: 'varchar', length: 24, nullable: true }),
+    __metadata("design:type", Object)
+], CalendarEvent.prototype, "sourceConditionId", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at', type: 'timestamp' }),
     __metadata("design:type", Date)

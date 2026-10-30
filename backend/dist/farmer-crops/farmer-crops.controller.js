@@ -19,16 +19,18 @@ const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const farmer_crops_service_1 = require("./farmer-crops.service");
 const create_farmer_crop_dto_1 = require("./dto/create-farmer-crop.dto");
 const update_farmer_crop_dto_1 = require("./dto/update-farmer-crop.dto");
+const create_crop_condition_dto_1 = require("./dto/create-crop-condition.dto");
 let FarmerCropsController = class FarmerCropsController {
     farmerCropsService;
     constructor(farmerCropsService) {
         this.farmerCropsService = farmerCropsService;
     }
     async create(req, createDto) {
-        const farmerCrop = await this.farmerCropsService.create(req.user.id, createDto);
+        const result = await this.farmerCropsService.create(req.user.id, createDto);
         return {
             message: 'Farmer crop assigned successfully',
-            data: farmerCrop,
+            data: result.crop,
+            calendar: { eventsGenerated: result.calendarCount, warning: result.calendarError },
         };
     }
     async findAll(req) {
@@ -43,6 +45,22 @@ let FarmerCropsController = class FarmerCropsController {
         return {
             data: farmerCrop,
         };
+    }
+    async findConditions(id, req) {
+        const observations = await this.farmerCropsService.findConditions(id, req.user.id);
+        return { data: observations, count: observations.length };
+    }
+    async createCondition(id, req, dto) {
+        const result = await this.farmerCropsService.createCondition(id, req.user.id, dto);
+        return {
+            message: 'Field condition recorded',
+            data: result.observation,
+            calendar: { updated: result.calendarUpdated, warning: result.calendarWarning },
+        };
+    }
+    async regenerateCalendar(id, req) {
+        const result = await this.farmerCropsService.regenerateCalendar(id, req.user.id);
+        return { message: result.updated ? 'Crop calendar updated with Gemini' : 'Crop calendar was not updated', data: result };
     }
     async update(id, req, updateDto) {
         const farmerCrop = await this.farmerCropsService.update(id, req.user.id, updateDto);
@@ -86,6 +104,34 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FarmerCropsController.prototype, "findOne", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'List manual field condition observations for a crop cycle' }),
+    (0, common_1.Get)(':id/conditions'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FarmerCropsController.prototype, "findConditions", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Record a manual field condition observation for a crop cycle' }),
+    (0, common_1.Post)(':id/conditions'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, create_crop_condition_dto_1.CreateCropConditionDto]),
+    __metadata("design:returntype", Promise)
+], FarmerCropsController.prototype, "createCondition", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Regenerate upcoming crop calendar tasks with Gemini using saved field conditions' }),
+    (0, common_1.Post)(':id/calendar/regenerate'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FarmerCropsController.prototype, "regenerateCalendar", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update specific farmer crop' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the farmer crop', example: '3' }),

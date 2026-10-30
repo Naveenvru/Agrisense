@@ -235,8 +235,8 @@ export class WeatherService {
       `SELECT
          id,
          farmer_profile_id AS "farmerProfileId",
-         ST_Y(location::geometry) AS "latitude",
-         ST_X(location::geometry) AS "longitude"
+         ST_Y(COALESCE(location, centroid)::geometry) AS "latitude",
+         ST_X(COALESCE(location, centroid)::geometry) AS "longitude"
        FROM farmer_land_parcels
        WHERE id = $1`,
       [parcelId],
@@ -256,7 +256,7 @@ export class WeatherService {
 
     if (parcel.latitude === null || parcel.longitude === null) {
       throw new NotFoundException(
-        'This land parcel does not have GPS coordinates. Please update the parcel with latitude and longitude.',
+        'This land parcel has no registered coordinate or boundary centroid. Add a map location or farm boundary first.',
       );
     }
 

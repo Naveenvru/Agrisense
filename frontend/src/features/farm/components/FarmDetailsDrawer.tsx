@@ -1,22 +1,28 @@
 import { useEffect } from 'react';
-import { Farm, LandParcel, CropSummary } from '../types';
+import { Farm, LandParcel } from '../types';
 import { Button } from '@/components/ui/button';
-import { X, Map, CloudSun, BrainCircuit, Sprout, Bug, TrendingUp } from 'lucide-react';
+import { X, Map, CloudSun, BrainCircuit, Bug, TrendingUp, Trash2 } from 'lucide-react';
 import { AccordionSection } from './ui/AccordionSection';
 import { ParcelCard } from './ParcelCard';
-import { CropSummaryCard } from './CropSummaryCard';
+import { CropCycleManager } from './CropCycleManager';
 import { EmptyState } from './ui/EmptyState';
+import { FarmParcelBoundaryEditor } from './FarmParcelBoundaryEditor';
+import { getAccountPreferencesFromStorage } from '@/features/settings/services/account-preferences';
+import { ROUTES } from '@/config/routes';
+import { Link } from 'react-router-dom';
 
 interface FarmDetailsDrawerProps {
   farm: Farm | null;
   parcels: LandParcel[];
-  crops: CropSummary[];
   isOpen: boolean;
   onClose: () => void;
   isLoading: boolean;
+  detailsError?: string;
+  onDelete: (farm: Farm) => void;
+  onParcelUpdated: () => void;
 }
 
-export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoading }: FarmDetailsDrawerProps) {
+export function FarmDetailsDrawer({ farm, parcels, isOpen, onClose, isLoading, detailsError, onDelete, onParcelUpdated }: FarmDetailsDrawerProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -46,6 +52,7 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
           <h2 className="text-xl md:text-2xl font-heading font-semibold text-text-primary tracking-tight">
             {isLoading ? 'Loading...' : farm?.name || 'Farm Details'}
           </h2>
+          {!isLoading && farm && <Button variant="ghost" size="sm" aria-label="Delete farm parcel" onClick={() => onDelete(farm)} className="h-8 w-8 p-0 rounded-full text-error hover:bg-error/10"><Trash2 className="h-4 w-4" /></Button>}
           <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 rounded-full hover:bg-hover">
             <X className="w-5 h-5 text-text-secondary hover:text-text-primary" />
           </Button>
@@ -53,6 +60,7 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar bg-surface/30">
+          {detailsError && <div role="alert" className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-text-primary">{detailsError}</div>}
           {isLoading ? (
             <div className="space-y-6">
               {[1, 2, 3].map(i => (
@@ -79,7 +87,7 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                   </div>
                   <div>
                     <p className="text-text-secondary mb-1">Total Area</p>
-                    <p className="font-medium text-text-primary">{farm.totalArea} ha</p>
+                    <p className="font-medium text-text-primary">{farm.totalArea} {getAccountPreferencesFromStorage().units === 'imperial' ? 'acres' : 'ha'}</p>
                   </div>
                   <div>
                     <p className="text-text-secondary mb-1">Last Updated</p>
@@ -101,30 +109,14 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                 )}
               </AccordionSection>
 
-              {/* Current Crops */}
-              <AccordionSection title={`Current Crops (${crops.length})`} defaultOpen>
-                {crops.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {crops.map(crop => (
-                      <CropSummaryCard key={crop.id} crop={crop} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState icon={Sprout} title="No Crops" description="There are no active crops on this farm." />
-                )}
+              {/* Crop rotation, calendar, and manually reported conditions */}
+              <AccordionSection title="Crop cycles & field conditions" defaultOpen>
+                <CropCycleManager parcelId={farm.id} farmName={farm.name} onChanged={onParcelUpdated} />
               </AccordionSection>
 
-              {/* Weather Summary Placeholder */}
+              {/* Existing parcel weather integration */}
               <AccordionSection title="Weather Intelligence">
-                <div className="glass rounded-xl p-6 border border-border bg-background/50 flex flex-col items-center justify-center text-center space-y-3">
-                  <div className="p-3 bg-info/10 rounded-full">
-                    <CloudSun className="w-6 h-6 text-info" />
-                  </div>
-                  <div>
-                    <p className="text-text-primary font-medium">Weather Data Coming Soon</p>
-                    <p className="text-sm text-text-secondary mt-1">Integration with micro-climate sensors is pending.</p>
-                  </div>
-                </div>
+                <Link to={ROUTES.WEATHER} className="flex items-center gap-3 rounded-xl border border-border bg-background/50 p-4 text-sm text-text-primary hover:border-primary/40"><CloudSun className="h-5 w-5 text-info" />Open live and stored weather for geolocated farm parcels</Link>
               </AccordionSection>
 
               {/* Disease Detection Placeholder */}
@@ -134,8 +126,8 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                     <Bug className="w-6 h-6 text-destructive" />
                   </div>
                   <div>
-                    <p className="text-text-primary font-medium">Pest & Disease Monitoring</p>
-                    <p className="text-sm text-text-secondary mt-1">Satellite and drone imagery analysis coming in v3.</p>
+                    <p className="text-text-primary font-medium">Vegetation index is not a disease diagnosis</p>
+                    <p className="text-sm text-text-secondary mt-1">Review Sentinel-2 vegetation observations separately; low NDVI alone does not identify pests or crop disease.</p>
                   </div>
                 </div>
               </AccordionSection>
@@ -166,13 +158,8 @@ export function FarmDetailsDrawer({ farm, parcels, crops, isOpen, onClose, isLoa
                 </div>
               </AccordionSection>
 
-              {/* Map Placeholder */}
-              <AccordionSection title="Farm Location Map">
-                <div className="h-48 rounded-xl bg-muted/50 flex flex-col items-center justify-center border border-dashed border-border text-text-secondary">
-                  <Map className="w-8 h-8 mb-3 opacity-50" />
-                  <p className="font-medium text-text-primary">Map Integration Pending</p>
-                  <p className="text-sm mt-1">GPS: {farm.gpsCoordinates?.latitude}, {farm.gpsCoordinates?.longitude}</p>
-                </div>
+              <AccordionSection title="Farm boundary and centroid" defaultOpen>
+                <FarmParcelBoundaryEditor farm={farm} onUpdated={onParcelUpdated} />
               </AccordionSection>
             </>
           )}

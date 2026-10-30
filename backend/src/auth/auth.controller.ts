@@ -18,6 +18,8 @@ import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import type { Response } from 'express';
+import { GoogleLinkGuard } from './guards/google-link.guard';
+import { SettingsService } from '../settings/settings.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -25,6 +27,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private settingsService: SettingsService,
   ) {}
 
   @ApiOperation({ summary: 'Register a new user' })
@@ -52,6 +55,13 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const oauthUser = req.user;
+    const state = req.query?.state;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    if (state) {
+      await this.settingsService.completeGoogleLink(String(state), oauthUser.googleId);
+      res.redirect(`${frontendUrl}/settings?google=connected`);
+      return;
+    }
     const name = oauthUser.displayName || `${oauthUser.firstName || ''} ${oauthUser.lastName || ''}`.trim();
     const user = await this.authService.validateOAuthUser(
       oauthUser.email,
@@ -61,9 +71,13 @@ export class AuthController {
     const { accessToken } = this.authService.generateToken(user);
     
     // Redirect to React frontend (Vite default port is 5173) with JWT token in query parameter
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     res.redirect(`${frontendUrl}/oauth-callback?token=${accessToken}`);
   }
+
+  @ApiOperation({ summary: 'Begin Google linking using a short-lived account settings ticket' })
+  @Get('google/link')
+  @UseGuards(GoogleLinkGuard)
+  async googleLink() {}
 
   // Token login endpoint for React app directly calling Google OAuth SDK
   @ApiOperation({ summary: 'Get profile using Google access token' })

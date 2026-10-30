@@ -39,6 +39,12 @@ export class CalendarEvent {
   @Column({ name: 'generated_by_weather', type: 'boolean', default: false })
   generatedByWeather: boolean;
 
+  @Column({ name: 'generated_by_ai', type: 'boolean', default: false })
+  generatedByAi: boolean;
+
+  @Column({ name: 'source_condition_id', type: 'varchar', length: 24, nullable: true })
+  sourceConditionId: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 

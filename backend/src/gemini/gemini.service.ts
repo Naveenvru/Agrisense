@@ -17,13 +17,14 @@ import { User } from '../users/user.entity';
 import { FarmerProfile } from '../farmer-profiles/farmer-profile.entity';
 import { LandParcelsService } from '../land-parcels/land-parcels.service';
 import { FarmerCropsService } from '../farmer-crops/farmer-crops.service';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
   private aiClient: GoogleGenAI | null = null;
-  private readonly primaryModel = 'gemini-3.6-flash';
-  private readonly fallbackModel = 'gemini-2.0-flash';
+  private readonly primaryModel: string;
+  private readonly fallbackModel: string;
 
   constructor(
     private configService: ConfigService,
@@ -33,7 +34,10 @@ export class GeminiService {
     private farmerProfilesRepository: Repository<FarmerProfile>,
     private landParcelsService: LandParcelsService,
     private farmerCropsService: FarmerCropsService,
+    private calendarService: CalendarService,
   ) {
+    this.primaryModel = this.configService.get<string>('GEMINI_MODEL') || 'gemini-3.6-flash';
+    this.fallbackModel = this.configService.get<string>('GEMINI_FALLBACK_MODEL') || 'gemini-3.8-flash';
     this.initClient();
   }
 
@@ -78,6 +82,8 @@ export class GeminiService {
         crops = await this.farmerCropsService.findAll(userId);
       } catch (e) {}
 
+      const observations = await this.farmerCropsService.findConditionsForCycles(userId, crops.map((crop: any) => String(crop.id)));
+
       let contextStr = `\n--- AUTHENTICATED FARMER GROUND TRUTH CONTEXT ---\n`;
       contextStr += `- Farmer Name: ${user?.name || 'Farmer'}\n`;
       if (user?.email) contextStr += `- Email: ${user.email}\n`;
@@ -100,12 +106,38 @@ export class GeminiService {
       }
 
       if (crops && crops.length > 0) {
-        contextStr += `- Active Crops (${crops.length}):\n`;
+        contextStr += `- Field Crop Cycles (${crops.length}; status is recorded by the farmer):\n`;
         crops.forEach((c: any, idx: number) => {
-          contextStr += `  * Crop #${idx + 1}: ${c.cropVariety || 'Crop'} | Sowing Date: ${c.sowingDate || 'N/A'} | Expected Harvest: ${c.expectedHarvestDate || 'N/A'}\n`;
+          const cropObservations = observations.filter((item) => String(item.farmerCropId) === String(c.id)).slice(0, 5);
+          contextStr += `  * Cycle #${idx + 1}: Field "${c.parcel?.parcelName || `Parcel ${c.parcelId}`}" | Crop: ${c.crop?.cropName || c.cropVariety || 'Crop'} | Variety: ${c.cropVariety || 'not recorded'} | Status: ${c.status || 'unknown'} | Sowing: ${c.sowingDate || 'not recorded'} | Expected harvest: ${c.expectedHarvestDate || 'not recorded'}\n`;
+          cropObservations.forEach((observation) => {
+            const values = [
+              `condition: ${observation.conditionLabel}`,
+              observation.growthStage ? `growth stage: ${observation.growthStage}` : null,
+              observation.soilMoisturePercent != null ? `soil moisture: ${observation.soilMoisturePercent}%` : null,
+              observation.airTemperatureC != null ? `air temperature: ${observation.airTemperatureC}°C` : null,
+              observation.rainfallMm != null ? `rainfall: ${observation.rainfallMm} mm` : null,
+              observation.irrigationStatus ? `irrigation: ${observation.irrigationStatus}` : null,
+              observation.symptomsAndSigns ? `symptoms/signs: ${observation.symptomsAndSigns}` : null,
+              observation.notes ? `farmer notes: ${observation.notes}` : null,
+            ].filter(Boolean).join('; ');
+            contextStr += `    - Farmer-reported field observation (${observation.observedAt.toISOString()}): ${values}\n`;
+          });
         });
       } else {
         contextStr += `- Active Crops: No crops added yet.\n`;
+      }
+
+      try {
+        const tasks = await this.calendarService.findAll(userId);
+        if (tasks.length) {
+          contextStr += `- Crop calendar tasks for active crop cycles (template-generated and condition-aware AI tasks):\n`;
+          tasks.slice(0, 20).forEach((task) => {
+            contextStr += `  * ${task.eventDate} | ${task.farmerCrop?.parcel?.parcelName || 'Field'} | ${task.farmerCrop?.crop?.cropName || task.farmerCrop?.cropVariety || 'Crop'} | ${task.taskName}: ${task.taskDescription || 'No description'} | ${task.isCompleted ? 'completed' : 'pending'}\n`;
+          });
+        }
+      } catch (error: any) {
+        this.logger.warn(`Could not load crop calendar for Gemini context: ${error?.message}`);
       }
 
       contextStr += `--------------------------------------------------\n`;

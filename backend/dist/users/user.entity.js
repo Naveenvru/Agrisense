@@ -30,6 +30,7 @@ let User = class User {
     role;
     preferredLanguage;
     isActive;
+    tokenVersion;
     lastLogin;
     createdAt;
     updatedAt;
@@ -83,6 +84,10 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'is_active', type: 'boolean', default: true }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'token_version', type: 'integer', default: 0 }),
+    __metadata("design:type", Number)
+], User.prototype, "tokenVersion", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'last_login', type: 'timestamp', nullable: true }),
     __metadata("design:type", Object)

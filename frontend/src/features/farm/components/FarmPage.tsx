@@ -2,24 +2,33 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/config/routes';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { getAccountPreferencesFromStorage } from '@/features/settings/services/account-preferences';
 
 import { FarmService } from '../services/FarmService';
-import { Farm, FarmDashboardSummaryStats, LandParcel, CropSummary } from '../types';
+import { Farm, FarmDashboardSummaryStats, LandParcel } from '../types';
 
 import { FarmDashboardSummary } from './FarmDashboardSummary';
 import { FarmListControls } from './FarmListControls';
 import { FarmList } from './FarmList';
 import { FarmDetailsDrawer } from './FarmDetailsDrawer';
 import { AddFarmModal } from './AddFarmModal';
+import { FarmBoundaryMap } from './FarmBoundaryMap';
+import { VegetationMonitoring } from './VegetationMonitoring';
 
 export function FarmPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   
   // State
   const [dashboardStats, setDashboardStats] = useState<FarmDashboardSummaryStats | null>(null);
   const [farms, setFarms] = useState<Farm[]>([]);
+  const [spatialParcels, setSpatialParcels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -35,19 +44,31 @@ export function FarmPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedFarmDetails, setSelectedFarmDetails] = useState<Farm | null>(null);
   const [selectedFarmParcels, setSelectedFarmParcels] = useState<LandParcel[]>([]);
-  const [selectedFarmCrops, setSelectedFarmCrops] = useState<CropSummary[]>([]);
   const [isDrawerLoading, setIsDrawerLoading] = useState(false);
+  const [drawerError, setDrawerError] = useState('');
 
   // Fetch data
   const loadData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      const [stats, farmsData] = await Promise.all([
-        FarmService.getFarmDashboard(),
-        FarmService.getFarms()
+      const [farmsResult, statsResult, spatialResult] = await Promise.allSettled([
+        FarmService.getFarms(), FarmService.getFarmDashboard(), FarmService.getSpatialParcels(),
       ]);
-      setDashboardStats(stats);
+      if (farmsResult.status === 'rejected') throw farmsResult.reason;
+      const farmsData = farmsResult.value;
+      const areaTotal = farmsData.reduce((total, farm) => total + farm.totalArea, 0);
+      setDashboardStats(statsResult.status === 'fulfilled' ? statsResult.value : {
+        totalFarms: farmsData.length, totalLandArea: Number(areaTotal.toFixed(2)),
+        areaUnit: getAccountPreferencesFromStorage().units === 'imperial' ? 'ac' : 'ha', totalActiveParcels: farmsData.length, activeCrops: 0,
+        harvestsThisMonth: 0, healthyFarmsPercentage: null,
+      });
       setFarms(farmsData);
+      setSpatialParcels(spatialResult.status === 'fulfilled' ? spatialResult.value : farmsData.map((farm) => ({
+        id: farm.id, label: farm.name, detail: farm.location,
+        boundary: farm.boundaryGeoJson ? { ...farm.boundaryGeoJson, id: farm.id, label: farm.name, detail: farm.location } : undefined,
+        point: farm.gpsCoordinates ? [farm.gpsCoordinates.latitude, farm.gpsCoordinates.longitude] as [number, number] : undefined,
+      })));
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch farm data'));
     } finally {
@@ -59,6 +80,14 @@ export function FarmPage() {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    const requestedFarmId = (location.state as { openFarmId?: string } | null)?.openFarmId;
+    if (!requestedFarmId) return;
+    setSelectedFarmId(String(requestedFarmId));
+    setIsDrawerOpen(true);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
+
   // Handle drawer open
   useEffect(() => {
     async function loadDrawerData() {
@@ -66,20 +95,20 @@ export function FarmPage() {
       
       try {
         setIsDrawerLoading(true);
-        const [farmData, parcelsData, allCrops] = await Promise.all([
+        setDrawerError('');
+        const [farmResult, parcelsResult] = await Promise.allSettled([
           FarmService.getFarmById(selectedFarmId),
           FarmService.getParcels(selectedFarmId),
-          FarmService.getCropSummaries()
         ]);
-        
-        setSelectedFarmDetails(farmData || null);
-        setSelectedFarmParcels(parcelsData);
-        
-        const farmCrops = allCrops.filter((crop) => crop.parcelId === selectedFarmId);
-        setSelectedFarmCrops(farmCrops);
-        
+        if (farmResult.status === 'fulfilled') setSelectedFarmDetails(farmResult.value || null);
+        else setSelectedFarmDetails(null);
+        setSelectedFarmParcels(parcelsResult.status === 'fulfilled' ? parcelsResult.value : []);
+        const failedSections = [farmResult, parcelsResult].filter((result) => result.status === 'rejected').length;
+        if (failedSections) setDrawerError(farmResult.status === 'rejected'
+          ? 'Farm details could not be loaded. Check your connection and try opening the farm again.'
+          : 'Some parcel or crop information is temporarily unavailable. The farm details are still shown.');
       } catch (err) {
-        console.error('Failed to load farm details', err);
+        setDrawerError(err instanceof Error ? err.message : 'Farm details could not be loaded.');
       } finally {
         setIsDrawerLoading(false);
       }
@@ -125,7 +154,7 @@ export function FarmPage() {
       setSelectedFarmId(null);
       setSelectedFarmDetails(null);
       setSelectedFarmParcels([]);
-      setSelectedFarmCrops([]);
+      setDrawerError('');
     }, 300);
   };
 
@@ -133,9 +162,9 @@ export function FarmPage() {
     <div className="space-y-6 pb-20 md:pb-6">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-text-secondary gap-2 mb-2">
-        <Link to={ROUTES.DASHBOARD} className="hover:text-primary transition-colors">Dashboard</Link>
+        <Link to={ROUTES.DASHBOARD} className="hover:text-primary transition-colors">{t('Dashboard')}</Link>
         <ChevronRight className="w-4 h-4" />
-        <span className="text-text-primary font-medium">My Farm</span>
+        <span className="text-text-primary font-medium">{t('My Farm')}</span>
       </div>
 
       {/* Hero Section */}
@@ -145,10 +174,10 @@ export function FarmPage() {
         
         <div className="relative z-10 space-y-2">
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary">
-            👋 Good Afternoon, {user?.name || 'Farmer'}
+            👋 {t('Good Afternoon, {{name}}', { name: user?.name || 'Farmer' })}
           </h1>
           <p className="text-text-secondary text-base md:text-lg max-w-xl">
-            Manage all your farms, parcels and crops from one intelligent workspace.
+            {t('Manage all your farms, parcels and crops from one intelligent workspace.')}
           </p>
         </div>
         
@@ -158,12 +187,25 @@ export function FarmPage() {
             className="w-full md:w-auto gap-2 rounded-xl h-14 px-8 text-lg font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
           >
             <Plus className="w-5 h-5" />
-            Add Farm
+            {t('Add Farm')}
           </Button>
         </div>
       </div>
 
       {/* Dashboard Summary inline within the page layout */}
+      <section className="space-y-4 rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div><h2 className="text-xl font-bold text-text-primary">Farm map</h2><p className="mt-1 text-sm text-text-secondary">Your saved parcel boundaries and registered locations. Select a parcel outline to open its details.</p></div>
+        <FarmBoundaryMap
+          points={[]}
+          center={spatialParcels.find((parcel) => parcel.point)?.point || [12.9716, 77.5946]}
+          savedBoundaries={spatialParcels.map((parcel) => parcel.boundary).filter(Boolean)}
+          savedLocations={spatialParcels.filter((parcel) => parcel.point).map((parcel) => ({ point: parcel.point, label: parcel.label, detail: parcel.detail }))}
+          onSavedBoundaryClick={handleFarmClick}
+        />
+        {!spatialParcels.length && !isLoading && <p className="text-sm text-text-secondary">Register a farm parcel to see its location here.</p>}
+      </section>
+      <VegetationMonitoring parcels={spatialParcels.map((parcel) => ({ id: parcel.id, name: parcel.label, hasBoundary: Boolean(parcel.boundary) }))} />
+
       {dashboardStats && !isLoading && !error && (
         <FarmDashboardSummary stats={dashboardStats} />
       )}
@@ -196,8 +238,17 @@ export function FarmPage() {
         onClose={handleCloseDrawer}
         farm={selectedFarmDetails}
         parcels={selectedFarmParcels}
-        crops={selectedFarmCrops}
         isLoading={isDrawerLoading}
+        detailsError={drawerError}
+        onDelete={(farm) => {
+          if (!window.confirm(`Delete “${farm.name}” and its associated crop and satellite records?`)) return;
+          void FarmService.deleteParcel(farm.id).then(() => { handleCloseDrawer(); void loadData(); })
+            .catch((cause: any) => setError(new Error(cause.response?.data?.message || 'Farm parcel could not be deleted.')));
+        }}
+        onParcelUpdated={() => {
+          void loadData();
+          if (selectedFarmId) void FarmService.getFarmById(selectedFarmId).then((updated) => { if (updated) setSelectedFarmDetails(updated); });
+        }}
       />
 
       {/* Add Farm Modal */}

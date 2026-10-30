@@ -24,6 +24,17 @@ let LandParcelsController = class LandParcelsController {
     constructor(landParcelsService) {
         this.landParcelsService = landParcelsService;
     }
+    async previewArea(body) {
+        return { data: await this.landParcelsService.previewArea(body?.boundaryGeoJson) };
+    }
+    async findNearby(req, latitude, longitude, radiusMeters = '10000') {
+        return {
+            data: await this.landParcelsService.findNearby(req.user.id, Number(latitude), Number(longitude), Number(radiusMeters)),
+        };
+    }
+    async findContaining(req, latitude, longitude) {
+        return { data: await this.landParcelsService.findContaining(req.user.id, Number(latitude), Number(longitude)) };
+    }
     async create(req, createDto) {
         const parcel = await this.landParcelsService.create(req.user.id, createDto);
         return {
@@ -44,6 +55,9 @@ let LandParcelsController = class LandParcelsController {
             data: parcel,
         };
     }
+    async overlapSummary(id, req) {
+        return { data: await this.landParcelsService.overlapSummary(id, req.user.id) };
+    }
     async update(id, req, updateDto) {
         const parcel = await this.landParcelsService.update(id, req.user.id, updateDto);
         return {
@@ -59,6 +73,35 @@ let LandParcelsController = class LandParcelsController {
     }
 };
 exports.LandParcelsController = LandParcelsController;
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Calculate area and centroid for a GeoJSON farm boundary using PostGIS' }),
+    (0, common_1.Post)('area-preview'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LandParcelsController.prototype, "previewArea", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find the signed-in farmer’s own parcels within a radius' }),
+    (0, common_1.Get)('spatial/nearby'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('latitude')),
+    __param(2, (0, common_1.Query)('longitude')),
+    __param(3, (0, common_1.Query)('radiusMeters')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], LandParcelsController.prototype, "findNearby", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find the signed-in farmer’s parcels containing a coordinate (boundary inclusive)' }),
+    (0, common_1.Get)('spatial/containing'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('latitude')),
+    __param(2, (0, common_1.Query)('longitude')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", Promise)
+], LandParcelsController.prototype, "findContaining", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Create land parcel' }),
     (0, common_1.Post)(),
@@ -86,6 +129,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], LandParcelsController.prototype, "findOne", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Check for potential boundary overlaps with other parcels; does not expose their details' }),
+    (0, common_1.Get)(':id/overlap-summary'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], LandParcelsController.prototype, "overlapSummary", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update a specific land parcel' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the land parcel', example: '3' }),

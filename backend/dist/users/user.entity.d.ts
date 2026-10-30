@@ -16,6 +16,7 @@ export declare class User {
     role: UserRole;
     preferredLanguage: string;
     isActive: boolean;
+    tokenVersion: number;
     lastLogin: Date | null;
     createdAt: Date;
     updatedAt: Date;

@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { MarketOpportunity } from '../types';
 import { TrendingUp, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MarketHeroProps {
   opportunity: MarketOpportunity;
@@ -8,6 +9,7 @@ interface MarketHeroProps {
 
 export function MarketHero({ opportunity }: MarketHeroProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   return (
     <div className="bg-primary/5 rounded-2xl border border-primary/10 p-6 md:p-8 relative overflow-hidden">
@@ -18,14 +20,14 @@ export function MarketHero({ opportunity }: MarketHeroProps) {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary">
-              Good Morning, {user?.name || 'Farmer'}
+              {t('Good Morning, {{name}}', { name: user?.name || 'Farmer' })}
             </h1>
             <p className="text-text-secondary text-base md:text-lg flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Market Intelligence
+              {t('Market Intelligence')}
             </p>
             <p className="text-sm text-text-secondary opacity-80 pt-1 italic">
-              Sell smarter with AI-powered market insights.
+              {t('Sell smarter with AI-powered market insights.')}
             </p>
           </div>
           

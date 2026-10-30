@@ -41,6 +41,9 @@ import { DecisionTrace } from './decision-center/decision-trace.entity';
 import { DecisionCenterModule } from './decision-center/decision-center.module';
 import { GeneratedReport } from './reports/report.entity';
 import { ReportsModule } from './reports/reports.module';
+import { UserSettings } from './settings/user-settings.entity';
+import { SettingsModule } from './settings/settings.module';
+import { VegetationModule } from './vegetation/vegetation.module';
 
 @Module({
   imports: [
@@ -72,6 +75,7 @@ import { ReportsModule } from './reports/reports.module';
           NotificationAttempt,
           DecisionTrace,
           GeneratedReport,
+          UserSettings,
         ],
         synchronize: false, // Schema is frozen
       }),
@@ -106,6 +110,8 @@ import { ReportsModule } from './reports/reports.module';
     NotificationsModule,
     DecisionCenterModule,
     ReportsModule,
+    SettingsModule,
+    VegetationModule,
   ],
 })
 export class AppModule {}

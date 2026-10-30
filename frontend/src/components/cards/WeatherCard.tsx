@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { WeatherData } from '@/types/dashboard/Weather';
 import { CloudRain, Wind, Droplets, Thermometer, AlertTriangle } from 'lucide-react';
+import { formatPressureHpa, formatRainfallMm, formatTemperature, formatWindSpeedKmh } from '@/features/settings/services/account-preferences';
 
 interface WeatherCardProps {
   weather: WeatherData;
@@ -17,7 +18,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
           <div>
             <h3 className="text-sm font-medium text-text-secondary mb-1">Current Conditions</h3>
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-heading font-bold text-text-primary">{weather.temperature}°</span>
+              <span className="text-4xl font-heading font-bold text-text-primary">{formatTemperature(weather.temperature)}</span>
               <span className="text-lg text-text-secondary mb-1">{weather.condition}</span>
             </div>
           </div>
@@ -35,21 +36,21 @@ export function WeatherCard({ weather }: WeatherCardProps) {
             <Wind className="w-4 h-4 text-text-secondary" />
             <div>
               <div className="text-xs text-text-secondary">Wind</div>
-              <div className="text-sm font-medium">{weather.windSpeed} km/h</div>
+              <div className="text-sm font-medium">{formatWindSpeedKmh(weather.windSpeed)}</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <CloudRain className="w-4 h-4 text-primary" />
             <div>
               <div className="text-xs text-text-secondary">Rainfall</div>
-              <div className="text-sm font-medium">{weather.rainfallMm} mm</div>
+              <div className="text-sm font-medium">{formatRainfallMm(weather.rainfallMm)}</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Thermometer className="w-4 h-4 text-warning" />
             <div>
               <div className="text-xs text-text-secondary">Pressure</div>
-              <div className="text-sm font-medium">{weather.pressureHpa} hPa</div>
+              <div className="text-sm font-medium">{formatPressureHpa(weather.pressureHpa)}</div>
             </div>
           </div>
         </div>
