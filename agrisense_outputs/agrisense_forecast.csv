@@ -1,0 +1,8 @@
+series_label,forecast_date,predicted_modal_price,assumed_arrival_qty,arrival_assumption,model,model_version
+Potato | Haryana | Jind | Jind,2025-05-11,2338.273760245732,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-12,2344.5395013556445,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-13,2348.052040364453,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-14,2350.0453781113783,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-15,2358.917097294676,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-16,2356.8053037389554,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z
+Potato | Haryana | Jind | Jind,2025-05-17,2359.6537778071224,,arrival_quantity_unavailable,RandomForest,agrisense-price-model-20261014T123641Z

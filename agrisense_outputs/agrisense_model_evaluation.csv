@@ -1,0 +1,13 @@
+commodity,state,district,market,series_label,model,status,MAE,RMSE,R2,test_rows
+Potato,Haryana,Jind,Jind,Potato | Haryana | Jind | Jind,Baseline_LastObservedPrice,evaluated,18.4740704376552,24.971792179768002,0.7166024264125159,18
+Potato,Haryana,Jind,Jind,Potato | Haryana | Jind | Jind,Baseline_7ObservationRollingMean,evaluated,45.36115914391624,50.81592315686244,-0.17353580044502426,18
+Potato,Haryana,Jind,Jind,Potato | Haryana | Jind | Jind,RandomForest,evaluated,24.70810349245082,34.47603591968047,0.45982889057301,18
+Potato,Haryana,Jind,Narwana,Potato | Haryana | Jind | Narwana,Baseline_LastObservedPrice,evaluated,18.4740704376552,24.971792179768002,0.7166024264125159,18
+Potato,Haryana,Jind,Narwana,Potato | Haryana | Jind | Narwana,Baseline_7ObservationRollingMean,evaluated,45.36115914391624,50.81592315686244,-0.17353580044502426,18
+Potato,Haryana,Jind,Narwana,Potato | Haryana | Jind | Narwana,RandomForest,evaluated,24.70810349245082,34.47603591968047,0.45982889057301,18
+Tomato,Haryana,Jind,Jind,Tomato | Haryana | Jind | Jind,Baseline_LastObservedPrice,evaluated,18.474070437655126,24.971792179767842,0.7166024264125189,18
+Tomato,Haryana,Jind,Jind,Tomato | Haryana | Jind | Jind,Baseline_7ObservationRollingMean,evaluated,45.36115914391618,50.81592315686236,-0.1735358004450236,18
+Tomato,Haryana,Jind,Jind,Tomato | Haryana | Jind | Jind,RandomForest,evaluated,24.707553695233692,34.55108488434061,0.4574745940146233,18
+Tomato,Haryana,Jind,Narwana,Tomato | Haryana | Jind | Narwana,Baseline_LastObservedPrice,evaluated,18.474070437655126,24.971792179767842,0.7166024264125189,18
+Tomato,Haryana,Jind,Narwana,Tomato | Haryana | Jind | Narwana,Baseline_7ObservationRollingMean,evaluated,45.36115914391618,50.81592315686236,-0.1735358004450236,18
+Tomato,Haryana,Jind,Narwana,Tomato | Haryana | Jind | Narwana,RandomForest,evaluated,24.707553695233692,34.55108488434061,0.4574745940146233,18

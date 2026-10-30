@@ -1,0 +1,7 @@
+series_label,current_recorded_arrivals,current_modal_price,applicable_msp,hypothetical_additional_quantity_purchased,absorbed_share_of_current_arrivals_pct,remaining_recorded_arrivals_after_purchase,scenario_predicted_price,below_msp_after_scenario,assumption_note
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,0.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,25.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,50.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,100.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,250.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
+Potato | Haryana | Jind | Jind,,2394.0820994486603,,500.0,,,,,No price response estimated because no calibrated demand/supply model was provided.
