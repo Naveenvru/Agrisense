@@ -22,10 +22,12 @@ let MarketRaw = class MarketRaw {
     maxPrice;
     modalPrice;
     arrivalQty;
+    grade;
     unit;
     source;
     rawPayload;
     collectedAt;
+    providerFetchedAt;
     batchId;
 };
 exports.MarketRaw = MarketRaw;
@@ -66,9 +68,13 @@ __decorate([
     __metadata("design:type", Number)
 ], MarketRaw.prototype, "modalPrice", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
 ], MarketRaw.prototype, "arrivalQty", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], MarketRaw.prototype, "grade", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ default: 'Quintal' }),
     __metadata("design:type", String)
@@ -85,6 +91,10 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
 ], MarketRaw.prototype, "collectedAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Date)
+], MarketRaw.prototype, "providerFetchedAt", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true, index: true }),
     __metadata("design:type", String)

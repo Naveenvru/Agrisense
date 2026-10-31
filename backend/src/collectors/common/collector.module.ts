@@ -7,6 +7,7 @@ import { CollectorLogger } from './collector-logger.service';
 import { WeatherCollector } from '../weather/weather.collector';
 import { MarketCollector } from '../market/market.collector';
 import { MockMarketDataSource } from '../market/mock-market-data.source';
+import { MandiApiDataSource } from '../market/mandi-api.data-source';
 import { GovernmentCollector } from '../government/government.collector';
 
 /**
@@ -45,6 +46,7 @@ import { GovernmentCollector } from '../government/government.collector';
     OpenWeatherClient,
     // Market data sources
     MockMarketDataSource,
+    MandiApiDataSource,
     // Domain collectors
     WeatherCollector,
     MarketCollector,
@@ -56,6 +58,7 @@ import { GovernmentCollector } from '../government/government.collector';
     MarketCollector,
     GovernmentCollector,
     MockMarketDataSource,
+    MandiApiDataSource,
   ],
 })
 export class CollectorModule {}

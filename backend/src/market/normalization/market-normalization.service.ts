@@ -147,8 +147,9 @@ export class MarketNormalizationService {
       const price = this.normalizeToPrice(raw, now);
       if (price) prices.push(price);
 
-      const arrival = this.normalizeToArrival(raw);
-      if (arrival) arrivals.push(arrival);
+      if (raw.arrivalQty !== undefined && raw.arrivalQty !== null) {
+        arrivals.push(this.normalizeToArrival(raw));
+      }
     }
 
     this.logger.log(
@@ -175,6 +176,8 @@ export class MarketNormalizationService {
       source: input.source,
       normalizedAt: new Date(),
       qualityScore: 100,
+      variety: input.variety,
+      grade: input.grade,
     };
   }
 
@@ -239,6 +242,8 @@ export class MarketNormalizationService {
       source: raw.source ?? INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
       normalizedAt,
       qualityScore: 100, // updated by quality service
+      variety: raw.variety,
+      grade: raw.grade,
     };
   }
 
@@ -249,7 +254,7 @@ export class MarketNormalizationService {
       district: raw.district,
       state: raw.state,
       date: this.normalizeDate(raw.date),
-      arrivalQty: Math.max(0, raw.arrivalQty),
+      arrivalQty: Math.max(0, raw.arrivalQty ?? 0),
       unit: this.normalizeUnit(raw.unit),
       source: raw.source ?? INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
     };

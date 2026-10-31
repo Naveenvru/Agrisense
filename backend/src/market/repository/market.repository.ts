@@ -103,10 +103,24 @@ export class MarketRepository {
     return saved;
   }
 
-  async savePriceBatch(records: IMarketPrice[]): Promise<MarketPriceV2[]> {
-    const docs = await this.priceModel.insertMany(records);
-    this.logger.log(`Saved ${docs.length} price records to market_prices_v2`);
-    return docs as unknown as MarketPriceV2[];
+  async savePriceBatch(records: IMarketPrice[]): Promise<void> {
+    if (!records.length) return;
+    await this.priceModel.bulkWrite(records.map((record) => ({
+      updateOne: {
+        filter: {
+          source: record.source,
+          state: record.state,
+          market: record.market,
+          commodity: record.commodity,
+          variety: record.variety ?? null,
+          grade: record.grade ?? null,
+          date: record.date,
+        },
+        update: { $set: record },
+        upsert: true,
+      },
+    })));
+    this.logger.log(`Upserted ${records.length} price records to market_prices_v2`);
   }
 
   async findPrices(
@@ -153,10 +167,23 @@ export class MarketRepository {
     return doc.save();
   }
 
-  async saveArrivalBatch(records: IMarketArrival[]): Promise<MarketArrival[]> {
-    const docs = await this.arrivalModel.insertMany(records);
-    this.logger.log(`Saved ${docs.length} arrival records to market_arrivals`);
-    return docs as unknown as MarketArrival[];
+  async saveArrivalBatch(records: IMarketArrival[]): Promise<void> {
+    if (!records.length) return;
+    await this.arrivalModel.bulkWrite(records.map((record) => ({
+      updateOne: {
+        filter: {
+          source: record.source,
+          state: record.state,
+          market: record.market,
+          commodity: record.commodity,
+          variety: record.variety ?? null,
+          date: record.date,
+        },
+        update: { $set: record },
+        upsert: true,
+      },
+    })));
+    this.logger.log(`Upserted ${records.length} arrival records to market_arrivals`);
   }
 
   async findArrivals(

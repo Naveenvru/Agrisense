@@ -10,6 +10,7 @@ exports.INTEGRATION_CONSTANTS = {
     PROVIDERS: {
         OPENWEATHER: 'openweather',
         AGMARKNET: 'agmarknet',
+        MANDI_API: 'mandi_api',
         ENAM: 'enam',
         IMD: 'imd',
         ICAR: 'icar',

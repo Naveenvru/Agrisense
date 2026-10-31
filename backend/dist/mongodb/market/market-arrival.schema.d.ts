@@ -10,6 +10,7 @@ export declare class MarketArrival implements IMarketArrival {
     arrivalQty: number;
     unit: string;
     source: string;
+    variety?: string;
 }
 export declare const MarketArrivalSchema: import("mongoose").Schema<MarketArrival, import("mongoose").Model<MarketArrival, any, any, any, any, any, MarketArrival>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, MarketArrival, Document<unknown, {}, MarketArrival, {
     id: string;
@@ -84,6 +85,15 @@ export declare const MarketArrivalSchema: import("mongoose").Schema<MarketArriva
         id: string;
     }> | undefined;
     source?: import("mongoose").SchemaDefinitionProperty<string, MarketArrival, Document<unknown, {}, MarketArrival, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<MarketArrival & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    variety?: import("mongoose").SchemaDefinitionProperty<string | undefined, MarketArrival, Document<unknown, {}, MarketArrival, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<MarketArrival & {
         _id: import("mongoose").Types.ObjectId;

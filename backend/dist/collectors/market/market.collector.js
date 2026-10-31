@@ -14,12 +14,13 @@ exports.MarketCollector = void 0;
 const common_1 = require("@nestjs/common");
 const collector_logger_service_1 = require("../common/collector-logger.service");
 const collector_constants_1 = require("../common/collector.constants");
-const integration_constants_1 = require("../../integrations/common/integration.constants");
 const mock_market_data_source_1 = require("./mock-market-data.source");
+const mandi_api_data_source_1 = require("./mandi-api.data-source");
 const datalake_service_1 = require("../../storage/datalake/datalake.service");
 const storage_constants_1 = require("../../storage/common/storage.constants");
 let MarketCollector = MarketCollector_1 = class MarketCollector {
-    dataSource;
+    mockDataSource;
+    mandiApiDataSource;
     collectorLogger;
     dataLakeService;
     logger = new common_1.Logger(MarketCollector_1.name);
@@ -28,8 +29,9 @@ let MarketCollector = MarketCollector_1 = class MarketCollector {
     failureCount = 0;
     lastSuccessAt;
     lastFailureAt;
-    constructor(dataSource, collectorLogger, dataLakeService) {
-        this.dataSource = dataSource;
+    constructor(mockDataSource, mandiApiDataSource, collectorLogger, dataLakeService) {
+        this.mockDataSource = mockDataSource;
+        this.mandiApiDataSource = mandiApiDataSource;
         this.collectorLogger = collectorLogger;
         this.dataLakeService = dataLakeService;
     }
@@ -37,13 +39,18 @@ let MarketCollector = MarketCollector_1 = class MarketCollector {
         const startTime = Date.now();
         const requestedAt = new Date();
         const operation = params.operation ?? collector_constants_1.COLLECTOR_CONSTANTS.OPERATIONS.MARKET_PRICES;
-        const source = process.env.MARKET_DATA_SOURCE === 'mock' ? 'development_mock' : integration_constants_1.INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET;
+        const configuredSource = process.env.MARKET_DATA_SOURCE;
+        const source = configuredSource === 'mock'
+            ? this.mockDataSource.sourceName
+            : configuredSource === 'mandi-api'
+                ? this.mandiApiDataSource.sourceName
+                : configuredSource ?? 'unconfigured';
         this.collectorLogger.logStart(source, operation);
         this.logger.log(`Collection started | operation=${operation}`);
         this.totalCollections++;
         try {
-            if (process.env.NODE_ENV === 'production' || process.env.MARKET_DATA_SOURCE !== 'mock') {
-                throw new Error('No live AGMARKNET data source is configured. Mock collection is available only when MARKET_DATA_SOURCE=mock is explicitly set for development.');
+            if (configuredSource !== 'mock' && configuredSource !== 'mandi-api') {
+                throw new Error('No market data source is configured. Set MARKET_DATA_SOURCE=mandi-api or explicitly set MARKET_DATA_SOURCE=mock for development.');
             }
             const fetchParams = {
                 commodity: params.payload['commodity'],
@@ -53,7 +60,8 @@ let MarketCollector = MarketCollector_1 = class MarketCollector {
                 date: params.payload['date'] ? new Date(params.payload['date']) : new Date(),
                 limit: params.payload['limit'] ?? 50,
             };
-            const rawRecords = await this.dataSource.fetchPrices(fetchParams);
+            const dataSource = configuredSource === 'mock' ? this.mockDataSource : this.mandiApiDataSource;
+            const rawRecords = await dataSource.fetchPrices(fetchParams);
             const durationMs = Date.now() - startTime;
             this.successCount++;
             this.lastSuccessAt = new Date();
@@ -138,6 +146,7 @@ exports.MarketCollector = MarketCollector;
 exports.MarketCollector = MarketCollector = MarketCollector_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [mock_market_data_source_1.MockMarketDataSource,
+        mandi_api_data_source_1.MandiApiDataSource,
         collector_logger_service_1.CollectorLogger,
         datalake_service_1.DataLakeService])
 ], MarketCollector);

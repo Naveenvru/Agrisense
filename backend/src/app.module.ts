@@ -25,6 +25,7 @@ import { YieldIntelligenceModule } from './yield-intelligence/yield-intelligence
 import { SupplyIntelligenceModule } from './supply-intelligence/supply-intelligence.module';
 import { DemandIntelligenceModule } from './demand-intelligence/demand-intelligence.module';
 import { GeminiModule } from './gemini/gemini.module';
+import { AiModule } from './ai/ai.module';
 import { User } from './users/user.entity';
 import { FarmerProfile } from './farmer-profiles/farmer-profile.entity';
 import { LandParcel } from './land-parcels/land-parcel.entity';
@@ -107,6 +108,7 @@ import { VegetationModule } from './vegetation/vegetation.module';
     SupplyIntelligenceModule,    // Phase 13 – Supply Intelligence
     DemandIntelligenceModule,    // Phase 14 – Demand Intelligence
     GeminiModule,
+    AiModule,
     NotificationsModule,
     DecisionCenterModule,
     ReportsModule,

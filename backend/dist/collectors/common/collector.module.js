@@ -16,6 +16,7 @@ const collector_logger_service_1 = require("./collector-logger.service");
 const weather_collector_1 = require("../weather/weather.collector");
 const market_collector_1 = require("../market/market.collector");
 const mock_market_data_source_1 = require("../market/mock-market-data.source");
+const mandi_api_data_source_1 = require("../market/mandi-api.data-source");
 const government_collector_1 = require("../government/government.collector");
 let CollectorModule = class CollectorModule {
 };
@@ -31,6 +32,7 @@ exports.CollectorModule = CollectorModule = __decorate([
             weather_mapper_1.WeatherMapper,
             openweather_client_1.OpenWeatherClient,
             mock_market_data_source_1.MockMarketDataSource,
+            mandi_api_data_source_1.MandiApiDataSource,
             weather_collector_1.WeatherCollector,
             market_collector_1.MarketCollector,
             government_collector_1.GovernmentCollector,
@@ -41,6 +43,7 @@ exports.CollectorModule = CollectorModule = __decorate([
             market_collector_1.MarketCollector,
             government_collector_1.GovernmentCollector,
             mock_market_data_source_1.MockMarketDataSource,
+            mandi_api_data_source_1.MandiApiDataSource,
         ],
     })
 ], CollectorModule);

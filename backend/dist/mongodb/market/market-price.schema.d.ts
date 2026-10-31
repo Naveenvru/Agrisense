@@ -12,6 +12,8 @@ export declare class MarketPriceV2 implements IMarketPrice {
     modalPrice: number;
     unit: string;
     source: string;
+    variety?: string;
+    grade?: string;
     normalizedAt: Date;
     qualityScore: number;
 }
@@ -106,6 +108,24 @@ export declare const MarketPriceV2Schema: import("mongoose").Schema<MarketPriceV
         id: string;
     }> | undefined;
     source?: import("mongoose").SchemaDefinitionProperty<string, MarketPriceV2, Document<unknown, {}, MarketPriceV2, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<MarketPriceV2 & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    variety?: import("mongoose").SchemaDefinitionProperty<string | undefined, MarketPriceV2, Document<unknown, {}, MarketPriceV2, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<MarketPriceV2 & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    grade?: import("mongoose").SchemaDefinitionProperty<string | undefined, MarketPriceV2, Document<unknown, {}, MarketPriceV2, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<MarketPriceV2 & {
         _id: import("mongoose").Types.ObjectId;

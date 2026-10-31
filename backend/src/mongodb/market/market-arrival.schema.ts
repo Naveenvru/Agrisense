@@ -32,8 +32,15 @@ export class MarketArrival implements IMarketArrival {
 
   @Prop({ required: true })
   source: string;
+
+  @Prop()
+  variety?: string;
 }
 
 export const MarketArrivalSchema = SchemaFactory.createForClass(MarketArrival);
 
 MarketArrivalSchema.index({ commodity: 1, market: 1, date: -1 });
+MarketArrivalSchema.index(
+  { source: 1, state: 1, market: 1, commodity: 1, variety: 1, date: 1 },
+  { unique: true, partialFilterExpression: { source: 'mandi_api' } },
+);

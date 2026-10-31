@@ -27,8 +27,8 @@ export class MarketQualityService {
    */
   private static readonly MAX_PRICE = 500_000;
 
-  /** Maximum days in the past a date can be (30 days) */
-  private static readonly MAX_DATE_AGE_DAYS = 30;
+  /** Permit retained history while still rejecting implausibly old records. */
+  private static readonly MAX_DATE_AGE_DAYS = 3650;
 
   // ---------------------------------------------------------------------------
   // Public API
@@ -176,7 +176,7 @@ export class MarketQualityService {
     }
 
     // --- Arrival quantity check ---
-    if (record.arrivalQty < 0) {
+    if (record.arrivalQty !== undefined && record.arrivalQty < 0) {
       reasons.push(`Invalid arrivalQty: ${record.arrivalQty} (negative)`);
     }
 
@@ -184,11 +184,12 @@ export class MarketQualityService {
   }
 
   /**
-   * Compute the HashSet deduplication key.
-   * Format: "NormalizedCommodity|NormalizedMarket|YYYY-MM-DD"
+   * Compute a location and variety aware HashSet deduplication key.
    */
   private dedupKey(record: IMarketRawRecord): string {
     const dateStr = new Date(record.date).toISOString().slice(0, 10);
-    return `${record.commodity.toLowerCase().trim()}|${record.market.toLowerCase().trim()}|${dateStr}`;
+    return [record.state, record.district, record.market, record.commodity, record.variety ?? '', record.grade ?? '', dateStr]
+      .map((value) => String(value).toLowerCase().trim())
+      .join('|');
   }
 }

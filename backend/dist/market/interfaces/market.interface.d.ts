@@ -1,6 +1,7 @@
 export interface IMarketRawRecord {
     commodity: string;
     variety?: string;
+    grade?: string;
     market: string;
     district: string;
     state: string;
@@ -8,10 +9,11 @@ export interface IMarketRawRecord {
     minPrice: number;
     maxPrice: number;
     modalPrice: number;
-    arrivalQty: number;
+    arrivalQty?: number;
     unit: string;
     source: string;
     rawPayload?: string;
+    providerFetchedAt?: Date;
     collectedAt: Date;
     batchId: string;
 }
@@ -28,6 +30,8 @@ export interface IMarketPrice {
     source: string;
     normalizedAt: Date;
     qualityScore: number;
+    variety?: string;
+    grade?: string;
 }
 export interface IMarketArrival {
     commodity: string;
@@ -35,9 +39,10 @@ export interface IMarketArrival {
     district: string;
     state: string;
     date: Date;
-    arrivalQty: number;
+    arrivalQty?: number;
     unit: string;
     source: string;
+    variety?: string;
 }
 export type TrendDirection = 'rising' | 'falling' | 'stable';
 export type TrendPeriod = 'daily' | 'weekly' | 'monthly';
@@ -77,11 +82,12 @@ export interface RawMarketInput {
     minPrice: number;
     maxPrice: number;
     modalPrice: number;
-    arrivalQty: number;
+    arrivalQty?: number;
     state: string;
     district: string;
     source: string;
     variety?: string;
+    grade?: string;
 }
 export interface MarketValidationResult {
     valid: IMarketRawRecord[];
@@ -117,4 +123,5 @@ export interface MarketCollectParams {
     state?: string;
     district?: string;
     date?: Date;
+    limit?: number;
 }

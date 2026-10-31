@@ -84,7 +84,7 @@ export class MarketService {
         state: params.state,
         district: params.district,
         date: params.date?.toISOString(),
-        limit: 50,
+        limit: params.limit ?? 200,
       },
       requestedAt: new Date(),
     });

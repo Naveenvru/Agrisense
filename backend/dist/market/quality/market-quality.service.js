@@ -13,7 +13,7 @@ let MarketQualityService = class MarketQualityService {
     static { MarketQualityService_1 = this; }
     logger = new common_1.Logger(MarketQualityService_1.name);
     static MAX_PRICE = 500_000;
-    static MAX_DATE_AGE_DAYS = 30;
+    static MAX_DATE_AGE_DAYS = 3650;
     validate(records) {
         const seenKeys = new Set();
         const valid = [];
@@ -102,14 +102,16 @@ let MarketQualityService = class MarketQualityService {
                 }
             }
         }
-        if (record.arrivalQty < 0) {
+        if (record.arrivalQty !== undefined && record.arrivalQty < 0) {
             reasons.push(`Invalid arrivalQty: ${record.arrivalQty} (negative)`);
         }
         return reasons;
     }
     dedupKey(record) {
         const dateStr = new Date(record.date).toISOString().slice(0, 10);
-        return `${record.commodity.toLowerCase().trim()}|${record.market.toLowerCase().trim()}|${dateStr}`;
+        return [record.state, record.district, record.market, record.commodity, record.variety ?? '', record.grade ?? '', dateStr]
+            .map((value) => String(value).toLowerCase().trim())
+            .join('|');
     }
 };
 exports.MarketQualityService = MarketQualityService;

@@ -41,6 +41,12 @@ export class MarketPriceV2 implements IMarketPrice {
   @Prop({ required: true })
   source: string;
 
+  @Prop()
+  variety?: string;
+
+  @Prop()
+  grade?: string;
+
   @Prop({ required: true })
   normalizedAt: Date;
 
@@ -53,3 +59,7 @@ export const MarketPriceV2Schema = SchemaFactory.createForClass(MarketPriceV2);
 
 MarketPriceV2Schema.index({ commodity: 1, market: 1, date: -1 });
 MarketPriceV2Schema.index({ state: 1, date: -1 });
+MarketPriceV2Schema.index(
+  { source: 1, state: 1, market: 1, commodity: 1, variety: 1, grade: 1, date: 1 },
+  { unique: true, partialFilterExpression: { source: 'mandi_api' } },
+);

@@ -3,7 +3,7 @@ import { X, Send, Mic, Paperclip, Sparkles, Sprout, Cloud, TrendingUp, AlertTria
 import { Button } from '@/components/ui/button';
 import { useModal } from '@/components/providers/ModalProvider';
 import { TreeMascot } from '@/components/ui/TreeMascot';
-import { geminiService } from '@/features/ai/services/gemini.service';
+import { aiGatewayService } from '@/features/ai/services/ai-gateway.service';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -82,11 +82,11 @@ export function AiChatDrawer({ isOpen, onClose }: AiChatDrawerProps) {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
-    // Format history for backend Gemini API
+    // Format recent messages for the AgriSense AI gateway.
     const historyPayload = chatHistory
       .filter(m => !m.isTyping)
       .map(m => ({
-        role: (m.role === 'user' ? 'user' : 'model') as 'user' | 'model',
+        role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
         content: m.content
       }));
 
@@ -103,7 +103,7 @@ export function AiChatDrawer({ isOpen, onClose }: AiChatDrawerProps) {
     }]);
 
     try {
-      const responseText = await geminiService.sendChatMessage(trimmed, historyPayload);
+      const responseText = await aiGatewayService.sendChatMessage(trimmed, historyPayload);
       setChatHistory(prev => prev.map(msg => 
         msg.id === typingId 
           ? { 

@@ -73,9 +73,24 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
         return saved;
     }
     async savePriceBatch(records) {
-        const docs = await this.priceModel.insertMany(records);
-        this.logger.log(`Saved ${docs.length} price records to market_prices_v2`);
-        return docs;
+        if (!records.length)
+            return;
+        await this.priceModel.bulkWrite(records.map((record) => ({
+            updateOne: {
+                filter: {
+                    source: record.source,
+                    state: record.state,
+                    market: record.market,
+                    commodity: record.commodity,
+                    variety: record.variety ?? null,
+                    grade: record.grade ?? null,
+                    date: record.date,
+                },
+                update: { $set: record },
+                upsert: true,
+            },
+        })));
+        this.logger.log(`Upserted ${records.length} price records to market_prices_v2`);
     }
     async findPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
         const filter = {};
@@ -112,9 +127,23 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
         return doc.save();
     }
     async saveArrivalBatch(records) {
-        const docs = await this.arrivalModel.insertMany(records);
-        this.logger.log(`Saved ${docs.length} arrival records to market_arrivals`);
-        return docs;
+        if (!records.length)
+            return;
+        await this.arrivalModel.bulkWrite(records.map((record) => ({
+            updateOne: {
+                filter: {
+                    source: record.source,
+                    state: record.state,
+                    market: record.market,
+                    commodity: record.commodity,
+                    variety: record.variety ?? null,
+                    date: record.date,
+                },
+                update: { $set: record },
+                upsert: true,
+            },
+        })));
+        this.logger.log(`Upserted ${records.length} arrival records to market_arrivals`);
     }
     async findArrivals(commodity, market, startDate, endDate, limit = 100) {
         const filter = {};

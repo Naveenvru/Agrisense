@@ -22,6 +22,8 @@ let MarketPriceV2 = class MarketPriceV2 {
     modalPrice;
     unit;
     source;
+    variety;
+    grade;
     normalizedAt;
     qualityScore;
 };
@@ -67,6 +69,14 @@ __decorate([
     __metadata("design:type", String)
 ], MarketPriceV2.prototype, "source", void 0);
 __decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], MarketPriceV2.prototype, "variety", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], MarketPriceV2.prototype, "grade", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
 ], MarketPriceV2.prototype, "normalizedAt", void 0);
@@ -80,4 +90,5 @@ exports.MarketPriceV2 = MarketPriceV2 = __decorate([
 exports.MarketPriceV2Schema = mongoose_1.SchemaFactory.createForClass(MarketPriceV2);
 exports.MarketPriceV2Schema.index({ commodity: 1, market: 1, date: -1 });
 exports.MarketPriceV2Schema.index({ state: 1, date: -1 });
+exports.MarketPriceV2Schema.index({ source: 1, state: 1, market: 1, commodity: 1, variety: 1, grade: 1, date: 1 }, { unique: true, partialFilterExpression: { source: 'mandi_api' } });
 //# sourceMappingURL=market-price.schema.js.map

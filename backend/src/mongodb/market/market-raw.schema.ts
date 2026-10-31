@@ -37,8 +37,11 @@ export class MarketRaw implements IMarketRawRecord {
   @Prop({ required: true })
   modalPrice: number;
 
-  @Prop({ required: true })
-  arrivalQty: number;
+  @Prop()
+  arrivalQty?: number;
+
+  @Prop()
+  grade?: string;
 
   @Prop({ default: 'Quintal' })
   unit: string;
@@ -52,6 +55,9 @@ export class MarketRaw implements IMarketRawRecord {
 
   @Prop({ required: true })
   collectedAt: Date;
+
+  @Prop()
+  providerFetchedAt?: Date;
 
   /** Groups all records from the same collection run */
   @Prop({ required: true, index: true })

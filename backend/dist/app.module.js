@@ -37,6 +37,7 @@ const yield_intelligence_module_1 = require("./yield-intelligence/yield-intellig
 const supply_intelligence_module_1 = require("./supply-intelligence/supply-intelligence.module");
 const demand_intelligence_module_1 = require("./demand-intelligence/demand-intelligence.module");
 const gemini_module_1 = require("./gemini/gemini.module");
+const ai_module_1 = require("./ai/ai.module");
 const user_entity_1 = require("./users/user.entity");
 const farmer_profile_entity_1 = require("./farmer-profiles/farmer-profile.entity");
 const land_parcel_entity_1 = require("./land-parcels/land-parcel.entity");
@@ -122,6 +123,7 @@ exports.AppModule = AppModule = __decorate([
             supply_intelligence_module_1.SupplyIntelligenceModule,
             demand_intelligence_module_1.DemandIntelligenceModule,
             gemini_module_1.GeminiModule,
+            ai_module_1.AiModule,
             notifications_module_1.NotificationsModule,
             decision_center_module_1.DecisionCenterModule,
             reports_module_1.ReportsModule,

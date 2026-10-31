@@ -17,12 +17,12 @@ export declare class MarketRepository {
     saveRawBatch(records: IMarketRawRecord[]): Promise<MarketRaw[]>;
     findRaw(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<MarketRaw[]>;
     savePrice(data: IMarketPrice): Promise<MarketPriceV2>;
-    savePriceBatch(records: IMarketPrice[]): Promise<MarketPriceV2[]>;
+    savePriceBatch(records: IMarketPrice[]): Promise<void>;
     findPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): Promise<MarketPriceV2[]>;
     private escapeRegex;
     findLatestPrice(commodity: string, market: string): Promise<MarketPriceV2 | null>;
     saveArrival(data: IMarketArrival): Promise<MarketArrival>;
-    saveArrivalBatch(records: IMarketArrival[]): Promise<MarketArrival[]>;
+    saveArrivalBatch(records: IMarketArrival[]): Promise<void>;
     findArrivals(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<MarketArrival[]>;
     saveTrend(data: IMarketTrend): Promise<MarketTrend>;
     findTrends(commodity?: string, market?: string, period?: string, limit?: number): Promise<MarketTrend[]>;

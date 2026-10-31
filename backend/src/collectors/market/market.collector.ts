@@ -10,8 +10,8 @@ import {
   COLLECTOR_CONSTANTS,
   CollectorDomain,
 } from '../common/collector.constants';
-import { INTEGRATION_CONSTANTS } from '../../integrations/common/integration.constants';
 import { MockMarketDataSource } from './mock-market-data.source';
+import { MandiApiDataSource } from './mandi-api.data-source';
 import { DataLakeService } from '../../storage/datalake/datalake.service';
 import { STORAGE_CONSTANTS } from '../../storage/common/storage.constants';
 import type { MarketFetchParams } from '../../market/interfaces/market.interface';
@@ -20,7 +20,7 @@ import type { MarketFetchParams } from '../../market/interfaces/market.interface
  * MarketCollector — Phase 9 (activated)
  *
  * Collects raw market price data via an IMarketDataSource implementation.
- * Currently uses MockMarketDataSource; AGMARKNET plugs in without changes.
+ * Uses the explicitly configured Mandi API or development mock source.
  *
  * What it does
  * ─────────────
@@ -48,7 +48,8 @@ export class MarketCollector implements ICollector {
   private lastFailureAt?: Date;
 
   constructor(
-    private readonly dataSource: MockMarketDataSource,
+    private readonly mockDataSource: MockMarketDataSource,
+    private readonly mandiApiDataSource: MandiApiDataSource,
     private readonly collectorLogger: CollectorLogger,
     private readonly dataLakeService: DataLakeService,
   ) {}
@@ -62,14 +63,19 @@ export class MarketCollector implements ICollector {
     const requestedAt = new Date();
     const operation = params.operation ?? COLLECTOR_CONSTANTS.OPERATIONS.MARKET_PRICES;
 
-    const source = process.env.MARKET_DATA_SOURCE === 'mock' ? 'development_mock' : INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET;
+    const configuredSource = process.env.MARKET_DATA_SOURCE;
+    const source = configuredSource === 'mock'
+      ? this.mockDataSource.sourceName
+      : configuredSource === 'mandi-api'
+        ? this.mandiApiDataSource.sourceName
+        : configuredSource ?? 'unconfigured';
     this.collectorLogger.logStart(source, operation);
     this.logger.log(`Collection started | operation=${operation}`);
     this.totalCollections++;
 
     try {
-      if (process.env.NODE_ENV === 'production' || process.env.MARKET_DATA_SOURCE !== 'mock') {
-        throw new Error('No live AGMARKNET data source is configured. Mock collection is available only when MARKET_DATA_SOURCE=mock is explicitly set for development.');
+      if (configuredSource !== 'mock' && configuredSource !== 'mandi-api') {
+        throw new Error('No market data source is configured. Set MARKET_DATA_SOURCE=mandi-api or explicitly set MARKET_DATA_SOURCE=mock for development.');
       }
       const fetchParams: MarketFetchParams = {
         commodity: params.payload['commodity'] as string | undefined,
@@ -80,7 +86,8 @@ export class MarketCollector implements ICollector {
         limit: (params.payload['limit'] as number | undefined) ?? 50,
       };
 
-      const rawRecords = await this.dataSource.fetchPrices(fetchParams);
+      const dataSource = configuredSource === 'mock' ? this.mockDataSource : this.mandiApiDataSource;
+      const rawRecords = await dataSource.fetchPrices(fetchParams);
 
       const durationMs = Date.now() - startTime;
       this.successCount++;

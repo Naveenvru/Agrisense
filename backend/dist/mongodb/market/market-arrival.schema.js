@@ -20,6 +20,7 @@ let MarketArrival = class MarketArrival {
     arrivalQty;
     unit;
     source;
+    variety;
 };
 exports.MarketArrival = MarketArrival;
 __decorate([
@@ -54,9 +55,14 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], MarketArrival.prototype, "source", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], MarketArrival.prototype, "variety", void 0);
 exports.MarketArrival = MarketArrival = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true, collection: 'market_arrivals' })
 ], MarketArrival);
 exports.MarketArrivalSchema = mongoose_1.SchemaFactory.createForClass(MarketArrival);
 exports.MarketArrivalSchema.index({ commodity: 1, market: 1, date: -1 });
+exports.MarketArrivalSchema.index({ source: 1, state: 1, market: 1, commodity: 1, variety: 1, date: 1 }, { unique: true, partialFilterExpression: { source: 'mandi_api' } });
 //# sourceMappingURL=market-arrival.schema.js.map

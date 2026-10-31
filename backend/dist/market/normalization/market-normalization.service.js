@@ -105,9 +105,9 @@ let MarketNormalizationService = MarketNormalizationService_1 = class MarketNorm
             const price = this.normalizeToPrice(raw, now);
             if (price)
                 prices.push(price);
-            const arrival = this.normalizeToArrival(raw);
-            if (arrival)
-                arrivals.push(arrival);
+            if (raw.arrivalQty !== undefined && raw.arrivalQty !== null) {
+                arrivals.push(this.normalizeToArrival(raw));
+            }
         }
         this.logger.log(`Normalized ${rawRecords.length} raw records → ${prices.length} prices, ${arrivals.length} arrivals`);
         return { prices, arrivals };
@@ -126,6 +126,8 @@ let MarketNormalizationService = MarketNormalizationService_1 = class MarketNorm
             source: input.source,
             normalizedAt: new Date(),
             qualityScore: 100,
+            variety: input.variety,
+            grade: input.grade,
         };
     }
     normalizeCommodity(raw) {
@@ -162,6 +164,8 @@ let MarketNormalizationService = MarketNormalizationService_1 = class MarketNorm
             source: raw.source ?? integration_constants_1.INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
             normalizedAt,
             qualityScore: 100,
+            variety: raw.variety,
+            grade: raw.grade,
         };
     }
     normalizeToArrival(raw) {
@@ -171,7 +175,7 @@ let MarketNormalizationService = MarketNormalizationService_1 = class MarketNorm
             district: raw.district,
             state: raw.state,
             date: this.normalizeDate(raw.date),
-            arrivalQty: Math.max(0, raw.arrivalQty),
+            arrivalQty: Math.max(0, raw.arrivalQty ?? 0),
             unit: this.normalizeUnit(raw.unit),
             source: raw.source ?? integration_constants_1.INTEGRATION_CONSTANTS.PROVIDERS.AGMARKNET,
         };

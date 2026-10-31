@@ -37,6 +37,7 @@ let MarketController = MarketController_1 = class MarketController {
             state: dto.state,
             district: dto.district,
             date: dto.date ? new Date(dto.date) : undefined,
+            limit: dto.limit,
         });
     }
     async getPrices(query, req) {
@@ -89,7 +90,7 @@ __decorate([
         description: 'Runs the full market intelligence pipeline: ' +
             'collect raw data → store in Data Lake (storage/raw/market/) → ' +
             'validate quality → normalize → persist to MongoDB. ' +
-            'Live collection is unavailable until an authorized AGMARKNET source is configured. Development mock collection requires MARKET_DATA_SOURCE=mock.',
+            'Set MARKET_DATA_SOURCE=mandi-api to use the configured external provider. Provider failures are returned as collection failures; development mock collection requires MARKET_DATA_SOURCE=mock.',
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,

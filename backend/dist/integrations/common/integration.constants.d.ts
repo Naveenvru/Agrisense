@@ -7,6 +7,7 @@ export declare const INTEGRATION_CONSTANTS: {
     readonly PROVIDERS: {
         readonly OPENWEATHER: "openweather";
         readonly AGMARKNET: "agmarknet";
+        readonly MANDI_API: "mandi_api";
         readonly ENAM: "enam";
         readonly IMD: "imd";
         readonly ICAR: "icar";
