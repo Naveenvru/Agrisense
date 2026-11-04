@@ -1,10 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -12,6 +45,8 @@ var MarketService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketService = void 0;
 const common_1 = require("@nestjs/common");
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
 const market_collector_1 = require("../collectors/market/market.collector");
 const market_normalization_service_1 = require("./normalization/market-normalization.service");
 const market_quality_service_1 = require("./quality/market-quality.service");
@@ -29,6 +64,7 @@ let MarketService = MarketService_1 = class MarketService {
     farmerProfiles;
     dataSource;
     logger = new common_1.Logger(MarketService_1.name);
+    cachedFallbackPrices = [];
     constructor(collector, normalization, quality, repository, aggregation, farmerProfiles, dataSource) {
         this.collector = collector;
         this.normalization = normalization;
@@ -37,6 +73,127 @@ let MarketService = MarketService_1 = class MarketService {
         this.aggregation = aggregation;
         this.farmerProfiles = farmerProfiles;
         this.dataSource = dataSource;
+    }
+    async onApplicationBootstrap() {
+        this.initFallbackDataset();
+        await this.seedAuthenticMarketDataIfEmpty();
+    }
+    initFallbackDataset() {
+        try {
+            const candidates = [
+                path.resolve(process.cwd(), 'ai-service/data/raw/prices/karnataka_mandi_live.json'),
+                path.resolve(process.cwd(), '../ai-service/data/raw/prices/karnataka_mandi_live.json'),
+            ];
+            let livePath = candidates.find((p) => fs.existsSync(p));
+            const histCandidates = [
+                path.resolve(process.cwd(), 'ai-service/data/raw/prices/karnataka_mandi_history.json'),
+                path.resolve(process.cwd(), '../ai-service/data/raw/prices/karnataka_mandi_history.json'),
+            ];
+            let histPath = histCandidates.find((p) => fs.existsSync(p));
+            const records = [];
+            if (livePath && fs.existsSync(livePath)) {
+                const liveData = JSON.parse(fs.readFileSync(livePath, 'utf8'));
+                const rawLive = (liveData.records || []);
+                for (const item of rawLive) {
+                    const p = this.mapRawToPrice(item);
+                    if (p)
+                        records.push(p);
+                }
+            }
+            if (histPath && fs.existsSync(histPath)) {
+                const histData = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+                for (const list of Object.values(histData)) {
+                    for (const item of list) {
+                        const p = this.mapRawToPrice(item);
+                        if (p)
+                            records.push(p);
+                    }
+                }
+            }
+            this.cachedFallbackPrices = records;
+            this.logger.log(`Initialized in-memory APMC market dataset: ${this.cachedFallbackPrices.length} records available`);
+        }
+        catch (err) {
+            this.logger.warn(`Could not load fallback market dataset: ${err.message}`);
+        }
+    }
+    mapRawToPrice(item) {
+        if (!item.commodity || !item.market || item.modal_price === undefined)
+            return null;
+        let date = new Date();
+        if (item.arrival_date) {
+            const parts = String(item.arrival_date).split('/');
+            if (parts.length === 3) {
+                date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            }
+            else {
+                date = new Date(item.arrival_date);
+            }
+        }
+        return {
+            source: 'Karnataka State Agricultural Marketing Board / AGMARKNET (GODL-India)',
+            state: item.state || 'Karnataka',
+            district: item.district || 'Bengaluru',
+            market: item.market,
+            commodity: item.commodity,
+            variety: item.variety || 'Standard',
+            grade: item.grade || 'Local',
+            date: isNaN(date.getTime()) ? new Date() : date,
+            minPrice: Number(item.min_price || item.modal_price),
+            maxPrice: Number(item.max_price || item.modal_price),
+            modalPrice: Number(item.modal_price),
+            unit: 'Quintal',
+            normalizedAt: new Date(),
+            qualityScore: 100,
+        };
+    }
+    async seedAuthenticMarketDataIfEmpty() {
+        try {
+            const count = await this.repository.countPrices();
+            if (count === 0 && this.cachedFallbackPrices.length > 0) {
+                this.logger.log(`MongoDB market_prices_v2 is empty. Seeding ${this.cachedFallbackPrices.length} authentic APMC records...`);
+                await this.repository.savePriceBatch(this.cachedFallbackPrices);
+                this.logger.log(`Successfully seeded ${this.cachedFallbackPrices.length} APMC price records into MongoDB.`);
+            }
+        }
+        catch (err) {
+            this.logger.warn(`MongoDB check/seeding skipped: ${err.message}`);
+        }
+    }
+    findFallbackPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
+        if (!this.cachedFallbackPrices.length) {
+            this.initFallbackDataset();
+        }
+        const normDistrict = district ? district.trim().toLowerCase().replace(/\s+(urban|rural)$/i, '') : null;
+        const normCommodity = commodity ? commodity.trim().toLowerCase() : null;
+        const normMarket = market ? market.trim().toLowerCase() : null;
+        const normState = state ? state.trim().toLowerCase() : null;
+        let filtered = this.cachedFallbackPrices.filter((r) => {
+            if (normCommodity && !r.commodity.toLowerCase().includes(normCommodity))
+                return false;
+            if (normMarket && !r.market.toLowerCase().includes(normMarket))
+                return false;
+            if (normDistrict && !r.district.toLowerCase().includes(normDistrict))
+                return false;
+            if (normState && !r.state.toLowerCase().includes(normState))
+                return false;
+            return true;
+        });
+        if (startDate || endDate) {
+            const dateFiltered = filtered.filter((r) => {
+                const t = r.date.getTime();
+                if (startDate && t < startDate.getTime())
+                    return false;
+                if (endDate && t > endDate.getTime())
+                    return false;
+                return true;
+            });
+            if (dateFiltered.length > 0) {
+                filtered = dateFiltered;
+            }
+        }
+        filtered.sort((a, b) => b.date.getTime() - a.date.getTime());
+        return filtered.slice(0, limit);
     }
     async collect(params = {}) {
         this.logger.log(`Collection started | params=${JSON.stringify(params)}`);
@@ -99,21 +256,42 @@ let MarketService = MarketService_1 = class MarketService {
         };
     }
     async getPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
-        return this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+        let records = [];
+        try {
+            records = await this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+        }
+        catch (err) {
+            this.logger.warn(`Failed to query repository findPrices: ${err.message}`);
+        }
+        if (!records || records.length === 0) {
+            records = this.findFallbackPrices(commodity, market, startDate, endDate, limit, district, state);
+        }
+        return records;
     }
     async getPricesForUser(userId, query) {
         let { district, state } = query;
         if ((!district || !state) && !query.market) {
-            const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
-            district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
-            state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+            try {
+                const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
+                district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
+                state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+            }
+            catch (err) {
+                this.logger.warn(`Could not lookup farmer land parcel: ${err.message}`);
+            }
         }
         if ((!district || !state) && !query.market) {
-            const profile = await this.farmerProfiles.findByUserId(userId);
-            const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
-            const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
-            district = district || profileDistrict || 'Bengaluru Urban';
-            state = state || profileState || 'Karnataka';
+            try {
+                const profile = await this.farmerProfiles.findByUserId(userId);
+                const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
+                const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
+                district = district || profileDistrict || 'Bengaluru';
+                state = state || profileState || 'Karnataka';
+            }
+            catch {
+                district = district || 'Bengaluru';
+                state = state || 'Karnataka';
+            }
         }
         return this.getPrices(query.commodity, query.market, query.startDate, query.endDate, query.limit, district, state);
     }

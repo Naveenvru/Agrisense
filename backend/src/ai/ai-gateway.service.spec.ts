@@ -78,7 +78,7 @@ describe('AiGatewayService', () => {
 
     expect(market.getPricesForUser).toHaveBeenCalledWith('user-1', expect.objectContaining({ commodity: 'tomato', district: 'Hassan', limit: 100 }));
     expect(openai.create.mock.calls[0][0][0].content).toContain('Verified AgriSense historical market database records');
-    expect(result.dataSource).toBe('AgriSense market database');
+    expect((result as any).dataSource).toBe('AgriSense market database');
     expect(mcp.withSession).not.toHaveBeenCalled();
   });
 });

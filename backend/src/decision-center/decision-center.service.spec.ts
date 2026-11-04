@@ -17,12 +17,22 @@ describe('DecisionCenterService', () => {
     expect(traceRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('returns no fabricated recommendation for unsupported questions', async () => {
+  it('answers agronomic decision queries with verified guidance', async () => {
     const traceRepo = { create: jest.fn((value) => value), save: jest.fn(async (value) => value) };
     const service = new DecisionCenterService(traceRepo as any, {} as any);
     const result: any = await service.analyze('5', 'Should I irrigate my field tomorrow?');
+    expect(result.status).toBe('completed');
+    expect(result.stages[0].status).toBe('completed');
+    expect(result.intent).toBe('weather_and_irrigation');
+    expect(result.answer).toContain('AgriSense Agronomic Advisory');
+  });
+
+  it('returns no fabricated recommendation for unsupported non-agricultural questions', async () => {
+    const traceRepo = { create: jest.fn((value) => value), save: jest.fn(async (value) => value) };
+    const service = new DecisionCenterService(traceRepo as any, {} as any);
+    const result: any = await service.analyze('5', 'What is the stock price of Apple on NASDAQ?');
     expect(result.status).toBe('unsupported');
     expect(result.stages[0].status).toBe('unsupported');
-    expect(result.answer).toContain('currently analyzes recorded market prices');
+    expect(result.answer).toContain('This Decision Center analyzes agricultural queries');
   });
 });

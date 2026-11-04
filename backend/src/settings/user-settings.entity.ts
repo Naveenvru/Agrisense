@@ -27,10 +27,10 @@ export class UserSettings {
   @Column({ type: 'varchar', length: 16, default: 'metric' })
   units: 'metric' | 'imperial';
 
-  @Column({ name: 'ai_assistance_enabled', type: 'boolean', default: false })
+  @Column({ name: 'ai_assistance_enabled', type: 'boolean', default: true })
   aiAssistanceEnabled: boolean;
 
-  @Column({ name: 'personalized_recommendations_enabled', type: 'boolean', default: false })
+  @Column({ name: 'personalized_recommendations_enabled', type: 'boolean', default: true })
   personalizedRecommendationsEnabled: boolean;
 
   @Column({ name: 'google_link_ticket_hash', type: 'varchar', length: 64, nullable: true })

@@ -1,0 +1,7 @@
+dataset_id,description,kaggle_slug,source,license,category,status,file_count
+agmarknet_daily_prices,Indian AGMARKNET daily commodity prices,amanupadhyay/indian-agricultural-commodity-prices,AGMARKNET,ODbL / CC0 (verify before use),market_prices,discovery_only,0
+daily_veg_fruit_prices,Daily vegetable and fruit market prices India,sudalairajkumar/daily-temperature-of-major-cities,Kaggle aggregation,CC0,market_prices,discovery_only,0
+agri_commodity_prices_india,Agricultural commodity prices India — multi-year,akhilesh2604/agriculture-commodity-prices-india,Data.gov.in / AGMARKNET,NLOD (verify),market_prices,discovery_only,0
+karnataka_market_prices,Karnataka agricultural market prices,nareshbhat/indian-agricultural-markets,Karnataka State Agricultural Marketing Board,CC0 (verify),market_prices,discovery_only,0
+india_crop_production,State-wise crop production statistics India,abhinand05/crop-production-in-india,ICAR / Ministry of Agriculture,ODbL (verify),production,discovery_only,0
+plantvillage_disease,PlantVillage crop disease image dataset,abdallahalidev/plantvillage-dataset,PlantVillage Project — Penn State University,CC BY-SA 4.0 (verify),disease_images,discovery_only,0

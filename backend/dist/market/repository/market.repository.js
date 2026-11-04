@@ -92,16 +92,24 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
         })));
         this.logger.log(`Upserted ${records.length} price records to market_prices_v2`);
     }
+    async countPrices() {
+        return this.priceModel.countDocuments().exec();
+    }
     async findPrices(commodity, market, startDate, endDate, limit = 100, district, state) {
         const filter = {};
-        if (commodity)
-            filter.commodity = new RegExp(this.escapeRegex(commodity), 'i');
-        if (market)
-            filter.market = new RegExp(this.escapeRegex(market), 'i');
-        if (district)
-            filter.district = new RegExp(this.escapeRegex(district), 'i');
-        if (state)
-            filter.state = new RegExp(this.escapeRegex(state), 'i');
+        if (commodity && commodity.trim()) {
+            filter.commodity = new RegExp(this.escapeRegex(commodity.trim()), 'i');
+        }
+        if (market && market.trim()) {
+            filter.market = new RegExp(this.escapeRegex(market.trim()), 'i');
+        }
+        if (district && district.trim()) {
+            const cleanDistrict = district.trim().replace(/\s+(urban|rural)$/i, '').trim();
+            filter.district = new RegExp(this.escapeRegex(cleanDistrict), 'i');
+        }
+        if (state && state.trim()) {
+            filter.state = new RegExp(this.escapeRegex(state.trim()), 'i');
+        }
         if (startDate || endDate) {
             filter.date = {};
             if (startDate)
@@ -109,11 +117,21 @@ let MarketRepository = MarketRepository_1 = class MarketRepository {
             if (endDate)
                 filter.date.$lte = endDate;
         }
-        return this.priceModel
+        let results = await this.priceModel
             .find(filter)
             .sort({ date: -1 })
             .limit(limit)
             .exec();
+        if (!results.length && (startDate || endDate)) {
+            const relaxedFilter = { ...filter };
+            delete relaxedFilter.date;
+            results = await this.priceModel
+                .find(relaxedFilter)
+                .sort({ date: -1 })
+                .limit(limit)
+                .exec();
+        }
+        return results;
     }
     escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
     async findLatestPrice(commodity, market) {

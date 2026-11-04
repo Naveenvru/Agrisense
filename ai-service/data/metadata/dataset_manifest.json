@@ -1,0 +1,118 @@
+[
+  {
+    "dataset_id": "agmarknet_daily_prices",
+    "description": "Indian AGMARKNET daily commodity prices",
+    "kaggle_slug": "amanupadhyay/indian-agricultural-commodity-prices",
+    "source": "AGMARKNET",
+    "license": "ODbL / CC0 (verify before use)",
+    "commodity_coverage": [
+      "Rice",
+      "Wheat",
+      "Tomato",
+      "Onion",
+      "Potato",
+      "Maize"
+    ],
+    "geographic_coverage": [
+      "India",
+      "Multiple states"
+    ],
+    "category": "market_prices",
+    "status": "discovery_only",
+    "files": []
+  },
+  {
+    "dataset_id": "daily_veg_fruit_prices",
+    "description": "Daily vegetable and fruit market prices India",
+    "kaggle_slug": "sudalairajkumar/daily-temperature-of-major-cities",
+    "source": "Kaggle aggregation",
+    "license": "CC0",
+    "commodity_coverage": [
+      "Vegetables",
+      "Fruits"
+    ],
+    "geographic_coverage": [
+      "India"
+    ],
+    "category": "market_prices",
+    "status": "discovery_only",
+    "files": []
+  },
+  {
+    "dataset_id": "agri_commodity_prices_india",
+    "description": "Agricultural commodity prices India \u2014 multi-year",
+    "kaggle_slug": "akhilesh2604/agriculture-commodity-prices-india",
+    "source": "Data.gov.in / AGMARKNET",
+    "license": "NLOD (verify)",
+    "commodity_coverage": [
+      "Rice",
+      "Wheat",
+      "Pulses",
+      "Oilseeds"
+    ],
+    "geographic_coverage": [
+      "India \u2014 multiple states"
+    ],
+    "category": "market_prices",
+    "status": "discovery_only",
+    "files": []
+  },
+  {
+    "dataset_id": "karnataka_market_prices",
+    "description": "Karnataka agricultural market prices",
+    "kaggle_slug": "nareshbhat/indian-agricultural-markets",
+    "source": "Karnataka State Agricultural Marketing Board",
+    "license": "CC0 (verify)",
+    "commodity_coverage": [
+      "Tomato",
+      "Onion",
+      "Paddy",
+      "Ragi",
+      "Maize"
+    ],
+    "geographic_coverage": [
+      "Karnataka"
+    ],
+    "category": "market_prices",
+    "status": "discovery_only",
+    "files": []
+  },
+  {
+    "dataset_id": "india_crop_production",
+    "description": "State-wise crop production statistics India",
+    "kaggle_slug": "abhinand05/crop-production-in-india",
+    "source": "ICAR / Ministry of Agriculture",
+    "license": "ODbL (verify)",
+    "commodity_coverage": [
+      "All major crops"
+    ],
+    "geographic_coverage": [
+      "India \u2014 state-wise"
+    ],
+    "category": "production",
+    "status": "discovery_only",
+    "files": []
+  },
+  {
+    "dataset_id": "plantvillage_disease",
+    "description": "PlantVillage crop disease image dataset",
+    "kaggle_slug": "abdallahalidev/plantvillage-dataset",
+    "source": "PlantVillage Project \u2014 Penn State University",
+    "license": "CC BY-SA 4.0 (verify)",
+    "commodity_coverage": [
+      "Tomato",
+      "Potato",
+      "Pepper",
+      "Rice",
+      "Corn",
+      "Grape",
+      "Apple"
+    ],
+    "geographic_coverage": [
+      "Global \u2014 controlled conditions"
+    ],
+    "category": "disease_images",
+    "status": "discovery_only",
+    "files": []
+  }
+]

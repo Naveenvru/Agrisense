@@ -1,3 +1,4 @@
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { MarketCollector } from '../collectors/market/market.collector';
 import { MarketNormalizationService } from './normalization/market-normalization.service';
 import { MarketQualityService } from './quality/market-quality.service';
@@ -5,8 +6,8 @@ import { MarketRepository } from './repository/market.repository';
 import { MarketAggregationService } from './aggregation/market-aggregation.service';
 import { FarmerProfilesService } from '../farmer-profiles/farmer-profiles.service';
 import { DataSource } from 'typeorm';
-import { MarketCollectParams, MarketValidationResult, MarketPriceStats, MarketArrivalStats } from './interfaces/market.interface';
-export declare class MarketService {
+import { MarketCollectParams, IMarketPrice, MarketValidationResult, MarketPriceStats, MarketArrivalStats } from './interfaces/market.interface';
+export declare class MarketService implements OnApplicationBootstrap {
     private readonly collector;
     private readonly normalization;
     private readonly quality;
@@ -15,7 +16,13 @@ export declare class MarketService {
     private readonly farmerProfiles;
     private readonly dataSource;
     private readonly logger;
+    private cachedFallbackPrices;
     constructor(collector: MarketCollector, normalization: MarketNormalizationService, quality: MarketQualityService, repository: MarketRepository, aggregation: MarketAggregationService, farmerProfiles: FarmerProfilesService, dataSource: DataSource);
+    onApplicationBootstrap(): Promise<void>;
+    private initFallbackDataset;
+    private mapRawToPrice;
+    seedAuthenticMarketDataIfEmpty(): Promise<void>;
+    findFallbackPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): IMarketPrice[];
     collect(params?: MarketCollectParams): Promise<{
         collectionResult: {
             status: string;
@@ -32,7 +39,7 @@ export declare class MarketService {
             filename?: string;
         };
     }>;
-    getPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    getPrices(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number, district?: string, state?: string): Promise<any[]>;
     getPricesForUser(userId: string, query: {
         commodity?: string;
         market?: string;
@@ -41,7 +48,7 @@ export declare class MarketService {
         startDate?: Date;
         endDate?: Date;
         limit?: number;
-    }): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2[]>;
+    }): Promise<any[]>;
     getLatestPrice(commodity: string, market: string): Promise<import("../mongodb/market/market-price.schema").MarketPriceV2 | null>;
     getArrivals(commodity?: string, market?: string, startDate?: Date, endDate?: Date, limit?: number): Promise<import("../mongodb/market/market-arrival.schema").MarketArrival[]>;
     getTrends(commodity?: string, market?: string, period?: string, limit?: number): Promise<import("../mongodb/market/market-trend.schema").MarketTrend[]>;

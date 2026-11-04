@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
 import { MarketCollector } from '../collectors/market/market.collector';
 import { MarketNormalizationService } from './normalization/market-normalization.service';
 import { MarketQualityService } from './quality/market-quality.service';
@@ -10,6 +12,7 @@ import { DataSource } from 'typeorm';
 import {
   MarketCollectParams,
   IMarketRawRecord,
+  IMarketPrice,
   MarketValidationResult,
   MarketPriceStats,
   MarketArrivalStats,
@@ -39,8 +42,9 @@ import {
  * ✔ Invalid records rejected
  */
 @Injectable()
-export class MarketService {
+export class MarketService implements OnApplicationBootstrap {
   private readonly logger = new Logger(MarketService.name);
+  private cachedFallbackPrices: IMarketPrice[] = [];
 
   constructor(
     private readonly collector: MarketCollector,
@@ -51,6 +55,138 @@ export class MarketService {
     private readonly farmerProfiles: FarmerProfilesService,
     private readonly dataSource: DataSource,
   ) {}
+
+  async onApplicationBootstrap() {
+    this.initFallbackDataset();
+    await this.seedAuthenticMarketDataIfEmpty();
+  }
+
+  private initFallbackDataset() {
+    try {
+      const candidates = [
+        path.resolve(process.cwd(), 'ai-service/data/raw/prices/karnataka_mandi_live.json'),
+        path.resolve(process.cwd(), '../ai-service/data/raw/prices/karnataka_mandi_live.json'),
+      ];
+      let livePath = candidates.find((p) => fs.existsSync(p));
+      const histCandidates = [
+        path.resolve(process.cwd(), 'ai-service/data/raw/prices/karnataka_mandi_history.json'),
+        path.resolve(process.cwd(), '../ai-service/data/raw/prices/karnataka_mandi_history.json'),
+      ];
+      let histPath = histCandidates.find((p) => fs.existsSync(p));
+
+      const records: IMarketPrice[] = [];
+
+      if (livePath && fs.existsSync(livePath)) {
+        const liveData = JSON.parse(fs.readFileSync(livePath, 'utf8'));
+        const rawLive = (liveData.records || []) as any[];
+        for (const item of rawLive) {
+          const p = this.mapRawToPrice(item);
+          if (p) records.push(p);
+        }
+      }
+
+      if (histPath && fs.existsSync(histPath)) {
+        const histData = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+        for (const list of Object.values(histData) as any[][]) {
+          for (const item of list) {
+            const p = this.mapRawToPrice(item);
+            if (p) records.push(p);
+          }
+        }
+      }
+
+      this.cachedFallbackPrices = records;
+      this.logger.log(`Initialized in-memory APMC market dataset: ${this.cachedFallbackPrices.length} records available`);
+    } catch (err: any) {
+      this.logger.warn(`Could not load fallback market dataset: ${err.message}`);
+    }
+  }
+
+  private mapRawToPrice(item: any): IMarketPrice | null {
+    if (!item.commodity || !item.market || item.modal_price === undefined) return null;
+    let date = new Date();
+    if (item.arrival_date) {
+      const parts = String(item.arrival_date).split('/');
+      if (parts.length === 3) {
+        date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      } else {
+        date = new Date(item.arrival_date);
+      }
+    }
+    return {
+      source: 'Karnataka State Agricultural Marketing Board / AGMARKNET (GODL-India)',
+      state: item.state || 'Karnataka',
+      district: item.district || 'Bengaluru',
+      market: item.market,
+      commodity: item.commodity,
+      variety: item.variety || 'Standard',
+      grade: item.grade || 'Local',
+      date: isNaN(date.getTime()) ? new Date() : date,
+      minPrice: Number(item.min_price || item.modal_price),
+      maxPrice: Number(item.max_price || item.modal_price),
+      modalPrice: Number(item.modal_price),
+      unit: 'Quintal',
+      normalizedAt: new Date(),
+      qualityScore: 100,
+    };
+  }
+
+  async seedAuthenticMarketDataIfEmpty() {
+    try {
+      const count = await this.repository.countPrices();
+      if (count === 0 && this.cachedFallbackPrices.length > 0) {
+        this.logger.log(`MongoDB market_prices_v2 is empty. Seeding ${this.cachedFallbackPrices.length} authentic APMC records...`);
+        await this.repository.savePriceBatch(this.cachedFallbackPrices);
+        this.logger.log(`Successfully seeded ${this.cachedFallbackPrices.length} APMC price records into MongoDB.`);
+      }
+    } catch (err: any) {
+      this.logger.warn(`MongoDB check/seeding skipped: ${err.message}`);
+    }
+  }
+
+  findFallbackPrices(
+    commodity?: string,
+    market?: string,
+    startDate?: Date,
+    endDate?: Date,
+    limit = 100,
+    district?: string,
+    state?: string,
+  ): IMarketPrice[] {
+    if (!this.cachedFallbackPrices.length) {
+      this.initFallbackDataset();
+    }
+
+    const normDistrict = district ? district.trim().toLowerCase().replace(/\s+(urban|rural)$/i, '') : null;
+    const normCommodity = commodity ? commodity.trim().toLowerCase() : null;
+    const normMarket = market ? market.trim().toLowerCase() : null;
+    const normState = state ? state.trim().toLowerCase() : null;
+
+    let filtered = this.cachedFallbackPrices.filter((r) => {
+      if (normCommodity && !r.commodity.toLowerCase().includes(normCommodity)) return false;
+      if (normMarket && !r.market.toLowerCase().includes(normMarket)) return false;
+      if (normDistrict && !r.district.toLowerCase().includes(normDistrict)) return false;
+      if (normState && !r.state.toLowerCase().includes(normState)) return false;
+      return true;
+    });
+
+    // If strict date filter matches, use it
+    if (startDate || endDate) {
+      const dateFiltered = filtered.filter((r) => {
+        const t = r.date.getTime();
+        if (startDate && t < startDate.getTime()) return false;
+        if (endDate && t > endDate.getTime()) return false;
+        return true;
+      });
+      if (dateFiltered.length > 0) {
+        filtered = dateFiltered;
+      }
+    }
+
+    // Sort descending by date
+    filtered.sort((a, b) => b.date.getTime() - a.date.getTime());
+    return filtered.slice(0, limit);
+  }
 
   // ---------------------------------------------------------------------------
   // Collect & Process Pipeline
@@ -167,22 +303,41 @@ export class MarketService {
     district?: string,
     state?: string,
   ) {
-    return this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+    let records: any[] = [];
+    try {
+      records = await this.repository.findPrices(commodity, market, startDate, endDate, limit, district, state);
+    } catch (err: any) {
+      this.logger.warn(`Failed to query repository findPrices: ${err.message}`);
+    }
+
+    if (!records || records.length === 0) {
+      records = this.findFallbackPrices(commodity, market, startDate, endDate, limit, district, state);
+    }
+    return records;
   }
 
   async getPricesForUser(userId: string, query: { commodity?: string; market?: string; district?: string; state?: string; startDate?: Date; endDate?: Date; limit?: number }) {
     let { district, state } = query;
     if ((!district || !state) && !query.market) {
-      const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
-      district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
-      state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+      try {
+        const farmRows = await this.dataSource.query(`SELECT lp.additional_metadata->>'district' AS district, lp.additional_metadata->>'state' AS state FROM farmer_land_parcels lp JOIN farmer_profiles fp ON fp.id = lp.farmer_profile_id WHERE fp.user_id = $1 ORDER BY lp.created_at DESC LIMIT 1`, [userId]);
+        district = district || (farmRows[0]?.district?.toLowerCase() === 'default' ? undefined : farmRows[0]?.district) || undefined;
+        state = state || (farmRows[0]?.state?.toLowerCase() === 'default' ? undefined : farmRows[0]?.state) || undefined;
+      } catch (err: any) {
+        this.logger.warn(`Could not lookup farmer land parcel: ${err.message}`);
+      }
     }
     if ((!district || !state) && !query.market) {
-      const profile = await this.farmerProfiles.findByUserId(userId);
-      const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
-      const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
-      district = district || profileDistrict || 'Bengaluru Urban';
-      state = state || profileState || 'Karnataka';
+      try {
+        const profile = await this.farmerProfiles.findByUserId(userId);
+        const profileDistrict = profile.district && profile.district.toLowerCase() !== 'default' ? profile.district : undefined;
+        const profileState = profile.state && profile.state.toLowerCase() !== 'default' ? profile.state : undefined;
+        district = district || profileDistrict || 'Bengaluru';
+        state = state || profileState || 'Karnataka';
+      } catch {
+        district = district || 'Bengaluru';
+        state = state || 'Karnataka';
+      }
     }
     return this.getPrices(query.commodity, query.market, query.startDate, query.endDate, query.limit, district, state);
   }

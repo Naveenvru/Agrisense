@@ -18,13 +18,16 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const market_service_1 = require("./market.service");
+const ai_ml_service_client_1 = require("../ai/ai-ml-service.client");
 const collect_market_dto_1 = require("./dto/collect-market.dto");
 const query_market_dto_1 = require("./dto/query-market.dto");
 let MarketController = MarketController_1 = class MarketController {
     marketService;
+    aiMlClient;
     logger = new common_1.Logger(MarketController_1.name);
-    constructor(marketService) {
+    constructor(marketService, aiMlClient) {
         this.marketService = marketService;
+        this.aiMlClient = aiMlClient;
     }
     health() {
         return this.marketService.healthCheck();
@@ -53,6 +56,17 @@ let MarketController = MarketController_1 = class MarketController {
     }
     async getLatestPrice(commodity, market) {
         return this.marketService.getLatestPrice(commodity, market);
+    }
+    async getForecast(commodity, market, state, horizonDays) {
+        const latest = await this.marketService.getLatestPrice(commodity, market || 'Bengaluru');
+        const currentPrice = latest ? latest.modalPrice : 1450;
+        return this.aiMlClient.getForecast({
+            commodity,
+            market: market || 'Bengaluru',
+            state: state || 'Karnataka',
+            currentModalPrice: currentPrice,
+            horizonDays: horizonDays ? Number(horizonDays) : 7,
+        });
     }
     async getArrivals(query) {
         return this.marketService.getArrivals(query.commodity, query.market, query.startDate ? new Date(query.startDate) : undefined, query.endDate ? new Date(query.endDate) : undefined, query.limit);
@@ -164,6 +178,25 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MarketController.prototype, "getLatestPrice", null);
 __decorate([
+    (0, common_1.Get)('forecast'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get multi-horizon AI price forecast for commodity and market',
+        description: 'Retrieves multi-horizon AI price forecast from the FastAPI microservice.',
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'commodity', required: true, example: 'Tomato' }),
+    (0, swagger_1.ApiQuery)({ name: 'market', required: false, example: 'Bengaluru' }),
+    (0, swagger_1.ApiQuery)({ name: 'state', required: false, example: 'Karnataka' }),
+    (0, swagger_1.ApiQuery)({ name: 'horizonDays', required: false, example: 7 }),
+    __param(0, (0, common_1.Query)('commodity')),
+    __param(1, (0, common_1.Query)('market')),
+    __param(2, (0, common_1.Query)('state')),
+    __param(3, (0, common_1.Query)('horizonDays')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Number]),
+    __metadata("design:returntype", Promise)
+], MarketController.prototype, "getForecast", null);
+__decorate([
     (0, common_1.Get)('arrivals'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
@@ -264,6 +297,7 @@ exports.MarketController = MarketController = MarketController_1 = __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('market'),
-    __metadata("design:paramtypes", [market_service_1.MarketService])
+    __metadata("design:paramtypes", [market_service_1.MarketService,
+        ai_ml_service_client_1.AiMlServiceClient])
 ], MarketController);
 //# sourceMappingURL=market.controller.js.map

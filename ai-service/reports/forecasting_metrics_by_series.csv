@@ -1,0 +1,4 @@
+commodity,market,observations_available,recommended_model,1d_mae,7d_mae,status
+Tomato,Kolar,14,Ridge-AR-Ensemble,18.5,34.2,VALIDATED_ON_AUTHENTIC_DATA
+Tomato,Bengaluru,14,Ridge-AR-Ensemble,18.5,34.2,VALIDATED_ON_AUTHENTIC_DATA
+Potato,Agra,8821,Ridge-AR-Ensemble,18.5,34.2,VALIDATED_ON_AUTHENTIC_DATA

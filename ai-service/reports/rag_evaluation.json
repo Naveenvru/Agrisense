@@ -1,0 +1,224 @@
+{
+  "evaluation_date": "2026-11-04T11:21:39.873508+00:00",
+  "vector_database": "ChromaDB (PersistentClient)",
+  "collection_name": "agricultural_advisories",
+  "total_knowledge_documents": 5,
+  "embedding_analysis": {
+    "current_embedding_type": "DeterministicAgronomicEmbeddingFunction (L2-Normalized Sparse Hashing)",
+    "dimension": 128,
+    "zero_network_dependency": true,
+    "strengths": "Fast sub-millisecond execution, completely deterministic, zero external HuggingFace dependency.",
+    "limitations": "Does not perform cross-lingual sub-word semantic transfer; relies on agronomic keyword overlap.",
+    "dense_transformer_upgrade_path": "sentence-transformers/all-MiniLM-L6-v2 ONNX runtime model when network permits."
+  },
+  "evaluation_benchmark": {
+    "total_questions_tested": 20,
+    "relevant_top1_retrievals": 12,
+    "precision_at_1": 0.6,
+    "citation_completeness_pct": 100.0,
+    "unsupported_hallucinations_detected": 0
+  },
+  "test_results_detailed": [
+    {
+      "test_id": 1,
+      "question": "Early blight control in tomato using organic methods",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "gok_horticulture_tomato_market_advisory",
+      "retrieved_title": "Karnataka Agricultural Price Commission & Horticulture Advisory",
+      "retrieved_publisher": "Department of Horticulture, Government of Karnataka",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 2,
+      "question": "Chemical fungicides for late blight in potato",
+      "expected_crop": "Potato",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 3,
+      "question": "How to manage blast disease in Kharif paddy?",
+      "expected_crop": "Paddy",
+      "retrieved_doc_id": "uas_paddy_blast_brown_planthopper",
+      "retrieved_title": "Paddy Cultivation Package of Practices for Karnataka",
+      "retrieved_publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 4,
+      "question": "Best sowing window for paddy in South Karnataka",
+      "expected_crop": "Paddy",
+      "retrieved_doc_id": "uas_paddy_blast_brown_planthopper",
+      "retrieved_title": "Paddy Cultivation Package of Practices for Karnataka",
+      "retrieved_publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 5,
+      "question": "Storage tips to prevent onion neck rot",
+      "expected_crop": "Onion",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 6,
+      "question": "Recommended plant spacing for tomato to prevent foliar disease",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "icar_tomato_early_blight",
+      "retrieved_title": "Integrated Management of Early Blight in Solanaceous Crops",
+      "retrieved_publisher": "Indian Council of Agricultural Research (ICAR - IIHR Bengaluru)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 7,
+      "question": "Pre-harvest interval for Mancozeb spray on tomato",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "icar_tomato_early_blight",
+      "retrieved_title": "Integrated Management of Early Blight in Solanaceous Crops",
+      "retrieved_publisher": "Indian Council of Agricultural Research (ICAR - IIHR Bengaluru)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 8,
+      "question": "How to identify late blight lesions on potato leaves",
+      "expected_crop": "Potato",
+      "retrieved_doc_id": "icar_potato_late_blight",
+      "retrieved_title": "Advisory on Late Blight Management in Potato",
+      "retrieved_publisher": "ICAR - Central Potato Research Institute (CPRI Shimla)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 9,
+      "question": "Brown plant hopper management in rice crop",
+      "expected_crop": "Paddy",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 10,
+      "question": "Maturity stage for harvesting tomato for long-distance transport",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 11,
+      "question": "Optimal nitrogen fertilizer split schedule for paddy",
+      "expected_crop": "Paddy",
+      "retrieved_doc_id": "uas_paddy_blast_brown_planthopper",
+      "retrieved_title": "Paddy Cultivation Package of Practices for Karnataka",
+      "retrieved_publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 12,
+      "question": "Controlling Alternaria solani in solanaceous vegetables",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "icar_potato_late_blight",
+      "retrieved_title": "Advisory on Late Blight Management in Potato",
+      "retrieved_publisher": "ICAR - Central Potato Research Institute (CPRI Shimla)",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 13,
+      "question": "Trichoderma harzianum dosage for bio-fungicidal soil treatment",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "icar_tomato_early_blight",
+      "retrieved_title": "Integrated Management of Early Blight in Solanaceous Crops",
+      "retrieved_publisher": "Indian Council of Agricultural Research (ICAR - IIHR Bengaluru)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 14,
+      "question": "Storage temperature and relative humidity for rabi onion",
+      "expected_crop": "Onion",
+      "retrieved_doc_id": "gok_horticulture_tomato_market_advisory",
+      "retrieved_title": "Karnataka Agricultural Price Commission & Horticulture Advisory",
+      "retrieved_publisher": "Department of Horticulture, Government of Karnataka",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 15,
+      "question": "Differences between early blight and late blight symptoms",
+      "expected_crop": "Potato",
+      "retrieved_doc_id": "gok_horticulture_tomato_market_advisory",
+      "retrieved_title": "Karnataka Agricultural Price Commission & Horticulture Advisory",
+      "retrieved_publisher": "Department of Horticulture, Government of Karnataka",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 16,
+      "question": "Zero-energy cool chamber design for tomato shelf life extension",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "uas_paddy_blast_brown_planthopper",
+      "retrieved_title": "Paddy Cultivation Package of Practices for Karnataka",
+      "retrieved_publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 17,
+      "question": "Pymetrozine 50 WG dosage for plant hoppers in paddy",
+      "expected_crop": "Paddy",
+      "retrieved_doc_id": "uas_paddy_blast_brown_planthopper",
+      "retrieved_title": "Paddy Cultivation Package of Practices for Karnataka",
+      "retrieved_publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 18,
+      "question": "Phytophthora infestans favorable weather conditions",
+      "expected_crop": "Potato",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": false,
+      "citation_present": true
+    },
+    {
+      "test_id": 19,
+      "question": "Post-harvest curing time for onion bulbs before storage",
+      "expected_crop": "Onion",
+      "retrieved_doc_id": "icar_onion_storage_pink_root",
+      "retrieved_title": "Post-Harvest Management and Storage of Rabi Onion",
+      "retrieved_publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+      "is_top1_relevant": true,
+      "citation_present": true
+    },
+    {
+      "test_id": 20,
+      "question": "Grade A sorting standards for Bengaluru APMC tomato market",
+      "expected_crop": "Tomato",
+      "retrieved_doc_id": "gok_horticulture_tomato_market_advisory",
+      "retrieved_title": "Karnataka Agricultural Price Commission & Horticulture Advisory",
+      "retrieved_publisher": "Department of Horticulture, Government of Karnataka",
+      "is_top1_relevant": true,
+      "citation_present": true
+    }
+  ],
+  "status": "EVALUATED_AND_VERIFIED"
+}

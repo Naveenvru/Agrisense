@@ -1,0 +1,60 @@
+{
+  "dataset_name": "PlantDoc",
+  "source_url": "https://github.com/pratikkayal/PlantDoc-Dataset",
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+  "domain": "In-field smartphone imagery with variable lighting & background soil",
+  "total_images_acquired": 47,
+  "categories_sampled": 12,
+  "categories": [
+    {
+      "category": "Apple Scab Leaf",
+      "images": 3
+    },
+    {
+      "category": "Apple leaf",
+      "images": 4
+    },
+    {
+      "category": "Apple rust leaf",
+      "images": 4
+    },
+    {
+      "category": "Bell_pepper leaf spot",
+      "images": 4
+    },
+    {
+      "category": "Bell_pepper leaf",
+      "images": 4
+    },
+    {
+      "category": "Blueberry leaf",
+      "images": 4
+    },
+    {
+      "category": "Cherry leaf",
+      "images": 4
+    },
+    {
+      "category": "Corn Gray leaf spot",
+      "images": 4
+    },
+    {
+      "category": "Corn leaf blight",
+      "images": 4
+    },
+    {
+      "category": "Corn rust leaf",
+      "images": 4
+    },
+    {
+      "category": "Peach leaf",
+      "images": 4
+    },
+    {
+      "category": "Potato leaf early blight",
+      "images": 4
+    }
+  ],
+  "compatibility": "Complementary external validation set for evaluating domain shift",
+  "status": "ACQUIRED_AND_VERIFIED"
+}

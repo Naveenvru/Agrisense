@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MarketService } from './market.service';
+import { AiMlServiceClient } from '../ai/ai-ml-service.client';
 import { CollectMarketDto } from './dto/collect-market.dto';
 import { QueryMarketDto, QueryTrendsDto, PriceStatsDto } from './dto/query-market.dto';
 
@@ -35,7 +36,10 @@ import { QueryMarketDto, QueryTrendsDto, PriceStatsDto } from './dto/query-marke
 export class MarketController {
   private readonly logger = new Logger(MarketController.name);
 
-  constructor(private readonly marketService: MarketService) {}
+  constructor(
+    private readonly marketService: MarketService,
+    private readonly aiMlClient: AiMlServiceClient,
+  ) {}
 
   // -------------------------------------------------------------------------
   // GET /market/health
@@ -156,6 +160,37 @@ export class MarketController {
     @Query('market') market: string,
   ) {
     return this.marketService.getLatestPrice(commodity, market);
+  }
+
+  // -------------------------------------------------------------------------
+  // GET /market/forecast
+  // -------------------------------------------------------------------------
+
+  @Get('forecast')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get multi-horizon AI price forecast for commodity and market',
+    description: 'Retrieves multi-horizon AI price forecast from the FastAPI microservice.',
+  })
+  @ApiQuery({ name: 'commodity', required: true, example: 'Tomato' })
+  @ApiQuery({ name: 'market', required: false, example: 'Bengaluru' })
+  @ApiQuery({ name: 'state', required: false, example: 'Karnataka' })
+  @ApiQuery({ name: 'horizonDays', required: false, example: 7 })
+  async getForecast(
+    @Query('commodity') commodity: string,
+    @Query('market') market?: string,
+    @Query('state') state?: string,
+    @Query('horizonDays') horizonDays?: number,
+  ) {
+    const latest = await this.marketService.getLatestPrice(commodity, market || 'Bengaluru');
+    const currentPrice = latest ? latest.modalPrice : 1450;
+    return this.aiMlClient.getForecast({
+      commodity,
+      market: market || 'Bengaluru',
+      state: state || 'Karnataka',
+      currentModalPrice: currentPrice,
+      horizonDays: horizonDays ? Number(horizonDays) : 7,
+    });
   }
 
   // -------------------------------------------------------------------------

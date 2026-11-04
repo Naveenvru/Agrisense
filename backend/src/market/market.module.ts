@@ -8,30 +8,8 @@ import { MarketAggregationService } from './aggregation/market-aggregation.servi
 import { MarketMongoModule } from '../mongodb/market/market-mongo.module';
 import { CollectorModule } from '../collectors/common/collector.module';
 import { FarmerProfilesModule } from '../farmer-profiles/farmer-profiles.module';
+import { AiMlServiceClient } from '../ai/ai-ml-service.client';
 
-/**
- * MarketModule — Phase 9 (Market Intelligence)
- *
- * Imports
- * ────────
- * ✔ MarketMongoModule   — 5 MongoDB collections (market_raw, market_prices_v2, etc.)
- * ✔ CollectorModule     — MarketCollector + DataLakeService (via StorageModule)
- *
- * Providers
- * ─────────
- * ✔ MarketRepository         — MongoDB data access
- * ✔ MarketNormalizationService — HashMap-based normalization
- * ✔ MarketQualityService     — HashSet-based duplicate detection + validation
- * ✔ MarketAggregationService — MongoDB $group aggregation pipelines
- * ✔ MarketService            — orchestrates full pipeline
- *
- * Does NOT modify
- * ────────────────
- * ✗ MongodbModule (Phase 6)
- * ✗ StorageModule (Phase 8.7)
- * ✗ WeatherModule (Phase 8)
- * ✗ Any auth / entity / controller from previous phases
- */
 @Module({
   imports: [
     MarketMongoModule,
@@ -45,7 +23,8 @@ import { FarmerProfilesModule } from '../farmer-profiles/farmer-profiles.module'
     MarketQualityService,
     MarketAggregationService,
     MarketService,
+    AiMlServiceClient,
   ],
-  exports: [MarketService, MarketRepository],
+  exports: [MarketService, MarketRepository, AiMlServiceClient],
 })
 export class MarketModule {}

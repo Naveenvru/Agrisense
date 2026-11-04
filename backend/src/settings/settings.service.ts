@@ -153,7 +153,7 @@ export class SettingsService {
   private async getOrCreate(userId: string) {
     let settings = await this.settings.findOne({ where: { userId } });
     if (!settings) {
-      settings = this.settings.create({ userId });
+      settings = this.settings.create({ userId, aiAssistanceEnabled: true, personalizedRecommendationsEnabled: true });
       settings = await this.settings.save(settings);
     }
     return settings;

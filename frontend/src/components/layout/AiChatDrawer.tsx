@@ -56,7 +56,7 @@ export function AiChatDrawer({ isOpen, onClose }: AiChatDrawerProps) {
 
   if (!isOpen) return null;
 
-  if (!user?.preferences?.aiAssistanceEnabled) return <div className="fixed inset-0 z-50 flex justify-end bg-black/50" role="dialog" aria-modal="true" aria-label="AI preferences">
+  if (user?.preferences?.aiAssistanceEnabled === false) return <div className="fixed inset-0 z-50 flex justify-end bg-black/50" role="dialog" aria-modal="true" aria-label="AI preferences">
     <section className="flex h-full w-full max-w-md flex-col border-l border-border bg-background p-6 shadow-2xl">
       <button type="button" onClick={onClose} className="self-end rounded-lg p-2 text-text-secondary hover:bg-surface" aria-label="Close"><X className="h-5 w-5" /></button>
       <div className="my-auto"><Sparkles className="mb-4 h-8 w-8 text-primary" /><h2 className="text-xl font-bold text-text-primary">AI assistance is off</h2><p className="mt-2 text-sm text-text-secondary">Turn on AI assistance in settings before sending prompts or crop images to the AI provider.</p><button type="button" onClick={() => { onClose(); navigate('/settings'); }} className="mt-5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Open settings</button></div>

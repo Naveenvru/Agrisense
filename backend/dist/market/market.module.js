@@ -17,6 +17,7 @@ const market_aggregation_service_1 = require("./aggregation/market-aggregation.s
 const market_mongo_module_1 = require("../mongodb/market/market-mongo.module");
 const collector_module_1 = require("../collectors/common/collector.module");
 const farmer_profiles_module_1 = require("../farmer-profiles/farmer-profiles.module");
+const ai_ml_service_client_1 = require("../ai/ai-ml-service.client");
 let MarketModule = class MarketModule {
 };
 exports.MarketModule = MarketModule;
@@ -34,8 +35,9 @@ exports.MarketModule = MarketModule = __decorate([
             market_quality_service_1.MarketQualityService,
             market_aggregation_service_1.MarketAggregationService,
             market_service_1.MarketService,
+            ai_ml_service_client_1.AiMlServiceClient,
         ],
-        exports: [market_service_1.MarketService, market_repository_1.MarketRepository],
+        exports: [market_service_1.MarketService, market_repository_1.MarketRepository, ai_ml_service_client_1.AiMlServiceClient],
     })
 ], MarketModule);
 //# sourceMappingURL=market.module.js.map

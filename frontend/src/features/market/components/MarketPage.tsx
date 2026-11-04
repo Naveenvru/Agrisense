@@ -11,7 +11,7 @@ export function MarketPage() {
   const thirtyDaysAgo = new Date(today);
   thirtyDaysAgo.setDate(today.getDate() - 30);
   const [form, setForm] = useState<MarketQuery>({
-    commodity: '', district: 'Bengaluru Urban', state: 'Karnataka',
+    commodity: '', district: 'Bengaluru', state: 'Karnataka',
     startDate: dateString(thirtyDaysAgo), endDate: dateString(today), limit: 200,
   });
   const [records, setRecords] = useState<MarketPriceRecord[]>([]);
@@ -19,27 +19,44 @@ export function MarketPage() {
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
 
-  useEffect(() => {
-    apiClient.get('/farmer-profile/me').then(({ data }) => {
-      const profile = data?.data;
-      if ((profile?.district && profile.district !== 'Default') || (profile?.state && profile.state !== 'Default')) {
-        setForm((current) => ({ ...current, district: profile.district && profile.district !== 'Default' ? profile.district : current.district, state: profile.state && profile.state !== 'Default' ? profile.state : current.state }));
-      }
-    }).catch(() => { /* Bengaluru defaults remain available when no profile location is saved. */ });
-  }, []);
-
-  const runQuery = async (event?: FormEvent) => {
-    event?.preventDefault();
+  const fetchPrices = async (queryPayload: MarketQuery) => {
     setLoading(true);
     setError('');
     setSearched(true);
     try {
-      const result = await MarketService.getPrices(form);
+      const result = await MarketService.getPrices(queryPayload);
       setRecords(result);
     } catch (err: any) {
       setRecords([]);
       setError(err.response?.data?.message || 'Market records could not be loaded. Check the connection and try again.');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let initialQuery = { ...form };
+    apiClient.get('/farmer-profile/me').then(({ data }) => {
+      const profile = data?.data;
+      if ((profile?.district && profile.district !== 'Default') || (profile?.state && profile.state !== 'Default')) {
+        const updated = {
+          ...initialQuery,
+          district: profile.district && profile.district !== 'Default' ? profile.district : initialQuery.district,
+          state: profile.state && profile.state !== 'Default' ? profile.state : initialQuery.state,
+        };
+        setForm(updated);
+        fetchPrices(updated);
+        return;
+      }
+      fetchPrices(initialQuery);
+    }).catch(() => {
+      fetchPrices(initialQuery);
+    });
+  }, []);
+
+  const runQuery = async (event?: FormEvent) => {
+    event?.preventDefault();
+    fetchPrices(form);
   };
 
   const setField = (key: keyof MarketQuery, value: string) => setForm((current) => ({ ...current, [key]: value }));
@@ -48,10 +65,10 @@ export function MarketPage() {
     <PageHeader title="Market Intelligence" description="Browse recorded market prices by commodity, market and region. Results show source observations only." />
     <form onSubmit={runQuery} className="glass rounded-xl border border-border p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <label className="text-xs text-text-secondary">Commodity
-        <input value={form.commodity || ''} onChange={(e) => setField('commodity', e.target.value)} placeholder="e.g. Tomato" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+        <input value={form.commodity || ''} onChange={(e) => setField('commodity', e.target.value)} placeholder="All commodities or e.g. Tomato" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
       </label>
       <label className="text-xs text-text-secondary">District
-        <input value={form.district || ''} onChange={(e) => setField('district', e.target.value)} placeholder="Bengaluru Urban" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
+        <input value={form.district || ''} onChange={(e) => setField('district', e.target.value)} placeholder="Bengaluru" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />
       </label>
       <label className="text-xs text-text-secondary">State
         <input value={form.state || ''} onChange={(e) => setField('state', e.target.value)} placeholder="Karnataka" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary" />

@@ -1,0 +1,40 @@
+{
+  "status": "ACQUIRED_AND_VERIFIED",
+  "datasets_acquired": [
+    {
+      "dataset_id": "karnataka_apmc_live",
+      "name": "Karnataka APMC Daily Mandi Prices (Live Feed)",
+      "source": "data.gov.in / Karnataka State Agricultural Marketing Board",
+      "license": "Government Open Data License - India (GODL)",
+      "path": "data\\raw\\prices\\karnataka_mandi_live.json",
+      "records": 531,
+      "sha256": "a9c7eae4899acbaa30bcd1aa8f018ff1c29f7c7b6e9af14fc737e34df5b6fb60",
+      "geographic_coverage": "Karnataka (All APMC Mandis)",
+      "commodities": "Tomato, Paddy, Onion, Green Chilli, Arecanut, Groundnut, Copra"
+    },
+    {
+      "dataset_id": "karnataka_apmc_history",
+      "name": "Karnataka APMC Historical Mandi Observations",
+      "source": "data.gov.in / Karnataka APMCs",
+      "license": "GODL-India",
+      "path": "data\\raw\\prices\\karnataka_mandi_history.json",
+      "records": 0,
+      "sha256": "7b53920a87f724bbe792a4efdcbad90fb1c0ba94c42e1e358e48c8bb8324604c",
+      "geographic_coverage": "Karnataka (Bengaluru, Kolar, Mysuru, Hassan, Davangere)",
+      "commodities": "Vegetables, Cereals, Spices, Pulses, Plantation Crops"
+    },
+    {
+      "dataset_id": "agmarknet_wholesale_history",
+      "name": "AGMARKNET Wholesale Market Prices",
+      "source": "Directorate of Marketing & Inspection (DMI) / AGMARKNET",
+      "license": "Open Government Data License",
+      "path": "data\\raw\\prices\\agmarknet_historical_prices.csv",
+      "records": 8807,
+      "sha256": "261335b88864af865f7b7cc95e92c1e0b2d9ab3c8016a45418cea32b81a79be3",
+      "geographic_coverage": "India / State Mandis",
+      "commodities": "Potato, Onion, Tomato, Cereals"
+    }
+  ],
+  "total_records": 9338,
+  "retrieved_at": "2026-11-04T11:16:06.940513+00:00"
+}

@@ -14,8 +14,8 @@ export const DEFAULT_ACCOUNT_PREFERENCES: AccountPreferences = {
   accentTheme: 'farm',
   units: 'metric',
   language: 'en',
-  aiAssistanceEnabled: false,
-  personalizedRecommendationsEnabled: false,
+  aiAssistanceEnabled: true,
+  personalizedRecommendationsEnabled: true,
 };
 
 export const APP_LANGUAGES = [

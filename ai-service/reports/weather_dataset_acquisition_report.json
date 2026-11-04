@@ -1,0 +1,70 @@
+{
+  "dataset_name": "Historical Agricultural Weather Observations",
+  "retrieved_at": "2026-11-04T11:16:14.125654+00:00",
+  "total_district_series": 4,
+  "total_daily_observations": 3444,
+  "variables_acquired": [
+    "temperature_2m_max (\u00b0C)",
+    "temperature_2m_min (\u00b0C)",
+    "precipitation_sum (mm)",
+    "relative_humidity_2m_mean (%)",
+    "wind_speed_10m_max (km/h)"
+  ],
+  "sources": [
+    "Open-Meteo Historical Weather API (ERA5 Reanalysis)",
+    "India Meteorological Department (IMD)"
+  ],
+  "files": [
+    {
+      "district": "Bengaluru",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "observations_count": 861,
+      "file_path": "data\\raw\\weather\\weather_bengaluru_historical.json",
+      "sha256": "cd05e62b3f7bc8fcf7d9b3f35a301f9ba4df4cc2de0fe406ab35eebb128324d3",
+      "source": "Open-Meteo Historical Archive / Copernicus ERA5",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+    },
+    {
+      "district": "Kolar",
+      "latitude": 13.1378,
+      "longitude": 78.1292,
+      "observations_count": 861,
+      "file_path": "data\\raw\\weather\\weather_kolar_historical.json",
+      "sha256": "213baa21a2669fc7397985dd88380c7a422035bf78b22552ca84ef7ab8fc21f4",
+      "source": "Open-Meteo Historical Archive / Copernicus ERA5",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+    },
+    {
+      "district": "Hassan",
+      "latitude": 13.0068,
+      "longitude": 76.1004,
+      "observations_count": 861,
+      "file_path": "data\\raw\\weather\\weather_hassan_historical.json",
+      "sha256": "46f5e7bef859847790efb1c9a6c01ec44f10f8c67688e41f918dfcb73f15a677",
+      "source": "Open-Meteo Historical Archive / Copernicus ERA5",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+    },
+    {
+      "district": "Mysuru",
+      "latitude": 12.2958,
+      "longitude": 76.6394,
+      "observations_count": 861,
+      "file_path": "data\\raw\\weather\\weather_mysuru_historical.json",
+      "sha256": "122eb317efe996148de9bda1c73a0b0a9faefccbb43ba23ac0802420f2700d51",
+      "source": "Open-Meteo Historical Archive / Copernicus ERA5",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+    },
+    {
+      "district": "All India (State & District-wise)",
+      "latitude": "National Coverage",
+      "longitude": "National Coverage",
+      "observations_count": 37826,
+      "file_path": "data\\raw\\weather\\imd_state_district_rainfall_historical.csv",
+      "sha256": "c9d03460c07ff75f26512fa9ab5c8eb834280b860a7ad42e2c2d7a4ff8d3c999",
+      "source": "India Meteorological Department (IMD) / Ministry of Earth Sciences",
+      "license": "Government Open Data License - India"
+    }
+  ],
+  "status": "ACQUIRED_AND_VERIFIED"
+}

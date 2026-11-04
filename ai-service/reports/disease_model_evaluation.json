@@ -1,0 +1,18 @@
+{
+  "model_architecture": "MobileNetV3-Small",
+  "dataset": "PlantVillage (Verified Subset)",
+  "train_samples": 418,
+  "val_samples": 76,
+  "test_samples": 114,
+  "num_classes": 38,
+  "epochs_trained": 3,
+  "best_val_accuracy": 0.0263,
+  "untouched_test_accuracy": 0.0263,
+  "macro_precision": 0.0007,
+  "macro_recall": 0.0263,
+  "macro_f1": 0.0013,
+  "weighted_f1": 0.0013,
+  "saved_checkpoint": "models\\disease\\mobilenetv3_best.pth",
+  "confusion_matrix_path": "reports\\disease_confusion_matrix.png",
+  "status": "TRAINED_AND_EVALUATED"
+}

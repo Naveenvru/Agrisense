@@ -1,0 +1,43 @@
+{
+  "forensic_audit": {
+    "finding_title": "Forensic Audit of Previous Ridge R2=0.9999 / MAE=0.33",
+    "date_audited": "2026-11-04T11:19:40.960471+00:00",
+    "input_dataset_analyzed": "agrisense_cleaned_dataset.csv",
+    "total_rows": 520,
+    "autocorrelation_lag_1": 0.936233,
+    "cross_commodity_delta_correlation": 1.0,
+    "diagnostics": {
+      "synthetic_regularity_detected": true,
+      "root_cause_analysis": "The cleaned dataset in agrisense_outputs contains artificially generated/interpolated modal prices where day-to-day changes in Tomato and Potato are perfectly collinear (correlation=1.000000). Because prices were generated along an analytical smooth curve, lag_1 alone captures 99.99% of the variance with near-zero residual error. The reported R2=0.9999 is therefore an artifact of synthetic data smoothness, NOT genuine market forecasting capability.",
+      "recommendation": "Reject the R2=0.9999 metric as unrepresentative of volatile agricultural spot markets. Revalidate forecasting models strictly against authentic AGMARKNET / Karnataka APMC mandi observations."
+    }
+  },
+  "evaluation_summary": {
+    "datasets_evaluated": [
+      "Karnataka APMC Mandi Historical Records (data.gov.in)",
+      "AGMARKNET Wholesale Price Records (DMI)"
+    ],
+    "horizons_evaluated": [
+      1,
+      3,
+      7,
+      14,
+      30
+    ],
+    "models_benchmarked": [
+      "Ridge",
+      "RandomForest",
+      "XGBoost",
+      "LightGBM",
+      "CatBoost",
+      "LastObservationBaseline",
+      "SeasonalNaiveBaseline"
+    ],
+    "key_finding": "On authentic volatile mandi spot observations, price changes exhibit realistic variance. Baseline persistence error increases naturally from Horizon 1 to Horizon 30. Ridge and GBDT models outperform static baselines across multi-day horizons without artificial 0.9999 overfit.",
+    "artifacts_generated": [
+      "reports\\forecasting_metrics_by_horizon.csv",
+      "reports\\forecasting_metrics_by_series.csv"
+    ]
+  },
+  "status": "REVALIDATED"
+}

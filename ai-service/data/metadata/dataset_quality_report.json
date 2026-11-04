@@ -1,0 +1,111 @@
+{
+  "dataset_name": "Haryana_Mandi_Observations_Canonical",
+  "generated_at": "2026-11-04T06:29:47.645918+00:00",
+  "total_records": 520,
+  "temporal_coverage": {
+    "start_date": "2025-01-01",
+    "end_date": "2025-05-10",
+    "invalid_dates": 0
+  },
+  "geographic_coverage": {
+    "total_states": 1,
+    "states": [
+      "Haryana"
+    ],
+    "total_markets": 2
+  },
+  "commodity_coverage": {
+    "total_commodities": 2,
+    "commodities": [
+      "Tomato",
+      "Potato"
+    ]
+  },
+  "price_invariants": {
+    "min_gt_modal_count": 0,
+    "modal_gt_max_count": 0,
+    "min_gt_max_count": 0,
+    "non_positive_price_count": 0,
+    "all_invariants_passed": true
+  },
+  "outlier_analysis": {
+    "total_price_outliers_iqr": 0,
+    "by_commodity": {
+      "Potato": {
+        "count": 260,
+        "q25": 2204.03,
+        "q75": 2327.7,
+        "iqr": 123.66,
+        "bounds": [
+          2018.54,
+          2513.19
+        ],
+        "outliers_detected": 0
+      },
+      "Tomato": {
+        "count": 260,
+        "q25": 1404.03,
+        "q75": 1527.7,
+        "iqr": 123.66,
+        "bounds": [
+          1218.54,
+          1713.19
+        ],
+        "outliers_detected": 0
+      }
+    }
+  },
+  "missing_values": {
+    "counts": {
+      "source_provider": 0,
+      "observation_date": 0,
+      "state": 0,
+      "district": 0,
+      "market": 0,
+      "commodity": 0,
+      "variety": 0,
+      "grade": 0,
+      "min_price": 0,
+      "max_price": 0,
+      "modal_price": 0,
+      "price_unit": 0,
+      "arrival_quantity": 520,
+      "arrival_unit": 0,
+      "source_record_id": 0,
+      "source_file": 0,
+      "source_row": 0,
+      "raw_record_hash": 0,
+      "ingested_at": 0,
+      "quality_flags": 0
+    },
+    "percentages": {
+      "source_provider": 0.0,
+      "observation_date": 0.0,
+      "state": 0.0,
+      "district": 0.0,
+      "market": 0.0,
+      "commodity": 0.0,
+      "variety": 0.0,
+      "grade": 0.0,
+      "min_price": 0.0,
+      "max_price": 0.0,
+      "modal_price": 0.0,
+      "price_unit": 0.0,
+      "arrival_quantity": 100.0,
+      "arrival_unit": 0.0,
+      "source_record_id": 0.0,
+      "source_file": 0.0,
+      "source_row": 0.0,
+      "raw_record_hash": 0.0,
+      "ingested_at": 0.0,
+      "quality_flags": 0.0
+    }
+  },
+  "duplicates": {
+    "conflicting_duplicate_keys": 0
+  },
+  "quality_flags_breakdown": {
+    "CLEAN": 520
+  },
+  "status": "VALIDATED"
+}

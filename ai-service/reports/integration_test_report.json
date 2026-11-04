@@ -1,0 +1,125 @@
+{
+  "suite_name": "AgriSense AI Microservice End-to-End Workflow Integration Test",
+  "timestamp": "2026-11-04T12:42:13.980291+00:00",
+  "total_suite_latency_ms": 3198.78,
+  "overall_status": "ALL_WORKFLOWS_PASSED",
+  "workflows": [
+    {
+      "workflow": "Workflow A: Market Price Forecasting",
+      "status": "PASSED",
+      "latency_ms": 2552.18,
+      "test_cases_run": 3,
+      "details": [
+        {
+          "commodity": "Tomato",
+          "market": "Kolar",
+          "horizon_days": 7,
+          "current_price": 1400.0,
+          "projected_price": 1521.73,
+          "trend": "UPWARD",
+          "ci_lower": 1520.02,
+          "ci_upper": 1523.44,
+          "daily_trajectory_steps": 7
+        },
+        {
+          "commodity": "Potato",
+          "market": "Agra",
+          "horizon_days": 14,
+          "current_price": 1100.0,
+          "projected_price": 1221.17,
+          "trend": "UPWARD",
+          "ci_lower": 1218.75,
+          "ci_upper": 1223.59,
+          "daily_trajectory_steps": 14
+        },
+        {
+          "commodity": "Tomato",
+          "market": "Bengaluru",
+          "horizon_days": 30,
+          "current_price": 1600.0,
+          "projected_price": 6198.52,
+          "trend": "UPWARD",
+          "ci_lower": 6194.98,
+          "ci_upper": 6202.06,
+          "daily_trajectory_steps": 30
+        }
+      ]
+    },
+    {
+      "workflow": "Workflow B: Disease Detection + Explainability",
+      "status": "PASSED",
+      "latency_ms": 435.64,
+      "test_image_used": "data\\raw\\plantvillage\\Apple___Apple_scab\\00075aa8-d81a-4184-8541-b692b78d398a___FREC_Scab 3335.JPG",
+      "predicted_crop": "Tomato",
+      "predicted_condition": "Yellow Leaf Curl Virus",
+      "confidence_score": 0.0359,
+      "gradcam_heatmap_generated": true,
+      "requires_expert_verification": true
+    },
+    {
+      "workflow": "Workflow C: RAG Agricultural Retrieval & Citations",
+      "status": "PASSED",
+      "latency_ms": 203.83,
+      "queries_tested": 3,
+      "details": [
+        {
+          "query": "How to treat tomato early blight?",
+          "crop": "Tomato",
+          "matched_count": 2,
+          "top_doc_title": "Integrated Management of Early Blight in Solanaceous Crops",
+          "publisher": "Indian Council of Agricultural Research (ICAR - IIHR Bengaluru)",
+          "citation": "https://iihr.res.in/pest-management/tomato-blight"
+        },
+        {
+          "query": "Managing blast in Kharif paddy",
+          "crop": "Paddy",
+          "matched_count": 1,
+          "top_doc_title": "Paddy Cultivation Package of Practices for Karnataka",
+          "publisher": "University of Agricultural Sciences (UAS) Bengaluru & Dharwad",
+          "citation": "https://uasbangalore.edu.in/paddy-package"
+        },
+        {
+          "query": "Onion storage rot prevention",
+          "crop": "Onion",
+          "matched_count": 1,
+          "top_doc_title": "Post-Harvest Management and Storage of Rabi Onion",
+          "publisher": "ICAR - Directorate of Onion and Garlic Research (DOGR Pune)",
+          "citation": "https://dogr.icar.gov.in/onion-storage"
+        }
+      ]
+    },
+    {
+      "workflow": "Workflow D: Weather-Driven Agronomic Risk Advisory",
+      "status": "PASSED",
+      "latency_ms": 6.42,
+      "districts_profiled": 2,
+      "details": [
+        {
+          "weather_station_file": "weather_bengaluru_historical.json",
+          "period": "2026-05-04 to 2026-05-10",
+          "7d_mean_temperature_c": 32.4,
+          "7d_mean_relative_humidity_pct": 61.3,
+          "7d_total_precipitation_mm": 9.7,
+          "fungal_disease_risk": "MODERATE",
+          "advisory": "Standard field moisture monitoring advised."
+        },
+        {
+          "weather_station_file": "weather_hassan_historical.json",
+          "period": "2026-05-04 to 2026-05-10",
+          "7d_mean_temperature_c": 31.4,
+          "7d_mean_relative_humidity_pct": 65.1,
+          "7d_total_precipitation_mm": 1.7,
+          "fungal_disease_risk": "MODERATE",
+          "advisory": "Standard field moisture monitoring advised."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_workflows_tested": 4,
+    "workflows_passed": 4,
+    "workflows_failed": 0,
+    "mean_workflow_latency_ms": 799.7,
+    "compliance_with_sla": true
+  }
+}

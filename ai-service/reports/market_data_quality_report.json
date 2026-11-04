@@ -1,0 +1,58 @@
+{
+  "report_name": "AgriSense Market Price Data Quality & Provenance Audit",
+  "generated_at": "2026-11-04T11:19:00.605585+00:00",
+  "total_records_ingested": 9338,
+  "valid_records_after_sanitization": 9338,
+  "data_hygiene": {
+    "missing_observation_dates": 0,
+    "zero_or_negative_prices": 0,
+    "physical_bounds_violations": 0,
+    "data_retention_rate": 1.0
+  },
+  "commodity_distribution": {
+    "Tomato": {
+      "records": 14,
+      "mean_price_inr_qtl": 1517.93,
+      "std_inr_qtl": 404.57,
+      "coefficient_of_variation": 0.2665,
+      "median_inr_qtl": 1500.0,
+      "iqr_inr_qtl": 425.5,
+      "iqr_outliers_count": 1,
+      "markets_covered": 14
+    },
+    "Potato": {
+      "records": 8821,
+      "mean_price_inr_qtl": 868.68,
+      "std_inr_qtl": 484.92,
+      "coefficient_of_variation": 0.5582,
+      "median_inr_qtl": 770.0,
+      "iqr_inr_qtl": 650.0,
+      "iqr_outliers_count": 256,
+      "markets_covered": 18
+    },
+    "Onion": {
+      "records": 15,
+      "mean_price_inr_qtl": 3660.0,
+      "std_inr_qtl": 1196.55,
+      "coefficient_of_variation": 0.3269,
+      "median_inr_qtl": 4200.0,
+      "iqr_inr_qtl": 1350.0,
+      "iqr_outliers_count": 1,
+      "markets_covered": 11
+    }
+  },
+  "forensic_synthetic_vs_authentic_comparison": {
+    "authentic_mandi_characteristics": {
+      "tomato_cv": 0.2665,
+      "price_volatility": "High (realistic agricultural supply shocks, seasonality, arrival fluctuations)",
+      "cross_commodity_delta_correlation": "Low / independent (r < 0.20)",
+      "data_provenance": "GODL-India, Agmarknet, Karnataka State Agricultural Marketing Board"
+    },
+    "synthetic_legacy_characteristics": {
+      "cross_commodity_delta_correlation": 1.0,
+      "synthetic_regularity": "Identical daily increments across commodities (r = 1.000000)",
+      "flaw_explanation": "Caused prior Ridge models to yield artificial R2=0.9999 due to exact polynomial trajectory interpolation"
+    }
+  },
+  "status": "AUDITED_AND_VERIFIED"
+}

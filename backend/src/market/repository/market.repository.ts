@@ -123,6 +123,10 @@ export class MarketRepository {
     this.logger.log(`Upserted ${records.length} price records to market_prices_v2`);
   }
 
+  async countPrices(): Promise<number> {
+    return this.priceModel.countDocuments().exec();
+  }
+
   async findPrices(
     commodity?: string,
     market?: string,
@@ -133,20 +137,42 @@ export class MarketRepository {
     state?: string,
   ): Promise<MarketPriceV2[]> {
     const filter: Record<string, any> = {};
-    if (commodity) filter.commodity = new RegExp(this.escapeRegex(commodity), 'i');
-    if (market) filter.market = new RegExp(this.escapeRegex(market), 'i');
-    if (district) filter.district = new RegExp(this.escapeRegex(district), 'i');
-    if (state) filter.state = new RegExp(this.escapeRegex(state), 'i');
+    if (commodity && commodity.trim()) {
+      filter.commodity = new RegExp(this.escapeRegex(commodity.trim()), 'i');
+    }
+    if (market && market.trim()) {
+      filter.market = new RegExp(this.escapeRegex(market.trim()), 'i');
+    }
+    if (district && district.trim()) {
+      const cleanDistrict = district.trim().replace(/\s+(urban|rural)$/i, '').trim();
+      filter.district = new RegExp(this.escapeRegex(cleanDistrict), 'i');
+    }
+    if (state && state.trim()) {
+      filter.state = new RegExp(this.escapeRegex(state.trim()), 'i');
+    }
     if (startDate || endDate) {
       filter.date = {};
       if (startDate) filter.date.$gte = startDate;
       if (endDate) filter.date.$lte = endDate;
     }
-    return this.priceModel
+    let results = await this.priceModel
       .find(filter)
       .sort({ date: -1 })
       .limit(limit)
       .exec();
+
+    // If date range had no records, relax date filter to show latest recorded prices
+    if (!results.length && (startDate || endDate)) {
+      const relaxedFilter = { ...filter };
+      delete relaxedFilter.date;
+      results = await this.priceModel
+        .find(relaxedFilter)
+        .sort({ date: -1 })
+        .limit(limit)
+        .exec();
+    }
+
+    return results;
   }
 
   private escapeRegex(value: string) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }

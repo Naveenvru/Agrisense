@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { EmptyState } from '@/components/common/EmptyState';
 import { CloudOff, RefreshCw, Thermometer, Droplets, Wind, Gauge } from 'lucide-react';
-import { CurrentObservation, ForecastObservation, HistoricalObservation, WeatherParcel, WeatherService } from '../services/WeatherService';
+import { CurrentObservation, HistoricalObservation, WeatherParcel, WeatherService } from '../services/WeatherService';
 import { formatPressureHpa, formatRainfallMm, formatTemperature, formatWindSpeedMs, getCurrentLocale } from '@/features/settings/services/account-preferences';
 
 export function WeatherPage() {
   const [parcels, setParcels] = useState<WeatherParcel[]>([]);
   const [parcelId, setParcelId] = useState('');
   const [current, setCurrent] = useState<CurrentObservation | null>(null);
-  const [forecast, setForecast] = useState<ForecastObservation[]>([]);
   const [history, setHistory] = useState<HistoricalObservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,14 +20,14 @@ export function WeatherPage() {
       setParcels(knownParcels);
       const withCoordinates = knownParcels.filter((parcel) => parcel.latitude != null && parcel.longitude != null && Number.isFinite(Number(parcel.latitude)) && Number.isFinite(Number(parcel.longitude)));
       const target = selectedId || parcelId || withCoordinates[0]?.id;
-      if (!target) { setCurrent(null); setForecast([]); setHistory([]); setParcelId(''); return; }
+      if (!target) { setCurrent(null); setHistory([]); setParcelId(''); return; }
       setParcelId(target);
-      const [observation, forecastRows, historyRows] = await Promise.all([
-        WeatherService.getCurrentWeather(target), WeatherService.getForecast(target), WeatherService.getHistory(target),
+      const [observation, historyRows] = await Promise.all([
+        WeatherService.getCurrentWeather(target), WeatherService.getHistory(target),
       ]);
-      setCurrent(observation); setForecast(forecastRows); setHistory(historyRows);
+      setCurrent(observation); setHistory(historyRows);
     } catch (err: any) {
-      setCurrent(null); setForecast([]); setHistory([]);
+      setCurrent(null); setHistory([]);
       setError(err.response?.data?.message || 'Weather service is unavailable. Try again later.');
     } finally { setLoading(false); }
   };
@@ -50,7 +49,6 @@ export function WeatherPage() {
         </div>
         <p className="mt-4 text-xs text-text-secondary">Rainfall recorded: {formatRainfallMm(current.rainfall)}</p>
       </section>
-      <section className="glass overflow-hidden rounded-xl border border-border"><div className="border-b border-border p-4"><h2 className="font-bold text-text-primary">Available forecast records</h2><p className="mt-1 text-xs text-text-secondary">Forecast values are provider data, not agricultural recommendations.</p></div>{forecast.length ? <div className="overflow-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-text-secondary"><tr>{['Time','Condition','Temp','Feels like','Humidity','Rain probability','Wind'].map((item)=><th key={item} className="px-4 py-3">{item}</th>)}</tr></thead><tbody>{forecast.map((item, i)=><tr key={`${item.forecastDate}-${i}`} className="border-t border-border"><td className="whitespace-nowrap px-4 py-3 text-text-primary">{new Date(item.forecastDate).toLocaleString(getCurrentLocale())}</td><td className="px-4 py-3 text-text-primary">{item.weatherDescription}</td><td className="px-4 py-3 text-text-primary">{formatTemperature(item.temperature)}</td><td className="px-4 py-3 text-text-primary">{formatTemperature(item.feelsLike)}</td><td className="px-4 py-3 text-text-primary">{item.humidity}%</td><td className="px-4 py-3 text-text-primary">{item.rainProbability}%</td><td className="px-4 py-3 text-text-primary">{formatWindSpeedMs(item.windSpeed)}</td></tr>)}</tbody></table></div> : <p className="p-5 text-sm text-text-secondary">No forecast records returned for this parcel.</p>}</section>
       <section className="glass overflow-hidden rounded-xl border border-border"><div className="border-b border-border p-4"><h2 className="font-bold text-text-primary">Stored weather history</h2></div>{history.length ? <div className="overflow-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-text-secondary"><tr>{['Time','Condition','Temp','Humidity','Rain','Wind','Pressure'].map((item)=><th key={item} className="px-4 py-3">{item}</th>)}</tr></thead><tbody>{history.map((item, i)=><tr key={`${item.timestamp}-${i}`} className="border-t border-border"><td className="whitespace-nowrap px-4 py-3 text-text-primary">{new Date(item.timestamp).toLocaleString(getCurrentLocale())}</td><td className="px-4 py-3 text-text-primary">{item.weatherCondition}</td><td className="px-4 py-3 text-text-primary">{formatTemperature(item.temperature)}</td><td className="px-4 py-3 text-text-primary">{item.humidity}%</td><td className="px-4 py-3 text-text-primary">{formatRainfallMm(item.rainfall)}</td><td className="px-4 py-3 text-text-primary">{formatWindSpeedMs(item.windSpeed)}</td><td className="px-4 py-3 text-text-primary">{formatPressureHpa(item.pressure)}</td></tr>)}</tbody></table></div> : <p className="p-5 text-sm text-text-secondary">No stored history records for the returned period.</p>}</section>
     </>}
   </div>;
