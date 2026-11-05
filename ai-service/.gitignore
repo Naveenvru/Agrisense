@@ -1,5 +1,51 @@
-.env
+# ==============================================================================
+# AgriSense AI Service — Git Ignore Configuration
+# ==============================================================================
+
+# Python Cache & Bytecode
 __pycache__/
-*.pyc
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
 venv/
 .venv/
+env/
+ENV/
+
+# Environment Variables & Secrets
+.env
+.env.*
+.env.local
+!.env.example
+
+# Vector Database & Embeddings Runtime Caches (Rebuilt automatically at runtime)
+chroma_db/
+*/chroma_db/
+ai-service/
+*.sqlite3
+*.sqlite3-journal
+
+# Model Training Logs & Checkpoints
+catboost_info/
+wandb/
+mlruns/
+lightning_logs/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+.idea/
+.vscode/

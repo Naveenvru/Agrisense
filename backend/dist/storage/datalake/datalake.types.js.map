@@ -1,1 +1,0 @@
-{"version":3,"file":"datalake.types.js","sourceRoot":"","sources":["../../../src/storage/datalake/datalake.types.ts"],"names":[],"mappings":";;;AAkHa,QAAA,WAAW,GAAmC;IACzD,IAAI,EAAE,kBAAkB;IACxB,GAAG,EAAE,UAAU;IACf,GAAG,EAAE,iBAAiB;CACvB,CAAC;AAGW,QAAA,UAAU,GAAmC;IACxD,IAAI,EAAE,OAAO;IACb,GAAG,EAAE,MAAM;IACX,GAAG,EAAE,MAAM;CACZ,CAAC"}
